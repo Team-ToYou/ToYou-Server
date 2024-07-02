@@ -1,7 +1,7 @@
 package com.example.toyou.domain;
 
 import com.example.toyou.domain.common.BaseEntity;
-import com.example.toyou.domain.constant.Emotion;
+import com.example.toyou.domain.enums.Emotion;
 import jakarta.persistence.*;
 import lombok.*;
 

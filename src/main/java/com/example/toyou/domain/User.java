@@ -1,11 +1,10 @@
 package com.example.toyou.domain;
 
 import com.example.toyou.domain.common.BaseEntity;
-import com.example.toyou.domain.constant.Emotion;
-import com.example.toyou.domain.constant.Status;
+import com.example.toyou.domain.enums.Emotion;
+import com.example.toyou.domain.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.context.annotation.Profile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ public class User extends BaseEntity {
     private Emotion todayEmotion;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Friend> friendList = new ArrayList<>();
+    private List<FriendRequest> friendRequestList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Question> questionList = new ArrayList<>();

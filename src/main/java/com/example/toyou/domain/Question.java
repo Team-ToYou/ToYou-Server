@@ -1,7 +1,7 @@
 package com.example.toyou.domain;
 
 import com.example.toyou.domain.common.BaseEntity;
-import com.example.toyou.domain.constant.QuestionType;
+import com.example.toyou.domain.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
 
