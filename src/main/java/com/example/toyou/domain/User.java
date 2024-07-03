@@ -5,6 +5,7 @@ import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.context.annotation.Profile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,4 +39,8 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Alarm> alarmList = new ArrayList<>();
+
+    public void setEmotion(Emotion emotion){
+        this.todayEmotion = emotion;
+    }
 }

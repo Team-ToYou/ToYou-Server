@@ -1,15 +1,15 @@
 package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.ApiResponse;
+import com.example.toyou.app.dto.HomeRequest;
+import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.service.HomeService.UserService;
 import com.example.toyou.app.dto.HomeResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/home")
@@ -34,5 +34,23 @@ public class HomeController {
         log.info("홈화면 조회: userId={}", userId);
 
         return ApiResponse.onSuccess(getHomeDTO);
+    }
+
+    /**
+     * [PATCH] /home/emotions
+     * 감정우표 선택
+     * @param userId 유저 식별자
+     * @param request
+     * @return
+     */
+    @PatchMapping("/emotions")
+    public ApiResponse postEmotion(@RequestHeader Long userId,
+                                   @RequestBody @Valid HomeRequest.postEmotionDTO request){
+
+        userService.updateEmotion(userId, request);
+
+        log.info("감정우표 선택: emotion={}", request.getEmotion());
+
+        return ApiResponse.onSuccess(null);
     }
 }

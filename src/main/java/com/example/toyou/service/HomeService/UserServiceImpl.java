@@ -2,11 +2,13 @@ package com.example.toyou.service.HomeService;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
+import com.example.toyou.app.dto.HomeRequest;
 import com.example.toyou.app.dto.HomeResponse;
 import com.example.toyou.converter.UserConverter;
 import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
+import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,5 +57,22 @@ public class UserServiceImpl implements UserService {
         }
 
         return UserConverter.toGetHomeDTO(user, cardId, questionNum);
+    }
+
+    /**
+     * 감정우표 선택
+     * @param userId 유저 식별자
+     * @param request
+     * @return
+     */
+    @Transactional
+    public void updateEmotion(Long userId, HomeRequest.postEmotionDTO request){
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        Emotion emotion = request.getEmotion();
+
+        user.setEmotion(emotion);
     }
 }
