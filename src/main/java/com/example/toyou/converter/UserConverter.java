@@ -8,20 +8,10 @@ import java.time.LocalDate;
 
 public class UserConverter {
 
-    public static HomeResponse.GetHomeDTO toGetHomeDTO(User user){
-        Long cardId = null;
-        LocalDate today = LocalDate.now();
-
-        for (DiaryCard card : user.getDiaryCardList()) {
-            if (today.equals(card.getCreatedAt().toLocalDate())) {
-                cardId = card.getId();
-                break;
-            }
-        }
-
+    public static HomeResponse.GetHomeDTO toGetHomeDTO(User user, Long cardId, int questionNum){
         return HomeResponse.GetHomeDTO.builder()
                 .emotion(user.getTodayEmotion())
-                .questionNum(user.getQuestionList().size())
+                .questionNum(questionNum)
                 .cardId(cardId)
                 .build();
     }
