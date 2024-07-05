@@ -2,7 +2,6 @@ package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.ApiResponse;
 import com.example.toyou.app.dto.HomeRequest;
-import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.service.HomeService.UserService;
 import com.example.toyou.app.dto.HomeResponse;
 import jakarta.validation.Valid;
