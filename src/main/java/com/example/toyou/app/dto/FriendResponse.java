@@ -28,4 +28,13 @@ public class FriendResponse {
         private Emotion emotion;
         private String ment;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class searchFriendDTO {
+
+        private String nickname;
+    }
 }

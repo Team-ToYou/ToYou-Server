@@ -45,4 +45,18 @@ public class FriendServiceImpl implements FriendService {
 
         return FriendConverter.toGetFriendsDTO(friends);
     }
+
+    /**
+     * 친구(유저) 검색
+     * @param keyword 검색어
+     * @return
+     */
+    public FriendResponse.searchFriendDTO searchFriend(String keyword) {
+
+        // 유저 검색
+        User user = userRepository.findByNickname(keyword)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        return FriendConverter.toSearchFriendDTO(user);
+    }
 }

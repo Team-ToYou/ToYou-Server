@@ -37,4 +37,10 @@ public class FriendConverter {
 
         return FriendResponse.GetFriendsDTO.builder().friendList(friendInfoList).build();
     }
+
+    public static FriendResponse.searchFriendDTO toSearchFriendDTO(User user) {
+        return FriendResponse.searchFriendDTO.builder()
+                .nickname(user.getNickname())
+                .build();
+    }
 }

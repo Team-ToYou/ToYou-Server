@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/friends")
@@ -30,5 +32,19 @@ public class FriendController {
         FriendResponse.GetFriendsDTO friendList = friendService.getFriends(userId);
 
         return ApiResponse.onSuccess(friendList);
+    }
+
+    /**
+     * [GET] /friends/search
+     * 친구(유저) 검색
+     * @param keyword 검색어
+     * @return
+     */
+    @GetMapping("/search")
+    public ApiResponse<FriendResponse.searchFriendDTO> searchFriend(@RequestParam(defaultValue = "") String keyword) {
+
+        FriendResponse.searchFriendDTO friend = friendService.searchFriend(keyword);
+
+        return ApiResponse.onSuccess(friend);
     }
 }
