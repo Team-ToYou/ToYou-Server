@@ -1,12 +1,21 @@
 package com.example.toyou.converter;
 
 import com.example.toyou.app.dto.FriendResponse;
+import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.Emotion;
 
 import java.util.List;
 
 public class FriendConverter {
+
+    public static FriendRequest toFriendRequest(User user, User friend) {
+        return FriendRequest.builder()
+                .user(user)
+                .friend(friend)
+                .accepted(false)
+                .build();
+    }
 
     private static String getMessageForEmotion(Emotion emotion) {
         return switch (emotion) {

@@ -17,7 +17,11 @@ public enum ErrorStatus implements BaseErrorCode {
     _ENUM_TYPE_NOT_MATCH(HttpStatus.BAD_REQUEST, "COMMON404", "일치하는 타입이 없습니다"),
 
     // 유저 에러
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER400", "해당하는 사용자가 존재하지 않습니다");
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER400", "해당하는 사용자가 존재하지 않습니다"),
+
+    // 친구 에러
+    FRIEND_REQUEST_ALREADY_EXISTING(HttpStatus.BAD_REQUEST, "FRIEND400", "이미 친구 요청 정보가 존재합니다."),
+    CANNOT_REQUEST_MYSELF(HttpStatus.BAD_REQUEST, "FRIEND401", "본인에게는 친구 요청이 불가능합니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

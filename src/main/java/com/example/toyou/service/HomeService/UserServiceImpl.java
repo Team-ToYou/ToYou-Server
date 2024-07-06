@@ -27,8 +27,6 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 홈화면 조회
-     * @param userId 유저 식별자
-     * @return 홈화면 정보
      */
     public HomeResponse.GetHomeDTO getHome(Long userId){
 
@@ -60,9 +58,6 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 감정우표 선택
-     * @param userId 유저 식별자
-     * @param request
-     * @return
      */
     @Transactional
     public void updateEmotion(Long userId, HomeRequest.postEmotionDTO request){
