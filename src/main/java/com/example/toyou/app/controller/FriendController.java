@@ -37,13 +37,15 @@ public class FriendController {
     /**
      * [GET] /friends/search
      * 친구(유저) 검색
+     * @param userId 유저 식별자
      * @param keyword 검색어
      * @return
      */
     @GetMapping("/search")
-    public ApiResponse<FriendResponse.searchFriendDTO> searchFriend(@RequestParam(defaultValue = "") String keyword) {
+    public ApiResponse<FriendResponse.searchFriendDTO> searchFriend(@RequestHeader Long userId,
+                                                                    @RequestParam(defaultValue = "") String keyword) {
 
-        FriendResponse.searchFriendDTO friend = friendService.searchFriend(keyword);
+        FriendResponse.searchFriendDTO friend = friendService.searchFriend(userId, keyword);
 
         return ApiResponse.onSuccess(friend);
     }

@@ -7,7 +7,7 @@ public interface FriendService {
 
     FriendResponse.GetFriendsDTO getFriends(Long userId);
 
-    FriendResponse.searchFriendDTO searchFriend(String keyword);
+    FriendResponse.searchFriendDTO searchFriend(Long userId, String keyword);
 
     void createFriendRequest(Long userId, FriendRequestDTO.createFriendRequestDTO request);
 }

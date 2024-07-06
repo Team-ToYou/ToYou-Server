@@ -1,6 +1,7 @@
 package com.example.toyou.app.dto;
 
 import com.example.toyou.domain.enums.Emotion;
+import com.example.toyou.domain.enums.FriendStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,5 +37,6 @@ public class FriendResponse {
     public static class searchFriendDTO {
 
         private String nickname;
+        private FriendStatus friendStatus;
     }
 }

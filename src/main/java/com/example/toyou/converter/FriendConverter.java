@@ -4,6 +4,7 @@ import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.Emotion;
+import com.example.toyou.domain.enums.FriendStatus;
 
 import java.util.List;
 
@@ -47,9 +48,10 @@ public class FriendConverter {
         return FriendResponse.GetFriendsDTO.builder().friendList(friendInfoList).build();
     }
 
-    public static FriendResponse.searchFriendDTO toSearchFriendDTO(User user) {
+    public static FriendResponse.searchFriendDTO toSearchFriendDTO(User friend, FriendStatus friendStatus) {
         return FriendResponse.searchFriendDTO.builder()
-                .nickname(user.getNickname())
+                .nickname(friend.getNickname())
+                .friendStatus(friendStatus)
                 .build();
     }
 }

@@ -7,6 +7,7 @@ import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.converter.FriendConverter;
 import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.User;
+import com.example.toyou.domain.enums.FriendStatus;
 import com.example.toyou.repository.FriendRepository;
 import com.example.toyou.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,13 +49,33 @@ public class FriendServiceImpl implements FriendService {
     /**
      * 친구(유저) 검색
      */
-    public FriendResponse.searchFriendDTO searchFriend(String keyword) {
+    public FriendResponse.searchFriendDTO searchFriend(Long userId, String keyword) {
 
-        // 유저 검색
-        User user = userRepository.findByNickname(keyword)
+        // 본인 검색
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
-        return FriendConverter.toSearchFriendDTO(user);
+        // 친구 검색
+        User friend = userRepository.findByNickname(keyword)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        if(user == friend) throw new GeneralException(ErrorStatus.CANNOT_REQUEST_MYSELF);
+
+        // 친구 상태 확인
+        FriendStatus friendStatus;
+
+        if (friendRepository.existsByUserAndFriendAndAccepted(user, friend, true)
+                || friendRepository.existsByUserAndFriendAndAccepted(friend, user, true)) {
+            friendStatus = FriendStatus.FRIEND;
+        } else if (friendRepository.existsByUserAndFriendAndAccepted(user, friend, false)) {
+            friendStatus = FriendStatus.REQUEST_SENT;
+        } else if (friendRepository.existsByUserAndFriendAndAccepted(friend, user, false)) {
+            friendStatus = FriendStatus.REQUEST_RECEIVED;
+        } else {
+            friendStatus = FriendStatus.NOT_FRIEND;
+        }
+
+        return FriendConverter.toSearchFriendDTO(friend, friendStatus);
     }
 
     /**
