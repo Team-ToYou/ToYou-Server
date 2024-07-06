@@ -10,4 +10,6 @@ public interface FriendService {
     FriendResponse.searchFriendDTO searchFriend(Long userId, String keyword);
 
     void createFriendRequest(Long userId, FriendRequestDTO.createFriendRequestDTO request);
+
+    void deleteFriendRequest(Long userId, FriendRequestDTO.deleteFriendRequestDTO request);
 }

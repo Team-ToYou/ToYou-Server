@@ -21,7 +21,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 친구 에러
     FRIEND_REQUEST_ALREADY_EXISTING(HttpStatus.BAD_REQUEST, "FRIEND400", "이미 친구 요청 정보가 존재합니다."),
-    CANNOT_REQUEST_MYSELF(HttpStatus.BAD_REQUEST, "FRIEND401", "친구 정보에 본인 정보를 기입할 수 없습니다.");
+    CANNOT_REQUEST_MYSELF(HttpStatus.BAD_REQUEST, "FRIEND401", "친구 정보에 본인 정보를 기입할 수 없습니다."),
+    REQUEST_INFO_NOT_FOUND(HttpStatus.BAD_REQUEST, "FRIEND402", "요청 정보가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

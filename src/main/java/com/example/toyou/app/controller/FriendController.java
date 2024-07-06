@@ -64,4 +64,19 @@ public class FriendController {
 
         return ApiResponse.onSuccess(null);
     }
+
+    /**
+     * [DELETE] /friends
+     * 친구 요청 취소
+     * @param userId 유저 식별자
+     * @return
+     */
+    @DeleteMapping("/request")
+    public ApiResponse deleteFriendRequest(@RequestHeader Long userId,
+                                           @RequestBody @Valid FriendRequestDTO.deleteFriendRequestDTO request) {
+
+        friendService.deleteFriendRequest(userId, request);
+
+        return ApiResponse.onSuccess(null);
+    }
 }

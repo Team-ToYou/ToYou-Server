@@ -102,4 +102,25 @@ public class FriendServiceImpl implements FriendService {
 
         friendRepository.save(newFriendRequest);
     }
+
+    /**
+     * 친구 요청 취소
+     */
+    @Transactional
+    public void deleteFriendRequest(Long userId, FriendRequestDTO.deleteFriendRequestDTO request){
+
+        // 유저 검색
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        // 친구 검색
+        User friend = userRepository.findByNickname(request.getNickname())
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        // 친구 요청 정보 확인
+        FriendRequest friendRequestToDelete = friendRepository.findByUserAndFriend(user, friend)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND));
+
+        friendRepository.delete(friendRequestToDelete);
+    }
 }

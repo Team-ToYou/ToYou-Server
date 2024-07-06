@@ -10,4 +10,10 @@ public class FriendRequestDTO {
         @NotEmpty
         private String nickname;
     }
+
+    @Getter
+    public static class deleteFriendRequestDTO{
+        @NotEmpty
+        private String nickname;
+    }
 }
