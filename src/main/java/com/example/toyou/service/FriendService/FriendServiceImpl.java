@@ -104,7 +104,7 @@ public class FriendServiceImpl implements FriendService {
     }
 
     /**
-     * 친구 요청 취소
+     * 친구 삭제 & 친구 요청 취소
      */
     @Transactional
     public void deleteFriendRequest(Long userId, FriendRequestDTO.deleteFriendRequestDTO request){
@@ -119,7 +119,10 @@ public class FriendServiceImpl implements FriendService {
 
         // 친구 요청 정보 확인
         FriendRequest friendRequestToDelete = friendRepository.findByUserAndFriend(user, friend)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND));
+                .orElseGet(() ->
+                        friendRepository.findByUserAndFriend(friend, user)
+                                .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND))
+                );
 
         friendRepository.delete(friendRequestToDelete);
     }

@@ -71,7 +71,7 @@ public class FriendController {
      * @param userId 유저 식별자
      * @return
      */
-    @DeleteMapping("/request")
+    @DeleteMapping
     public ApiResponse deleteFriendRequest(@RequestHeader Long userId,
                                            @RequestBody @Valid FriendRequestDTO.deleteFriendRequestDTO request) {
 
