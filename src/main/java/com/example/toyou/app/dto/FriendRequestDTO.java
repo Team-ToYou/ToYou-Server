@@ -16,4 +16,10 @@ public class FriendRequestDTO {
         @NotEmpty
         private String nickname;
     }
+
+    @Getter
+    public static class acceptFriendRequestDTO{
+        @NotEmpty
+        private String nickname;
+    }
 }

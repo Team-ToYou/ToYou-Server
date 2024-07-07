@@ -12,4 +12,6 @@ public interface FriendService {
     void createFriendRequest(Long userId, FriendRequestDTO.createFriendRequestDTO request);
 
     void deleteFriendRequest(Long userId, FriendRequestDTO.deleteFriendRequestDTO request);
+
+    void acceptFriendRequest(Long userId, FriendRequestDTO.acceptFriendRequestDTO request);
 }

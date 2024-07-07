@@ -79,4 +79,19 @@ public class FriendController {
 
         return ApiResponse.onSuccess(null);
     }
+
+    /**
+     * [PATCH] /friends
+     * 친구 요청 승인
+     * @param userId 유저 식별자
+     * @return
+     */
+    @PatchMapping
+    public ApiResponse acceptFriendRequest(@RequestHeader Long userId,
+                                           @RequestBody @Valid FriendRequestDTO.acceptFriendRequestDTO request) {
+
+        friendService.acceptFriendRequest(userId, request);
+
+        return ApiResponse.onSuccess(null);
+    }
 }
