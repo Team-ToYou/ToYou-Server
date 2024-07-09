@@ -1,7 +1,9 @@
 package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.ApiResponse;
+import com.example.toyou.app.dto.HomeResponse;
 import com.example.toyou.app.dto.QuestionRequest;
+import com.example.toyou.app.dto.QuestionResponse;
 import com.example.toyou.service.QuestionService.QuestionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +33,19 @@ public class QuestionController {
         questionService.createQuestion(userId, request);
 
         return ApiResponse.onSuccess(null);
+    }
+
+    /**
+     * [GET] /questions
+     * 질문 목록 조회
+     * @param userId 유저 식별자
+     * @return
+     */
+    @GetMapping
+    public ApiResponse<QuestionResponse.GetQuestionsDTO> getHome(@RequestHeader Long userId){
+
+        QuestionResponse.GetQuestionsDTO questionList = questionService.getQuestions(userId);
+
+        return ApiResponse.onSuccess(questionList);
     }
 }

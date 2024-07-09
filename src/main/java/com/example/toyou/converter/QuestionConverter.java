@@ -1,8 +1,11 @@
 package com.example.toyou.converter;
 
+import com.example.toyou.app.dto.FriendResponse;
+import com.example.toyou.app.dto.QuestionResponse;
 import com.example.toyou.domain.AnswerOption;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
+import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.QuestionType;
 
 import java.util.List;
@@ -32,4 +35,26 @@ public class QuestionConverter {
                 .map(content -> toAnswerOption(content, question))
                 .collect(Collectors.toList());
     }
+
+    public static QuestionResponse.GetQuestionsDTO toGetQuestionDTO(List<Question> questions) {
+
+        List<QuestionResponse.QuestionInfo> questionInfos = questions.stream()
+                .map(question -> {
+                    List<String> answerOptionContents = question.getAnswerOptionList().stream()
+                            .map(AnswerOption::getContent)
+                            .collect(Collectors.toList());
+
+                    return QuestionResponse.QuestionInfo.builder()
+                            .questionId(question.getId())
+                            .content(question.getContent())
+                            .questionType(question.getQuestionType())
+                            .questioner(question.getQuestioner())
+                            .answerOption(answerOptionContents)
+                            .build();
+                })
+                .toList();
+
+        return QuestionResponse.GetQuestionsDTO.builder().questionList(questionInfos).build();
+    }
+
 }

@@ -3,6 +3,8 @@ package com.example.toyou.service.QuestionService;
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.QuestionRequest;
+import com.example.toyou.app.dto.QuestionResponse;
+import com.example.toyou.converter.FriendConverter;
 import com.example.toyou.converter.QuestionConverter;
 import com.example.toyou.domain.AnswerOption;
 import com.example.toyou.domain.Question;
@@ -77,5 +79,15 @@ public class QuestionServiceImpl implements QuestionService {
 
             answerOptionRepository.saveAll(answerOptions);
         }
+    }
+
+    public QuestionResponse.GetQuestionsDTO getQuestions(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        List<Question> questions = questionRepository.findByUser(user);
+
+        return QuestionConverter.toGetQuestionDTO(questions);
     }
 }
