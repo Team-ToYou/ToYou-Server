@@ -2,10 +2,9 @@ package com.example.toyou.service.FriendService;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
-import com.example.toyou.app.dto.FriendRequestDTO;
+import com.example.toyou.app.dto.FriendRequest;
 import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.converter.FriendConverter;
-import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.FriendStatus;
 import com.example.toyou.repository.FriendRepository;
@@ -36,11 +35,11 @@ public class FriendServiceImpl implements FriendService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // accepted가 true인 친구 요청 리스트 검색
-        List<FriendRequest> friendRequests = friendRepository.findByUserAndAcceptedTrue(user);
+        List<com.example.toyou.domain.FriendRequest> friendRequests = friendRepository.findByUserAndAcceptedTrue(user);
 
         // 친구 리스트화
         List<User> friends = friendRequests.stream()
-                .map(FriendRequest::getFriend)
+                .map(com.example.toyou.domain.FriendRequest::getFriend)
                 .toList();
 
         return FriendConverter.toGetFriendsDTO(friends);
@@ -82,7 +81,7 @@ public class FriendServiceImpl implements FriendService {
      * 친구 요청
      */
     @Transactional
-    public void createFriendRequest(Long userId, FriendRequestDTO.createFriendRequestDTO request) {
+    public void createFriendRequest(Long userId, FriendRequest.createFriendRequestDTO request) {
         // 본인 검색
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -98,7 +97,7 @@ public class FriendServiceImpl implements FriendService {
         if(friendRepository.existsByUserAndFriend(user, friend) || friendRepository.existsByUserAndFriend(friend, user))
             throw new GeneralException(ErrorStatus.FRIEND_REQUEST_ALREADY_EXISTING);
 
-        FriendRequest newFriendRequest = FriendConverter.toFriendRequest(user, friend);
+        com.example.toyou.domain.FriendRequest newFriendRequest = FriendConverter.toFriendRequest(user, friend);
 
         friendRepository.save(newFriendRequest);
     }
@@ -107,7 +106,7 @@ public class FriendServiceImpl implements FriendService {
      * 친구 삭제 & 친구 요청 취소
      */
     @Transactional
-    public void deleteFriendRequest(Long userId, FriendRequestDTO.deleteFriendRequestDTO request){
+    public void deleteFriendRequest(Long userId, FriendRequest.deleteFriendRequestDTO request){
 
         // 유저 검색
         User user = userRepository.findById(userId)
@@ -118,7 +117,7 @@ public class FriendServiceImpl implements FriendService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 요청 정보 확인
-        FriendRequest friendRequestToDelete = friendRepository.findByUserAndFriend(user, friend)
+        com.example.toyou.domain.FriendRequest friendRequestToDelete = friendRepository.findByUserAndFriend(user, friend)
                 .orElseGet(() ->
                         friendRepository.findByUserAndFriend(friend, user)
                                 .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND))
@@ -131,7 +130,7 @@ public class FriendServiceImpl implements FriendService {
      * 친구 요청 승인
      */
     @Transactional
-    public void acceptFriendRequest(Long userId, FriendRequestDTO.acceptFriendRequestDTO request){
+    public void acceptFriendRequest(Long userId, FriendRequest.acceptFriendRequestDTO request){
 
         // 친구 신청 대상(본인)
         User receiver = userRepository.findById(userId)
@@ -142,7 +141,7 @@ public class FriendServiceImpl implements FriendService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 요청 정보 확인
-        FriendRequest friendRequestToAccept = friendRepository.findByUserAndFriend(requester, receiver)
+        com.example.toyou.domain.FriendRequest friendRequestToAccept = friendRepository.findByUserAndFriend(requester, receiver)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND));
 
         if(friendRequestToAccept.getAccepted()) throw new GeneralException(ErrorStatus.ALREADY_FRIENDS);

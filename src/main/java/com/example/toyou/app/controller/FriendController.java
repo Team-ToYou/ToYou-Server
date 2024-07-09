@@ -1,7 +1,7 @@
 package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.ApiResponse;
-import com.example.toyou.app.dto.FriendRequestDTO;
+import com.example.toyou.app.dto.FriendRequest;
 import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.service.FriendService.FriendService;
 import jakarta.validation.Valid;
@@ -58,7 +58,7 @@ public class FriendController {
      */
     @PostMapping
     public ApiResponse createFriendRequest(@RequestHeader Long userId,
-                                           @RequestBody @Valid FriendRequestDTO.createFriendRequestDTO request) {
+                                           @RequestBody @Valid FriendRequest.createFriendRequestDTO request) {
 
         friendService.createFriendRequest(userId, request);
 
@@ -73,7 +73,7 @@ public class FriendController {
      */
     @DeleteMapping
     public ApiResponse deleteFriendRequest(@RequestHeader Long userId,
-                                           @RequestBody @Valid FriendRequestDTO.deleteFriendRequestDTO request) {
+                                           @RequestBody @Valid FriendRequest.deleteFriendRequestDTO request) {
 
         friendService.deleteFriendRequest(userId, request);
 
@@ -88,7 +88,7 @@ public class FriendController {
      */
     @PatchMapping
     public ApiResponse acceptFriendRequest(@RequestHeader Long userId,
-                                           @RequestBody @Valid FriendRequestDTO.acceptFriendRequestDTO request) {
+                                           @RequestBody @Valid FriendRequest.acceptFriendRequestDTO request) {
 
         friendService.acceptFriendRequest(userId, request);
 
