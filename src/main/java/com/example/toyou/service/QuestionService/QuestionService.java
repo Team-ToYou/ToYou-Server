@@ -8,4 +8,6 @@ public interface QuestionService {
     void createQuestion(Long userId, QuestionRequest.createQuestionDTO request);
 
     QuestionResponse.GetQuestionsDTO getQuestions(Long userId);
+
+    void deleteOldQuestions();
 }

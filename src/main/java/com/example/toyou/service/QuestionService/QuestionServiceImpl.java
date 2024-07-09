@@ -18,6 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -89,5 +92,12 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> questions = questionRepository.findByUser(user);
 
         return QuestionConverter.toGetQuestionDTO(questions);
+    }
+
+    public void deleteOldQuestions() {
+        LocalDateTime today = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        List<Question> questionsToDelete = questionRepository.findByDiaryCardCreatedAtBefore(today);
+
+        questionRepository.deleteAll(questionsToDelete);
     }
 }
