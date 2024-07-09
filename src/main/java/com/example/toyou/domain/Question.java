@@ -1,6 +1,7 @@
 package com.example.toyou.domain;
 
 import com.example.toyou.domain.common.BaseEntity;
+import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,4 +38,13 @@ public class Question extends BaseEntity {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<AnswerOption> answerOptionList = new ArrayList<>();
+
+
+    public void setDiaryCard(DiaryCard diaryCard){
+        this.diaryCard = diaryCard;
+    }
+
+    public void setAnswer(String answer){
+        this.answer = answer;
+    }
 }

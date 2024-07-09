@@ -27,7 +27,13 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 질문 에러
     INCORRECT_QUESTION_TYPE(HttpStatus.BAD_REQUEST, "QUESTION400", "맞지 않는 질문 유형입니다."),
-    EMPTIED_LIST(HttpStatus.BAD_REQUEST, "QUESTION401", "선택형 질문은 리스트가 비어있으면 안됩니다.");
+    EMPTIED_LIST(HttpStatus.BAD_REQUEST, "QUESTION401", "선택형 질문은 리스트가 비어있으면 안됩니다."),
+    QUESTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "QUESTION402", "존재하지 않는 질문 ID입니다."),
+    NOT_IN_OPTIONS(HttpStatus.BAD_REQUEST, "QUESTION403", "선택지에 없는 답안입니다."),
+
+    // 카드 에러
+    DUPLICATE_CARD_FOR_TODAY(HttpStatus.BAD_REQUEST, "CARD400", "금일 일기카드가 이미 생성되었습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;

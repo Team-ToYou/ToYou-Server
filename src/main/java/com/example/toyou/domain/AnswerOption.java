@@ -19,6 +19,4 @@ public class AnswerOption extends BaseEntity {
     private Question question;
 
     private String content;
-
-    private boolean selected;
 }

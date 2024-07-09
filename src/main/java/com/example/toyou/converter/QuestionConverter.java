@@ -26,7 +26,6 @@ public class QuestionConverter {
         return AnswerOption.builder()
                 .content(content)
                 .question(question)
-                .selected(false)
                 .build();
     }
 
