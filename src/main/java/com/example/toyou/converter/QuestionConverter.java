@@ -10,13 +10,12 @@ import java.util.stream.Collectors;
 
 public class QuestionConverter {
 
-    public static Question toQuestion(User user, QuestionType questionType, String questioner, String content, String answer) {
+    public static Question toQuestion(User user, QuestionType questionType, String questioner, String content) {
         return Question.builder()
                 .user(user)
                 .questionType(questionType)
                 .questioner(questioner)
                 .content(content)
-                .answer(answer)
                 .build();
     }
 

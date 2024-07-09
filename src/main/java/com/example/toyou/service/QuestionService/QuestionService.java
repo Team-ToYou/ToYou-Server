@@ -4,5 +4,5 @@ import com.example.toyou.app.dto.QuestionRequest;
 
 public interface QuestionService {
 
-    void createOptional(Long userId, QuestionRequest.createOptionalDTO request);
+    void createQuestion(Long userId, QuestionRequest.createQuestionDTO request);
 }

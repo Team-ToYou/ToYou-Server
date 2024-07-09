@@ -19,16 +19,16 @@ public class QuestionController {
     private final QuestionService questionService;
 
     /**
-     * [POST] /questions/optional
-     * 질문 생성(선택형)
+     * [POST] /questions
+     * 질문 생성
      * @param userId 유저 식별자
      * @return
      */
-    @PostMapping("/optional")
-    public ApiResponse createFriendRequest(@RequestHeader Long userId,
-                                           @RequestBody @Valid QuestionRequest.createOptionalDTO request) {
+    @PostMapping
+    public ApiResponse createQuestion(@RequestHeader Long userId,
+                                           @RequestBody @Valid QuestionRequest.createQuestionDTO request) {
 
-        questionService.createOptional(userId, request);
+        questionService.createQuestion(userId, request);
 
         return ApiResponse.onSuccess(null);
     }

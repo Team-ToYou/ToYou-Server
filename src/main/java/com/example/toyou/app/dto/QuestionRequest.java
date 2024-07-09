@@ -1,5 +1,7 @@
 package com.example.toyou.app.dto;
 
+import com.example.toyou.domain.enums.QuestionType;
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 
 import java.util.List;
@@ -7,10 +9,11 @@ import java.util.List;
 public class QuestionRequest {
 
     @Getter
-    public static class createOptionalDTO{
+    public static class createQuestionDTO{
         private String target;
         private String content;
-        private List<String> answerOptionList;
+        private QuestionType questionType;
         private boolean anonymous;
+        private List<String> answerOptionList;
     }
 }
