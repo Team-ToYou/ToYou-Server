@@ -158,7 +158,7 @@ public class FriendServiceImpl implements FriendService {
     }
 
     /**
-     * 어제 일기카드를 생성한 친구 목록 조회
+     * 작일 친구 일기카드 목록 조회
      */
     public FriendResponse.getFriendYesterdayDTO getFriendYesterday(Long userId){
 
@@ -169,33 +169,23 @@ public class FriendServiceImpl implements FriendService {
         // 오늘 날짜 기준 어제 날짜 계산
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
-        // accepted가 true이고, 어제 생성된 DiaryCard가 있는 친구들의 닉네임 리스트
-        List<String> friendNicknames1 = friendRepository.findByUserAndAcceptedTrue(user).stream()
-                .filter(friendRequest -> {
-                    User friend = friendRequest.getFriend();
-                    return friend.getDiaryCardList().stream()
-                            .anyMatch(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday));
-                })
-                .map(friendRequest -> friendRequest.getFriend().getNickname())
-                .toList();
+        // accepted가 true이고, 어제 생성된 DiaryCard가 있는 친구들의 친구 객체 리스트
+        List<User> friendsWithDiaryCardYesterday = Stream.concat(
+                        // User가 요청자인 경우
+                        friendRepository.findByUserAndAcceptedTrue(user).stream()
+                                .filter(friendRequest -> friendRequest.getFriend().getDiaryCardList().stream()
+                                        .anyMatch(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday)))
+                                .map(FriendRequest::getFriend),
 
-        List<String> friendNicknames2 = friendRepository.findByFriendAndAcceptedTrue(user).stream()
-                .filter(friendRequest -> {
-                    User friend = friendRequest.getUser();
-                    return friend.getDiaryCardList().stream()
-                            .anyMatch(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday));
-                })
-                .map(friendRequest -> friendRequest.getUser().getNickname())
-                .toList();
-
-        // 두 리스트 합치기
-        List<String> friendNicknames = Stream.concat(
-                        friendNicknames1.stream(),
-                        friendNicknames2.stream()
+                        // Friend가 요청자인 경우
+                        friendRepository.findByFriendAndAcceptedTrue(user).stream()
+                                .filter(friendRequest -> friendRequest.getUser().getDiaryCardList().stream()
+                                        .anyMatch(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday)))
+                                .map(FriendRequest::getUser)
                 )
                 .distinct() // 중복 제거
                 .toList();
 
-        return FriendConverter.toYesterdayDTO(friendNicknames);
+        return FriendConverter.toYesterdayDTO(friendsWithDiaryCardYesterday);
     }
 }

@@ -46,6 +46,16 @@ public class FriendResponse {
     @AllArgsConstructor
     public static class getFriendYesterdayDTO {
 
-        private List<String> friends;
+        private List<yesterdayInfo> yesterday;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class yesterdayInfo {
+
+        private Long cardId;
+        private String nickname;
     }
 }

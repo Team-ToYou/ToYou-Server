@@ -97,7 +97,7 @@ public class FriendController {
 
     /**
      * [GET] /friends/yesterday
-     * 어제 일기카드를 생성한 친구 목록 조회
+     * 작일 친구 일기카드 목록 조회
      * @param userId 유저 식별자
      * @return
      */
