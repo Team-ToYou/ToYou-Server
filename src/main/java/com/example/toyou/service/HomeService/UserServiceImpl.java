@@ -10,12 +10,14 @@ import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.repository.UserRepository;
+import com.example.toyou.service.QuestionService.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -24,6 +26,7 @@ import java.time.LocalDate;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final QuestionService questionService;
 
     /**
      * 홈화면 조회
@@ -67,6 +70,23 @@ public class UserServiceImpl implements UserService {
 
         Emotion emotion = request.getEmotion();
 
+        // 유저의 일기카드 목록 가져오기
+        List<DiaryCard> diaryCards = user.getDiaryCardList();
+
+        // 최근 일기카드와 오늘 날짜 비교
+        if (!diaryCards.isEmpty()) {
+            DiaryCard latestCard = diaryCards.get(diaryCards.size() - 1); // 가장 최근 일기카드
+            LocalDate today = LocalDate.now();
+            if (latestCard.getCreatedAt().toLocalDate().equals(today)) {
+                throw new GeneralException(ErrorStatus.DUPLICATE_CARD_FOR_TODAY);
+            }
+        }
+
         user.setEmotion(emotion);
+
+        // 맞춤형 질문 생성
+
+
+//        questionService.createQuestion(user.getId(), );
     }
 }
