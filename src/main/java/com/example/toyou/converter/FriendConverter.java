@@ -54,4 +54,9 @@ public class FriendConverter {
                 .friendStatus(friendStatus)
                 .build();
     }
+    public static FriendResponse.getFriendYesterdayDTO toYesterdayDTO(List<String> friends) {
+        return FriendResponse.getFriendYesterdayDTO.builder()
+                .friends(friends)
+                .build();
+    }
 }

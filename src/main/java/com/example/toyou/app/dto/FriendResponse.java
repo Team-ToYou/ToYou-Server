@@ -39,4 +39,13 @@ public class FriendResponse {
         private String nickname;
         private FriendStatus friendStatus;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getFriendYesterdayDTO {
+
+        private List<String> friends;
+    }
 }

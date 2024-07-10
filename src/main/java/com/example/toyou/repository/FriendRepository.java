@@ -11,6 +11,8 @@ public interface FriendRepository extends JpaRepository<FriendRequest, Long> {
 
     List<FriendRequest> findByUserAndAcceptedTrue(User user);
 
+    List<FriendRequest> findByFriendAndAcceptedTrue(User user);
+
     Optional<FriendRequest> findByUserAndFriend(User user, User friend);
 
     Boolean existsByUserAndFriend(User user, User friend);

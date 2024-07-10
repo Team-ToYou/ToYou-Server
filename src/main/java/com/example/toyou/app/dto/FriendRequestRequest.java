@@ -3,7 +3,7 @@ package com.example.toyou.app.dto;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 
-public class FriendRequest {
+public class FriendRequestRequest {
 
     @Getter
     public static class createFriendRequestDTO{

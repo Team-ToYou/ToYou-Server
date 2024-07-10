@@ -1,7 +1,7 @@
 package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.ApiResponse;
-import com.example.toyou.app.dto.FriendRequest;
+import com.example.toyou.app.dto.FriendRequestRequest;
 import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.service.FriendService.FriendService;
 import jakarta.validation.Valid;
@@ -58,7 +58,7 @@ public class FriendController {
      */
     @PostMapping
     public ApiResponse createFriendRequest(@RequestHeader Long userId,
-                                           @RequestBody @Valid FriendRequest.createFriendRequestDTO request) {
+                                           @RequestBody @Valid FriendRequestRequest.createFriendRequestDTO request) {
 
         friendService.createFriendRequest(userId, request);
 
@@ -73,7 +73,7 @@ public class FriendController {
      */
     @DeleteMapping
     public ApiResponse deleteFriendRequest(@RequestHeader Long userId,
-                                           @RequestBody @Valid FriendRequest.deleteFriendRequestDTO request) {
+                                           @RequestBody @Valid FriendRequestRequest.deleteFriendRequestDTO request) {
 
         friendService.deleteFriendRequest(userId, request);
 
@@ -88,10 +88,24 @@ public class FriendController {
      */
     @PatchMapping
     public ApiResponse acceptFriendRequest(@RequestHeader Long userId,
-                                           @RequestBody @Valid FriendRequest.acceptFriendRequestDTO request) {
+                                           @RequestBody @Valid FriendRequestRequest.acceptFriendRequestDTO request) {
 
         friendService.acceptFriendRequest(userId, request);
 
         return ApiResponse.onSuccess(null);
+    }
+
+    /**
+     * [GET] /friends/yesterday
+     * 어제 일기카드를 생성한 친구 목록 조회
+     * @param userId 유저 식별자
+     * @return
+     */
+    @GetMapping("/yesterday")
+    public ApiResponse<FriendResponse.getFriendYesterdayDTO> searchFriend(@RequestHeader Long userId) {
+
+        FriendResponse.getFriendYesterdayDTO friends = friendService.getFriendYesterday(userId);
+
+        return ApiResponse.onSuccess(friends);
     }
 }
