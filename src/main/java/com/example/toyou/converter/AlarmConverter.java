@@ -17,4 +17,15 @@ public class AlarmConverter {
                 .friendRequest(friendRequest)
                 .build();
     }
+
+    public static Alarm toReqeustAcceptedAlarm(User user, User friend, FriendRequest friendRequest) {
+
+        return Alarm.builder()
+                .user(friend)
+                .alarmType(AlarmType.REQUEST_ACCEPTED)
+                .content(String.format("%s님이 친구 요청을 수락했습니다.", user.getNickname()))
+                .checked(false)
+                .friendRequest(friendRequest)
+                .build();
+    }
 }

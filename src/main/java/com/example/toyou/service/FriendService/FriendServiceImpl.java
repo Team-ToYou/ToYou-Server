@@ -163,6 +163,10 @@ public class FriendServiceImpl implements FriendService {
         if(friendRequestToAccept.getAccepted()) throw new GeneralException(ErrorStatus.ALREADY_FRIENDS);
 
         friendRequestToAccept.setAccepted();
+
+        Alarm newAlarm = AlarmConverter.toReqeustAcceptedAlarm(receiver, requester, friendRequestToAccept);
+
+        alarmRepository.save(newAlarm);
     }
 
     /**
