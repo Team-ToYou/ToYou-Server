@@ -29,4 +29,8 @@ public class DiaryCard extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Emotion emotion;
+
+    public void setExposure(boolean bool){
+        this.exposure = bool;
+    }
 }

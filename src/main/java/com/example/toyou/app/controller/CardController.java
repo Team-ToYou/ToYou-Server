@@ -50,4 +50,21 @@ public class CardController {
 
         return ApiResponse.onSuccess(card);
     }
+
+    /**
+     * [PATCH] /diarycards/{cardId}
+     * 일기카드 수정
+     * @param userId 유저 식별자
+     * @param cardId 카드 식별자
+     * @return
+     */
+    @PatchMapping("/{cardId}")
+    public ApiResponse createQuestion(@RequestHeader Long userId,
+                                      @PathVariable Long cardId,
+                                      @RequestBody @Valid CardRequest.updateCardDTO request) {
+
+        cardService.updateCard(userId, cardId, request);
+
+        return ApiResponse.onSuccess(null);
+    }
 }

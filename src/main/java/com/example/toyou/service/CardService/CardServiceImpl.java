@@ -86,4 +86,39 @@ public class CardServiceImpl implements CardService {
 
         return CardConverter.toGetCardDTO(card);
     }
+
+    @Transactional
+    public void updateCard(Long userId, Long cardId, CardRequest.updateCardDTO request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        DiaryCard card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.CARD_NOT_FOUND));
+
+        if(user != card.getUser()) throw new GeneralException(ErrorStatus.NOT_OWNER);
+
+        List<Question> questionList = card.getQuestionList();
+        questionList.forEach(question -> question.setDiaryCard(null)); // 질문 목록의 각 질문에 대해 카드 ID를 null로 설정
+        questionList.clear(); // 카드의 질문 목록 비우기
+
+        // 1.qaList에서 각 qa 객체의 questionId를 사용하여 Question을 검색
+        // 2.answer를 수정 & 일기카드 연동
+        request.getQuestionList()
+                .forEach(qa -> {
+                    Question question = questionRepository.findById(qa.getQuestionId())
+                            .orElseThrow(() -> new GeneralException(ErrorStatus.QUESTION_NOT_FOUND));
+
+                    // 선택형
+                    if (question.getQuestionType() == QuestionType.OPTIONAL) {
+                        boolean validAnswer = question.getAnswerOptionList().stream()
+                                .anyMatch(option -> option.getContent().equals(qa.getAnswer()));
+                        if(!validAnswer) throw new GeneralException(ErrorStatus.NOT_IN_OPTIONS);
+                    }
+
+                    question.setAnswer(qa.getAnswer());
+                    question.setDiaryCard(card);
+                });
+
+        card.setExposure(request.isExposure()); // 공개 여부 설정
+    }
 }

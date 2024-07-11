@@ -14,6 +14,12 @@ public class CardRequest {
     }
 
     @Getter
+    public static class updateCardDTO {
+        private boolean exposure;
+        private List<CardRequest.qa> questionList;
+    }
+
+    @Getter
     public static class qa {
         private Long questionId;
         private String answer;

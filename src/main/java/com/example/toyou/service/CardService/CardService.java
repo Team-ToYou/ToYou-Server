@@ -8,4 +8,6 @@ public interface CardService {
     CardResponse.createCardDTO createCard(Long userId, CardRequest.createCardDTO request);
 
     CardResponse.getCardDTO getCard(Long userId, Long cardId);
+
+    void updateCard(Long userId, Long cardId, CardRequest.updateCardDTO request);
 }
