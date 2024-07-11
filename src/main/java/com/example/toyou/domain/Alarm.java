@@ -1,6 +1,7 @@
 package com.example.toyou.domain;
 
 import com.example.toyou.domain.common.BaseEntity;
+import com.example.toyou.domain.enums.AlarmType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,17 +17,20 @@ public class Alarm extends BaseEntity {
 
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    private AlarmType alarmType;
+
     private boolean checked;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "friend_request_id")
     private FriendRequest friendRequest;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
 }

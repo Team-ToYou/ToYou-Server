@@ -4,10 +4,13 @@ import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.FriendRequestRequest;
 import com.example.toyou.app.dto.FriendResponse;
+import com.example.toyou.converter.AlarmConverter;
 import com.example.toyou.converter.FriendConverter;
+import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.FriendStatus;
+import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.FriendRepository;
 import com.example.toyou.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,7 @@ public class FriendServiceImpl implements FriendService {
 
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
+    private final AlarmRepository alarmRepository;
 
     /**
      * 친구 목록 조회
@@ -105,9 +109,13 @@ public class FriendServiceImpl implements FriendService {
         if(friendRepository.existsByUserAndFriend(user, friend) || friendRepository.existsByUserAndFriend(friend, user))
             throw new GeneralException(ErrorStatus.FRIEND_REQUEST_ALREADY_EXISTING);
 
-        com.example.toyou.domain.FriendRequest newFriendRequest = FriendConverter.toFriendRequest(user, friend);
+        FriendRequest newFriendRequest = FriendConverter.toFriendRequest(user, friend);
 
         friendRepository.save(newFriendRequest);
+
+        Alarm newAlarm = AlarmConverter.toFriendReqeustAlarm(user, friend, newFriendRequest);
+
+        alarmRepository.save(newAlarm);
     }
 
     /**
@@ -125,7 +133,7 @@ public class FriendServiceImpl implements FriendService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 요청 정보 확인
-        com.example.toyou.domain.FriendRequest friendRequestToDelete = friendRepository.findByUserAndFriend(user, friend)
+        FriendRequest friendRequestToDelete = friendRepository.findByUserAndFriend(user, friend)
                 .orElseGet(() ->
                         friendRepository.findByUserAndFriend(friend, user)
                                 .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND))
