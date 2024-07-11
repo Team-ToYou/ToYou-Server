@@ -32,7 +32,9 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_IN_OPTIONS(HttpStatus.BAD_REQUEST, "QUESTION403", "선택지에 없는 답안입니다."),
 
     // 카드 에러
-    DUPLICATE_CARD_FOR_TODAY(HttpStatus.BAD_REQUEST, "CARD400", "금일 일기카드가 이미 생성되었습니다.");
+    DUPLICATE_CARD_FOR_TODAY(HttpStatus.BAD_REQUEST, "CARD400", "금일 일기카드가 이미 생성되었습니다."),
+    CARD_NOT_FOUND(HttpStatus.NOT_FOUND, "CARD401", "해당하는 일기카드가 존재하지 않습니다"),
+    PRIVATE_CARD(HttpStatus.FORBIDDEN, "CARD402", "비공개 일기카드입니다.");
 
 
     private final HttpStatus httpStatus;

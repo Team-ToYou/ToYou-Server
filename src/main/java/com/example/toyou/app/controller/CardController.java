@@ -3,7 +3,6 @@ package com.example.toyou.app.controller;
 import com.example.toyou.apiPayload.ApiResponse;
 import com.example.toyou.app.dto.CardRequest;
 import com.example.toyou.app.dto.CardResponse;
-import com.example.toyou.app.dto.QuestionRequest;
 import com.example.toyou.service.CardService.CardService;
 import jakarta.validation.Valid;
 import lombok.*;
@@ -37,4 +36,18 @@ public class CardController {
         return ApiResponse.onSuccess(card);
     }
 
+    /**
+     * [GET] /diarycards/{cardId}
+     * 질문 목록 조회
+     * @param userId 사용자 식별자
+     * @param cardId 카드 식별자
+     * @return
+     */
+    @GetMapping("/{cardId}")
+    public ApiResponse<CardResponse.getCardDTO> getCard(@RequestHeader Long userId, @PathVariable Long cardId){
+
+        CardResponse.getCardDTO card = cardService.getCard(userId, cardId);
+
+        return ApiResponse.onSuccess(card);
+    }
 }

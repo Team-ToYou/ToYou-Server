@@ -9,7 +9,6 @@ import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.QuestionType;
-import com.example.toyou.repository.AnswerOptionRepository;
 import com.example.toyou.repository.CardRepository;
 import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
@@ -73,5 +72,18 @@ public class CardServiceImpl implements CardService {
                 });
 
         return CardConverter.toCreateCardDTO(newCard.getId());
+    }
+
+    public CardResponse.getCardDTO getCard(Long userId, Long cardId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        DiaryCard card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.CARD_NOT_FOUND));
+
+        if(!card.isExposure() && (user != card.getUser())) throw new GeneralException(ErrorStatus.PRIVATE_CARD);
+
+        return CardConverter.toGetCardDTO(card);
     }
 }
