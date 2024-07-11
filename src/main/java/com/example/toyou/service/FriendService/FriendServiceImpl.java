@@ -113,6 +113,7 @@ public class FriendServiceImpl implements FriendService {
 
         friendRepository.save(newFriendRequest);
 
+        // 알림 생성
         Alarm newAlarm = AlarmConverter.toFriendReqeustAlarm(user, friend, newFriendRequest);
 
         alarmRepository.save(newAlarm);
@@ -164,6 +165,7 @@ public class FriendServiceImpl implements FriendService {
 
         friendRequestToAccept.setAccepted();
 
+        // 알림 생성
         Alarm newAlarm = AlarmConverter.toReqeustAcceptedAlarm(receiver, requester, friendRequestToAccept);
 
         alarmRepository.save(newAlarm);

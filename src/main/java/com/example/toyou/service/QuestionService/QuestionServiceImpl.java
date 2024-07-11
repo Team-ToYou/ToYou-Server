@@ -4,12 +4,15 @@ import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.QuestionRequest;
 import com.example.toyou.app.dto.QuestionResponse;
+import com.example.toyou.converter.AlarmConverter;
 import com.example.toyou.converter.FriendConverter;
 import com.example.toyou.converter.QuestionConverter;
+import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.AnswerOption;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.QuestionType;
+import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.AnswerOptionRepository;
 import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
@@ -34,6 +37,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final AnswerOptionRepository answerOptionRepository;
+    private final AlarmRepository alarmRepository;
 
     // 익명 이름 리스트
     private static final List<String> ANONYMOUS_NAMES = Arrays.asList(
@@ -82,6 +86,11 @@ public class QuestionServiceImpl implements QuestionService {
 
             answerOptionRepository.saveAll(answerOptions);
         }
+
+        // 알림 생성
+        Alarm newAlarm = AlarmConverter.toNewQuestionAlarm(user, target, newQuestion);
+
+        alarmRepository.save(newAlarm);
     }
 
     public QuestionResponse.GetQuestionsDTO getQuestions(Long userId) {
