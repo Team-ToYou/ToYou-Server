@@ -38,7 +38,7 @@ public class CardController {
 
     /**
      * [GET] /diarycards/{cardId}
-     * 질문 목록 조회
+     * 일기카드 상세 조회
      * @param userId 사용자 식별자
      * @param cardId 카드 식별자
      * @return
@@ -66,5 +66,19 @@ public class CardController {
         cardService.updateCard(userId, cardId, request);
 
         return ApiResponse.onSuccess(null);
+    }
+
+    /**
+     * [GET] /diarycards/mine
+     * 내 일기카드 목록 조회
+     * @param userId 사용자 식별자
+     * @return
+     */
+    @GetMapping("/mine")
+    public ApiResponse<CardResponse.getMyCardsDTO> getCard(@RequestHeader Long userId){
+
+        CardResponse.getMyCardsDTO cards = cardService.getMyCards(userId);
+
+        return ApiResponse.onSuccess(cards);
     }
 }

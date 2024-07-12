@@ -121,4 +121,14 @@ public class CardServiceImpl implements CardService {
 
         card.setExposure(request.isExposure()); // 공개 여부 설정
     }
+
+    public CardResponse.getMyCardsDTO getMyCards(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        List<DiaryCard> myCards = cardRepository.findByUser(user);
+
+        return CardConverter.toGetMyCardsDTO(myCards);
+    }
 }

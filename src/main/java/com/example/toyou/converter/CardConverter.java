@@ -52,4 +52,19 @@ public class CardConverter {
                 .questionList(questionInfo)
                 .build();
     }
+
+    public static CardResponse.getMyCardsDTO toGetMyCardsDTO(List<DiaryCard> myCards) {
+
+        List<CardResponse.myCardInfo> myCardInfos = myCards.stream()
+                .map(card -> CardResponse.myCardInfo.builder()
+                        .cardId(card.getId())
+                        .emotion(card.getEmotion())
+                        .date(card.getCreatedAt().toLocalDate())
+                        .build())
+                .toList();
+
+        return CardResponse.getMyCardsDTO.builder()
+                .cardList(myCardInfos)
+                .build();
+    }
 }

@@ -43,4 +43,23 @@ public class CardResponse {
         private String answer;
         private List<String> answerOption;
     }
+
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getMyCardsDTO {
+        private List<myCardInfo> cardList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class myCardInfo {
+        private Long cardId;
+        private Emotion emotion;
+        private LocalDate date;
+    }
 }

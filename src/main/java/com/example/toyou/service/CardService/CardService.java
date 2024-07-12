@@ -10,4 +10,6 @@ public interface CardService {
     CardResponse.getCardDTO getCard(Long userId, Long cardId);
 
     void updateCard(Long userId, Long cardId, CardRequest.updateCardDTO request);
+
+    CardResponse.getMyCardsDTO getMyCards(Long userId);
 }
