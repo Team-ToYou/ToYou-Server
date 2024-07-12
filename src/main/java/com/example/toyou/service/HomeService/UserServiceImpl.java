@@ -5,10 +5,12 @@ import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.HomeRequest;
 import com.example.toyou.app.dto.HomeResponse;
 import com.example.toyou.converter.UserConverter;
+import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.Emotion;
+import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.UserRepository;
 import com.example.toyou.service.QuestionService.QuestionService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,6 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final QuestionService questionService;
 
     /**
      * 홈화면 조회
@@ -56,7 +57,15 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        return UserConverter.toGetHomeDTO(user, cardId, questionNum);
+        // 체크하지 않은 알림 조회
+        boolean uncheckedAlarm = false;
+        for (Alarm alarm : user.getAlarmList()) {
+            if (!alarm.isChecked()) {
+                uncheckedAlarm = true;
+            }
+        }
+
+        return UserConverter.toGetHomeDTO(user, cardId, questionNum, uncheckedAlarm);
     }
 
     /**

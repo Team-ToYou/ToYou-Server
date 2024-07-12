@@ -15,9 +15,8 @@ public class HomeResponse {
     public static class GetHomeDTO {
 
         private Emotion emotion;
-
         private Integer questionNum;
-
         private Long cardId;
+        private boolean uncheckedAlarm;
     }
 }

@@ -8,11 +8,12 @@ import java.time.LocalDate;
 
 public class UserConverter {
 
-    public static HomeResponse.GetHomeDTO toGetHomeDTO(User user, Long cardId, int questionNum){
+    public static HomeResponse.GetHomeDTO toGetHomeDTO(User user, Long cardId, int questionNum, boolean uncheckedAlarm){
         return HomeResponse.GetHomeDTO.builder()
                 .emotion(user.getTodayEmotion())
                 .questionNum(questionNum)
                 .cardId(cardId)
+                .uncheckedAlarm(uncheckedAlarm)
                 .build();
     }
 }
