@@ -11,5 +11,5 @@ public interface CardService {
 
     void updateCard(Long userId, Long cardId, CardRequest.updateCardDTO request);
 
-    CardResponse.getMyCardsDTO getMyCards(Long userId);
+    CardResponse.getMyCardsDTO getMyCards(Long userId, int year, int month);
 }

@@ -72,12 +72,16 @@ public class CardController {
      * [GET] /diarycards/mine
      * 내 일기카드 목록 조회
      * @param userId 사용자 식별자
+     * @param year 연도
+     * @param month 월
      * @return
      */
     @GetMapping("/mine")
-    public ApiResponse<CardResponse.getMyCardsDTO> getCard(@RequestHeader Long userId){
+    public ApiResponse<CardResponse.getMyCardsDTO> getCard(@RequestHeader Long userId,
+                                                           @RequestParam int year,
+                                                           @RequestParam int month){
 
-        CardResponse.getMyCardsDTO cards = cardService.getMyCards(userId);
+        CardResponse.getMyCardsDTO cards = cardService.getMyCards(userId, year, month);
 
         return ApiResponse.onSuccess(cards);
     }

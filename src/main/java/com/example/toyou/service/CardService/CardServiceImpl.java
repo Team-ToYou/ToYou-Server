@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -122,13 +123,22 @@ public class CardServiceImpl implements CardService {
         card.setExposure(request.isExposure()); // 공개 여부 설정
     }
 
-    public CardResponse.getMyCardsDTO getMyCards(Long userId) {
+    public CardResponse.getMyCardsDTO getMyCards(Long userId, int year, int month) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         List<DiaryCard> myCards = cardRepository.findByUser(user);
 
-        return CardConverter.toGetMyCardsDTO(myCards);
+        // 연도와 월을 기준으로 다이어리 카드를 필터링
+        List<DiaryCard> filteredCards = myCards.stream()
+                .filter(card -> {
+                    // card.getDate()는 다이어리 카드의 날짜를 반환하는 메소드라고 가정합니다
+                    LocalDate cardDate = card.getCreatedAt().toLocalDate();
+                    return cardDate.getYear() == year && cardDate.getMonthValue() == month;
+                })
+                .toList();
+
+        return CardConverter.toGetMyCardsDTO(filteredCards);
     }
 }
