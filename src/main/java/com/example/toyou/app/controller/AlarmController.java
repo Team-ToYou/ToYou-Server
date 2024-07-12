@@ -30,4 +30,20 @@ public class AlarmController {
 
         return ApiResponse.onSuccess(alarms);
     }
+
+    /**
+     * [DELETE] /alarms/{alarmId}
+     * 알림 삭제
+     * @param userId 유저 식별자
+     * @param alarmId 알림 식별자
+     * @return
+     */
+    @DeleteMapping("/{alarmId}")
+    public ApiResponse deleteFriendRequest(@RequestHeader Long userId,
+                                           @PathVariable Long alarmId) {
+
+        alarmService.deleteAlarm(userId, alarmId);
+
+        return ApiResponse.onSuccess(null);
+    }
 }
