@@ -15,6 +15,7 @@ import com.example.toyou.repository.UserRepository;
 import com.example.toyou.service.QuestionService.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,5 +98,17 @@ public class UserServiceImpl implements UserService {
 
 
 //        questionService.createQuestion(user.getId(), );
+    }
+
+    /**
+     * 감정 초기화(매일 자정 실행)
+     */
+    @Transactional
+    public void resetTodayEmotion() {
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            user.setEmotion(null);
+        }
+        userRepository.saveAll(users);
     }
 }

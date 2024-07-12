@@ -9,4 +9,6 @@ public interface UserService {
     HomeResponse.GetHomeDTO getHome(Long userId);
 
     void updateEmotion(Long userId, HomeRequest.postEmotionDTO request);
+
+    void resetTodayEmotion();
 }
