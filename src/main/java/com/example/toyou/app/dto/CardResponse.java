@@ -62,4 +62,39 @@ public class CardResponse {
         private Emotion emotion;
         private LocalDate date;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getFriendsCardsDTO {
+        private List<friendsCardInfo> cardList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class friendsCardInfo {
+        private Long cardNum;
+        private LocalDate date;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getDailyFriendsCardsDTO {
+        private List<dailyFriendsCardInfo> cardList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class dailyFriendsCardInfo {
+        private Long cardId;
+        private String nickname;
+        private Emotion emotion;
+    }
 }

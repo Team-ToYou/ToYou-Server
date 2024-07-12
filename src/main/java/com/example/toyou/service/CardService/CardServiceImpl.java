@@ -6,10 +6,12 @@ import com.example.toyou.app.dto.CardRequest;
 import com.example.toyou.app.dto.CardResponse;
 import com.example.toyou.converter.CardConverter;
 import com.example.toyou.domain.DiaryCard;
+import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.QuestionType;
 import com.example.toyou.repository.CardRepository;
+import com.example.toyou.repository.FriendRepository;
 import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -29,6 +32,7 @@ public class CardServiceImpl implements CardService {
 
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
+    private final FriendRepository friendRepository;
     private final QuestionRepository questionRepository;
 
     @Transactional
@@ -133,12 +137,78 @@ public class CardServiceImpl implements CardService {
         // 연도와 월을 기준으로 다이어리 카드를 필터링
         List<DiaryCard> filteredCards = myCards.stream()
                 .filter(card -> {
-                    // card.getDate()는 다이어리 카드의 날짜를 반환하는 메소드라고 가정합니다
+                    // card.getDate()는 다이어리 카드의 날짜를 반환하는 메소드라고 가정
                     LocalDate cardDate = card.getCreatedAt().toLocalDate();
                     return cardDate.getYear() == year && cardDate.getMonthValue() == month;
                 })
                 .toList();
 
         return CardConverter.toGetMyCardsDTO(filteredCards);
+    }
+
+    public CardResponse.getFriendsCardsDTO getFriendsCards(Long userId, int year, int month) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        // accepted가 true인 친구 요청 리스트 검색
+        List<FriendRequest> friendRequests1 = friendRepository.findByUserAndAcceptedTrue(user);
+        List<FriendRequest> friendRequests2 = friendRepository.findByFriendAndAcceptedTrue(user);
+
+        // 두 리스트 합치기
+        List<User> friends = Stream.concat(
+                        friendRequests1.stream().map(FriendRequest::getFriend),
+                        friendRequests2.stream().map(FriendRequest::getUser)
+                )
+                .distinct() // 중복 제거
+                .toList();
+
+        List<DiaryCard> friendsCards = friends.stream()
+                .flatMap(friend -> friend.getDiaryCardList().stream()) // 각 친구의 diaryCard 리스트를 flatMap으로 평면화
+                .toList();
+
+        // 연도와 월을 기준으로 다이어리 카드를 필터링
+        List<DiaryCard> filteredCards = friendsCards.stream()
+                .filter(card -> {
+                    // card.getDate()는 다이어리 카드의 날짜를 반환하는 메소드라고 가정
+                    LocalDate cardDate = card.getCreatedAt().toLocalDate();
+                    return cardDate.getYear() == year && cardDate.getMonthValue() == month;
+                })
+                .toList();
+
+        return CardConverter.toGetFriendsCardsDTO(filteredCards);
+    }
+
+    public CardResponse.getDailyFriendsCardsDTO getDailyFriendsCards(Long userId, int year, int month, int day) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        // accepted가 true인 친구 요청 리스트 검색
+        List<FriendRequest> friendRequests1 = friendRepository.findByUserAndAcceptedTrue(user);
+        List<FriendRequest> friendRequests2 = friendRepository.findByFriendAndAcceptedTrue(user);
+
+        // 두 리스트 합치기
+        List<User> friends = Stream.concat(
+                        friendRequests1.stream().map(FriendRequest::getFriend),
+                        friendRequests2.stream().map(FriendRequest::getUser)
+                )
+                .distinct() // 중복 제거
+                .toList();
+
+        List<DiaryCard> friendsCards = friends.stream()
+                .flatMap(friend -> friend.getDiaryCardList().stream()) // 각 친구의 diaryCard 리스트를 flatMap으로 평면화
+                .toList();
+
+        // 연도와 월을 기준으로 다이어리 카드를 필터링
+        List<DiaryCard> filteredCards = friendsCards.stream()
+                .filter(card -> {
+                    // card.getDate()는 다이어리 카드의 날짜를 반환하는 메소드라고 가정
+                    LocalDate cardDate = card.getCreatedAt().toLocalDate();
+                    return cardDate.getYear() == year && cardDate.getMonthValue() == month && cardDate.getDayOfMonth() == day;
+                })
+                .toList();
+
+        return CardConverter.toGetDailyFriendsCardsDTO(filteredCards);
     }
 }

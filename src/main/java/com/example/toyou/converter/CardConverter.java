@@ -6,7 +6,10 @@ import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CardConverter {
@@ -65,6 +68,43 @@ public class CardConverter {
 
         return CardResponse.getMyCardsDTO.builder()
                 .cardList(myCardInfos)
+                .build();
+    }
+
+    public static CardResponse.getFriendsCardsDTO toGetFriendsCardsDTO(List<DiaryCard> friendsCards) {
+
+        // diaryCard를 일별로 그룹화하고 각 그룹의 사이즈를 구함
+        Map<LocalDate, Long> dailyCardCounts = friendsCards.stream()
+                .collect(Collectors.groupingBy(
+                        card -> card.getCreatedAt().toLocalDate(),
+                        Collectors.counting() // 각 그룹의 사이즈(count)를 계산
+                ));
+
+        // friendsCardInfo 리스트 생성
+        List<CardResponse.friendsCardInfo> friendsCardInfos = dailyCardCounts.entrySet().stream()
+                .map(entry -> CardResponse.friendsCardInfo.builder()
+                        .date(entry.getKey())
+                        .cardNum(entry.getValue())
+                        .build())
+                .toList();
+
+        return CardResponse.getFriendsCardsDTO.builder()
+                .cardList(friendsCardInfos)
+                .build();
+    }
+
+    public static CardResponse.getDailyFriendsCardsDTO toGetDailyFriendsCardsDTO(List<DiaryCard> friendsCards) {
+
+        List<CardResponse.dailyFriendsCardInfo> dailyFriendsCardInfos = friendsCards.stream()
+                .map(card -> CardResponse.dailyFriendsCardInfo.builder()
+                        .cardId(card.getId())
+                        .nickname(card.getUser().getNickname())
+                        .emotion(card.getEmotion())
+                        .build())
+                .toList();
+
+        return CardResponse.getDailyFriendsCardsDTO.builder()
+                .cardList(dailyFriendsCardInfos)
                 .build();
     }
 }

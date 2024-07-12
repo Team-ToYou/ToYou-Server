@@ -85,4 +85,28 @@ public class CardController {
 
         return ApiResponse.onSuccess(cards);
     }
+
+    /**
+     * [GET] /diarycards/friends
+     * 내 일기카드 목록 조회
+     * @param userId 사용자 식별자
+     * @param year 연도
+     * @param month 월
+     * @param day 일
+     * @return
+     */
+    @GetMapping("/friends")
+    public ApiResponse<?> getCard(@RequestHeader Long userId,
+                                                           @RequestParam int year,
+                                                           @RequestParam int month,
+                                                           @RequestParam(required = false) Integer day){
+
+        if(day == null) {
+            CardResponse.getFriendsCardsDTO cards = cardService.getFriendsCards(userId, year, month);
+            return ApiResponse.onSuccess(cards);
+        } else {
+            CardResponse.getDailyFriendsCardsDTO dailyCards = cardService.getDailyFriendsCards(userId, year, month, day);
+            return ApiResponse.onSuccess(dailyCards);
+        }
+    }
 }

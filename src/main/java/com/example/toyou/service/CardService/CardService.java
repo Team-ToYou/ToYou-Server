@@ -12,4 +12,8 @@ public interface CardService {
     void updateCard(Long userId, Long cardId, CardRequest.updateCardDTO request);
 
     CardResponse.getMyCardsDTO getMyCards(Long userId, int year, int month);
+
+    CardResponse.getFriendsCardsDTO getFriendsCards(Long userId, int year, int month);
+
+    CardResponse.getDailyFriendsCardsDTO getDailyFriendsCards(Long userId, int year, int month, int day);
 }
