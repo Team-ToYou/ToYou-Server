@@ -17,6 +17,8 @@ public class Alarm extends BaseEntity {
 
     private String content;
 
+    private String opponent;
+
     @Enumerated(EnumType.STRING)
     private AlarmType alarmType;
 
@@ -33,4 +35,8 @@ public class Alarm extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
+
+    public void setChecked(){
+        this.checked = true;
+    }
 }
