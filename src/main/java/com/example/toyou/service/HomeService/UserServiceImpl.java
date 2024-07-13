@@ -4,13 +4,14 @@ import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.HomeRequest;
 import com.example.toyou.app.dto.HomeResponse;
+import com.example.toyou.app.dto.QuestionRequest;
+import com.example.toyou.converter.QuestionConverter;
 import com.example.toyou.converter.UserConverter;
-import com.example.toyou.domain.Alarm;
-import com.example.toyou.domain.DiaryCard;
-import com.example.toyou.domain.Question;
-import com.example.toyou.domain.User;
+import com.example.toyou.domain.*;
 import com.example.toyou.domain.enums.Emotion;
+import com.example.toyou.domain.enums.QuestionType;
 import com.example.toyou.repository.AlarmRepository;
+import com.example.toyou.repository.CustomQuestionRepository;
 import com.example.toyou.repository.UserRepository;
 import com.example.toyou.service.QuestionService.QuestionService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,6 +33,8 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final CustomQuestionRepository customQuestionRepository;
+    private final QuestionService questionService;
 
     /**
      * 홈화면 조회
@@ -80,24 +86,47 @@ public class UserServiceImpl implements UserService {
 
         Emotion emotion = request.getEmotion();
 
-        // 유저의 일기카드 목록 가져오기
-        List<DiaryCard> diaryCards = user.getDiaryCardList();
-
-        // 최근 일기카드와 오늘 날짜 비교
-        if (!diaryCards.isEmpty()) {
-            DiaryCard latestCard = diaryCards.get(diaryCards.size() - 1); // 가장 최근 일기카드
-            LocalDate today = LocalDate.now();
-            if (latestCard.getCreatedAt().toLocalDate().equals(today)) {
-                throw new GeneralException(ErrorStatus.DUPLICATE_CARD_FOR_TODAY);
-            }
-        }
+        if(user.getTodayEmotion() == request.getEmotion()) throw new GeneralException(ErrorStatus.EMOTION_ALREADY_CHOSEN);
 
         user.setEmotion(emotion);
 
+        // 오늘 중 이전에 생성된 맞춤형 질문 삭제
+        questionService.deleteToYouQuestions(user);
+
         // 맞춤형 질문 생성
+        List<CustomQuestion> customQuestions = customQuestionRepository.findByUserStatus(user.getStatus());
 
+        // 필터링 조건에 따라 질문 생성
+        createAndProcessRandomQuestion(user, customQuestions, user.getTodayEmotion(), QuestionType.LONG_ANSWER);
+        createAndProcessRandomQuestion(user, customQuestions, null, QuestionType.SHORT_ANSWER);
+        createAndProcessRandomQuestion(user, customQuestions, null, QuestionType.OPTIONAL);
+    }
 
-//        questionService.createQuestion(user.getId(), );
+    // 랜덤 질문 생성 및 처리
+    private void createAndProcessRandomQuestion(User user, List<CustomQuestion> customQuestions, Emotion emotion, QuestionType questionType) {
+        List<CustomQuestion> filteredQuestions = customQuestions.stream()
+                .filter(question -> (emotion == null || Objects.equals(question.getEmotion(), emotion)) && question.getQuestionType() == questionType)
+                .collect(Collectors.toList());
+
+        if (!filteredQuestions.isEmpty()) {
+            CustomQuestion randomQuestion = getRandomQuestion(filteredQuestions);
+            processQuestion(user, randomQuestion);
+        }
+    }
+
+    // 랜덤 질문 추출
+    private CustomQuestion getRandomQuestion(List<CustomQuestion> questions) {
+        Random random = new Random();
+        int randomIndex = random.nextInt(questions.size());
+        return questions.get(randomIndex);
+    }
+
+    // 질문 처리
+    private void processQuestion(User user, CustomQuestion cq) {
+        if (cq != null) {
+            QuestionRequest.createQuestionDTO request = QuestionConverter.toCreateQuestionDTO(user, cq);
+            questionService.autoCreateQuestion(request);
+        }
     }
 
     /**

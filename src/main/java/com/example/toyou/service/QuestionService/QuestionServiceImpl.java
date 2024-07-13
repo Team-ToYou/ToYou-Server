@@ -5,7 +5,6 @@ import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.QuestionRequest;
 import com.example.toyou.app.dto.QuestionResponse;
 import com.example.toyou.converter.AlarmConverter;
-import com.example.toyou.converter.FriendConverter;
 import com.example.toyou.converter.QuestionConverter;
 import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.AnswerOption;
@@ -27,6 +26,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -103,10 +103,66 @@ public class QuestionServiceImpl implements QuestionService {
         return QuestionConverter.toGetQuestionDTO(questions);
     }
 
+    // Problem : Question delete 쿼리 안 나감(아래 메소드 둘 다)
+
+    @Transactional
     public void deleteOldQuestions() {
-        LocalDateTime today = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-        List<Question> questionsToDelete = questionRepository.findByCreatedAtBeforeAndDiaryCardIsNull(today);
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+
+        List<Question> questionsToDelete = questionRepository.findByCreatedAtBetweenAndDiaryCardIsNull(startOfDay, endOfDay);
 
         questionRepository.deleteAll(questionsToDelete);
+    }
+
+    @Transactional
+    public void deleteToYouQuestions(User user) {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+
+
+        List<Question> questionsToDelete = user.getQuestionList().stream()
+                .filter(question -> question.getCreatedAt().isAfter(startOfDay) && question.getCreatedAt().isBefore(endOfDay))
+                .filter(question -> "투유".equals(question.getQuestioner()))
+                .toList();
+
+        log.info("listSize={}", questionsToDelete.size());
+
+        for (Question question : questionsToDelete) {
+            // 연관된 AnswerOption 엔티티들 먼저 삭제
+            answerOptionRepository.deleteAll(question.getAnswerOptionList());
+            // Question 엔티티 삭제
+            questionRepository.delete(question);
+        }
+    }
+
+    @Transactional
+    public void autoCreateQuestion(QuestionRequest.createQuestionDTO request) {
+
+        // 질문 대상 검색
+        User target = userRepository.findByNickname(request.getTarget())
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        QuestionType questionType = request.getQuestionType();
+
+        Question newQuestion = QuestionConverter.toQuestion(target, questionType, "투유", request.getContent());
+
+        questionRepository.save(newQuestion);
+
+        log.info("questionType={}", request.getQuestionType());
+        log.info("list={}", request.getAnswerOptionList());
+
+        // 선택형
+        if(questionType == QuestionType.OPTIONAL) {
+
+            if(request.getAnswerOptionList() == null) throw new GeneralException(ErrorStatus.EMPTIED_LIST);
+
+            // answerOptionList를 AnswerOption 객체 리스트로 변환
+            List<AnswerOption> answerOptions = QuestionConverter.toAnswerOptionList(request.getAnswerOptionList(), newQuestion);
+
+            answerOptionRepository.saveAll(answerOptions);
+        }
     }
 }

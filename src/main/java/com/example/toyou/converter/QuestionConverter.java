@@ -1,8 +1,10 @@
 package com.example.toyou.converter;
 
 import com.example.toyou.app.dto.FriendResponse;
+import com.example.toyou.app.dto.QuestionRequest;
 import com.example.toyou.app.dto.QuestionResponse;
 import com.example.toyou.domain.AnswerOption;
+import com.example.toyou.domain.CustomQuestion;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.Emotion;
@@ -56,4 +58,13 @@ public class QuestionConverter {
         return QuestionResponse.GetQuestionsDTO.builder().questionList(questionInfos).build();
     }
 
+    public static QuestionRequest.createQuestionDTO toCreateQuestionDTO(User user, CustomQuestion cq) {
+        return QuestionRequest.createQuestionDTO.builder()
+                .target(user.getNickname())
+                .content(cq.getContent())
+                .questionType(cq.getQuestionType())
+                .anonymous(false)
+                .answerOptionList(cq.getAnswerOptions())
+                .build();
+    }
 }

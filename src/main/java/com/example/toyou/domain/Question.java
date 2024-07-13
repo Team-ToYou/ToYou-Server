@@ -39,7 +39,6 @@ public class Question extends BaseEntity {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<AnswerOption> answerOptionList = new ArrayList<>();
 
-
     public void setDiaryCard(DiaryCard diaryCard){
         this.diaryCard = diaryCard;
     }

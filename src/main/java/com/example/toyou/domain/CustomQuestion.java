@@ -6,6 +6,9 @@ import com.example.toyou.domain.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @Getter
@@ -26,4 +29,7 @@ public class CustomQuestion {
     private Status userStatus;
 
     private String content;
+
+    @ElementCollection
+    private List<String> answerOptions;
 }
