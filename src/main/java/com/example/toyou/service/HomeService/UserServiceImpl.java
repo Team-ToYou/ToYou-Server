@@ -86,7 +86,19 @@ public class UserServiceImpl implements UserService {
 
         Emotion emotion = request.getEmotion();
 
+        // 이미 선택한 감정 재선택 불가능
         if(user.getTodayEmotion() == request.getEmotion()) throw new GeneralException(ErrorStatus.EMOTION_ALREADY_CHOSEN);
+
+        List<DiaryCard> diaryCards = user.getDiaryCardList();
+
+        // 일기카드 생성시 감정 변경 불가능
+        if (!diaryCards.isEmpty()) {
+            DiaryCard latestCard = diaryCards.get(diaryCards.size() - 1); // 가장 최근 일기카드
+            LocalDate today = LocalDate.now();
+            if (latestCard.getCreatedAt().toLocalDate().equals(today)) {
+                throw new GeneralException(ErrorStatus.DUPLICATE_CARD_FOR_TODAY);
+            }
+        }
 
         user.setEmotion(emotion);
 

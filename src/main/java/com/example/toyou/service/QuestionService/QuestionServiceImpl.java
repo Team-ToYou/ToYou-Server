@@ -128,12 +128,8 @@ public class QuestionServiceImpl implements QuestionService {
                 .filter(question -> "투유".equals(question.getQuestioner()))
                 .toList();
 
-        log.info("listSize={}", questionsToDelete.size());
-
         for (Question question : questionsToDelete) {
-            // 연관된 AnswerOption 엔티티들 먼저 삭제
-            answerOptionRepository.deleteAll(question.getAnswerOptionList());
-            // Question 엔티티 삭제
+            question.deleteMappings(); // 연관 관계 해제
             questionRepository.delete(question);
         }
     }

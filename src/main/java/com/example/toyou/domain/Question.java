@@ -46,4 +46,20 @@ public class Question extends BaseEntity {
     public void setAnswer(String answer){
         this.answer = answer;
     }
+
+
+    // ManyToOne 연관 관계 끊기
+    public void deleteMappings() {
+        // User와의 연관 관계 끊기
+        if (this.user != null) {
+            this.user.getQuestionList().remove(this);
+            this.user = null;
+        }
+
+        // DiaryCard와의 연관 관계 끊기
+        if (this.diaryCard != null) {
+            this.diaryCard.getQuestionList().remove(this);
+            this.diaryCard = null;
+        }
+    }
 }
