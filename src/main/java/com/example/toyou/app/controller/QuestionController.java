@@ -49,4 +49,12 @@ public class QuestionController {
 
         return ApiResponse.onSuccess(questionList);
     }
+
+//    @DeleteMapping
+//    public ApiResponse deleteOld(){
+//
+//        questionService.deleteOldQuestions();
+//
+//        return ApiResponse.onSuccess(null);
+//    }
 }

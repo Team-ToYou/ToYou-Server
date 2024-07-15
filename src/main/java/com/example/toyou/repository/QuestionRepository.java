@@ -12,7 +12,5 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findByUser(User user);
 
-    List<Question> findByCreatedAtBetweenAndDiaryCardIsNull(LocalDateTime startOfDay, LocalDateTime endOfDay);
-
-    void deleteByIdIn(List<Long> ids);
+    List<Question> findByCreatedAtBeforeAndDiaryCardIsNull(LocalDateTime startOfDay);
 }

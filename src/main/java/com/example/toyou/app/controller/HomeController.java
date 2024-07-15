@@ -52,4 +52,12 @@ public class HomeController {
 
         return ApiResponse.onSuccess(null);
     }
+
+//    @PatchMapping("/reset")
+//    public ApiResponse resetEmotions(){
+//
+//        userService.resetTodayEmotion();
+//
+//        return ApiResponse.onSuccess(null);
+//    }
 }

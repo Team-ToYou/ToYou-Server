@@ -109,11 +109,15 @@ public class QuestionServiceImpl implements QuestionService {
     public void deleteOldQuestions() {
         LocalDate today = LocalDate.now();
         LocalDateTime startOfDay = today.atStartOfDay();
-        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
-        List<Question> questionsToDelete = questionRepository.findByCreatedAtBetweenAndDiaryCardIsNull(startOfDay, endOfDay);
+        List<Question> questionsToDelete = questionRepository.findByCreatedAtBeforeAndDiaryCardIsNull(startOfDay);
 
-        questionRepository.deleteAll(questionsToDelete);
+        log.info("listSize={}", questionsToDelete.size());
+
+        for (Question question : questionsToDelete) {
+            question.deleteMappings(); // 연관 관계 해제
+            questionRepository.delete(question);
+        }
     }
 
     @Transactional
