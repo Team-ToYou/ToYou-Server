@@ -1,6 +1,7 @@
 package com.example.toyou.converter;
 
 import com.example.toyou.app.dto.FriendResponse;
+import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.Emotion;
@@ -62,6 +63,7 @@ public class FriendConverter {
         List<FriendResponse.yesterdayInfo> yesterdayList =  friends.stream()
                 .flatMap(friend -> friend.getDiaryCardList().stream()
                         .filter(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday))
+                        .filter(DiaryCard::isExposure)
                         .map(diaryCard -> FriendResponse.yesterdayInfo.builder()
                                 .cardId(diaryCard.getId())
                                 .nickname(friend.getNickname())

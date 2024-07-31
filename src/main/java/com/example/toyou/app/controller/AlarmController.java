@@ -1,8 +1,15 @@
 package com.example.toyou.app.controller;
 
-import com.example.toyou.apiPayload.ApiResponse;
+import com.example.toyou.apiPayload.CustomApiResponse;
+import com.example.toyou.apiPayload.code.status.ErrorStatus;
+import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.AlarmResponse;
 import com.example.toyou.service.AlarmService.AlarmService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
+@Tag(name = "Alarm 컨트롤러", description = "Alarm 관련 API입니다.")
 public class AlarmController {
 
     private final AlarmService alarmService;
@@ -24,11 +32,12 @@ public class AlarmController {
      * @return
      */
     @GetMapping
-    public ApiResponse<AlarmResponse.getAlarmsDTO> getAlarms(@RequestHeader Long userId){
+    @Operation(summary = "알림 목록 조회", description = "유저의 알림 목록을 조회합니다.")
+    public CustomApiResponse<AlarmResponse.getAlarmsDTO> getAlarms(@RequestHeader Long userId){
 
         AlarmResponse.getAlarmsDTO alarms = alarmService.getAlarms(userId);
 
-        return ApiResponse.onSuccess(alarms);
+        return CustomApiResponse.onSuccess(alarms);
     }
 
     /**
@@ -39,11 +48,12 @@ public class AlarmController {
      * @return
      */
     @DeleteMapping("/{alarmId}")
-    public ApiResponse deleteFriendRequest(@RequestHeader Long userId,
+    @Operation(summary = "알림 삭제", description = "특정 알림을 삭제합니다.")
+    public CustomApiResponse deleteFriendRequest(@RequestHeader Long userId,
                                            @PathVariable Long alarmId) {
 
         alarmService.deleteAlarm(userId, alarmId);
 
-        return ApiResponse.onSuccess(null);
+        return CustomApiResponse.onSuccess(null);
     }
 }

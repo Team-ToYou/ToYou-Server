@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -140,6 +141,11 @@ public class FriendServiceImpl implements FriendService {
                                 .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND))
                 );
 
+        // 알람 삭제
+        Alarm alarmToDelete = alarmRepository.findByFriendRequest(friendRequestToDelete);
+
+        if (alarmToDelete != null) alarmRepository.delete(alarmToDelete);
+
         friendRepository.delete(friendRequestToDelete);
     }
 
@@ -165,10 +171,10 @@ public class FriendServiceImpl implements FriendService {
 
         friendRequestToAccept.setAccepted();
 
-        // 알림 생성
-        Alarm newAlarm = AlarmConverter.toReqeustAcceptedAlarm(receiver, requester, friendRequestToAccept);
+        // 알림 수정
+        Alarm alarmToUpdate = alarmRepository.findByFriendRequest(friendRequestToAccept);
 
-        alarmRepository.save(newAlarm);
+        alarmToUpdate.updateForRequestAccepted(receiver, requester);
     }
 
     /**

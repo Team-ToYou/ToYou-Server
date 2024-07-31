@@ -39,4 +39,12 @@ public class Alarm extends BaseEntity {
     public void setChecked(){
         this.checked = true;
     }
+
+    public void updateForRequestAccepted(User user, User friend) {
+        this.user = friend;
+        this.alarmType = AlarmType.REQUEST_ACCEPTED;
+        this.content = String.format("%s님이 친구 요청을 수락했습니다.", user.getNickname());
+        this.opponent = user.getNickname();
+        this.checked = false;
+    }
 }

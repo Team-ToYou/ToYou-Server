@@ -1,6 +1,7 @@
 package com.example.toyou.app.dto;
 
 import com.example.toyou.domain.enums.Emotion;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,10 +14,13 @@ public class HomeResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GetHomeDTO {
-
+        @Schema(description = "감정", nullable = false, example = "HAPPY")
         private Emotion emotion;
+        @Schema(description = "질문 개수", nullable = false, example = "5")
         private Integer questionNum;
+        @Schema(description = "카드 식별자", nullable = false, example = "1")
         private Long cardId;
+        @Schema(description = "알림 확인 여부", nullable = false, example = "false")
         private boolean uncheckedAlarm;
     }
 }

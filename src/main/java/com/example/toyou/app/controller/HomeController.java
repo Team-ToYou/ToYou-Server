@@ -1,9 +1,11 @@
 package com.example.toyou.app.controller;
 
-import com.example.toyou.apiPayload.ApiResponse;
+import com.example.toyou.apiPayload.CustomApiResponse;
 import com.example.toyou.app.dto.HomeRequest;
 import com.example.toyou.service.HomeService.UserService;
 import com.example.toyou.app.dto.HomeResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
+@Tag(name = "Home 컨트롤러", description = "Home 관련 API입니다.")
 public class HomeController {
 
     private final UserService userService;
@@ -26,13 +29,14 @@ public class HomeController {
      * @return
      */
     @GetMapping
-    public ApiResponse<HomeResponse.GetHomeDTO> getHome(@RequestHeader Long userId){
+    @Operation(summary = "홈 화면 조회", description = "홈 화면에 나타나는 유저의 정보를 조회합니다.")
+    public CustomApiResponse<HomeResponse.GetHomeDTO> getHome(@RequestHeader Long userId){
 
         HomeResponse.GetHomeDTO getHomeDTO = userService.getHome(userId);
 
         log.info("홈화면 조회: userId={}", userId);
 
-        return ApiResponse.onSuccess(getHomeDTO);
+        return CustomApiResponse.onSuccess(getHomeDTO);
     }
 
     /**
@@ -43,21 +47,22 @@ public class HomeController {
      * @return
      */
     @PatchMapping("/emotions")
-    public ApiResponse postEmotion(@RequestHeader Long userId,
+    @Operation(summary = "감정우표 선택", description = "금일 감정우표를 선택합니다.")
+    public CustomApiResponse postEmotion(@RequestHeader Long userId,
                                    @RequestBody @Valid HomeRequest.postEmotionDTO request){
 
         userService.updateEmotion(userId, request);
 
         log.info("감정우표 선택: emotion={}", request.getEmotion());
 
-        return ApiResponse.onSuccess(null);
+        return CustomApiResponse.onSuccess(null);
     }
 
 //    @PatchMapping("/reset")
-//    public ApiResponse resetEmotions(){
+//    public CustomApiResponse resetEmotions(){
 //
 //        userService.resetTodayEmotion();
 //
-//        return ApiResponse.onSuccess(null);
+//        return CustomApiResponse.onSuccess(null);
 //    }
 }

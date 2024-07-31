@@ -1,9 +1,11 @@
 package com.example.toyou.app.controller;
 
-import com.example.toyou.apiPayload.ApiResponse;
+import com.example.toyou.apiPayload.CustomApiResponse;
 import com.example.toyou.app.dto.FriendRequestRequest;
 import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.service.FriendService.FriendService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
+@Tag(name = "Friend 컨트롤러", description = "Friend 관련 API입니다.")
 public class FriendController {
 
     private final FriendService friendService;
@@ -27,11 +30,12 @@ public class FriendController {
      * @return
      */
     @GetMapping
-    public ApiResponse<FriendResponse.GetFriendsDTO> getFriends(@RequestHeader Long userId){
+    @Operation(summary = "친구 목록 조회", description = "친구 목록을 조회합니다.")
+    public CustomApiResponse<FriendResponse.GetFriendsDTO> getFriends(@RequestHeader Long userId){
 
         FriendResponse.GetFriendsDTO friendList = friendService.getFriends(userId);
 
-        return ApiResponse.onSuccess(friendList);
+        return CustomApiResponse.onSuccess(friendList);
     }
 
     /**
@@ -42,12 +46,13 @@ public class FriendController {
      * @return
      */
     @GetMapping("/search")
-    public ApiResponse<FriendResponse.searchFriendDTO> searchFriend(@RequestHeader Long userId,
+    @Operation(summary = "친구(유저) 검색", description = "닉네임 검색을 통해 유저를 조회합니다.")
+    public CustomApiResponse<FriendResponse.searchFriendDTO> searchFriend(@RequestHeader Long userId,
                                                                     @RequestParam(defaultValue = "") String keyword) {
 
         FriendResponse.searchFriendDTO friend = friendService.searchFriend(userId, keyword);
 
-        return ApiResponse.onSuccess(friend);
+        return CustomApiResponse.onSuccess(friend);
     }
 
     /**
@@ -57,12 +62,13 @@ public class FriendController {
      * @return
      */
     @PostMapping
-    public ApiResponse createFriendRequest(@RequestHeader Long userId,
+    @Operation(summary = "친구 요청", description = "다른 유저에게 친구 요청을 보냅니다.")
+    public CustomApiResponse createFriendRequest(@RequestHeader Long userId,
                                            @RequestBody @Valid FriendRequestRequest.createFriendRequestDTO request) {
 
         friendService.createFriendRequest(userId, request);
 
-        return ApiResponse.onSuccess(null);
+        return CustomApiResponse.onSuccess(null);
     }
 
     /**
@@ -72,12 +78,13 @@ public class FriendController {
      * @return
      */
     @DeleteMapping
-    public ApiResponse deleteFriendRequest(@RequestHeader Long userId,
+    @Operation(summary = "친구 요청 취소", description = "이전에 보낸 친구 요청을 취소합니다.")
+    public CustomApiResponse deleteFriendRequest(@RequestHeader Long userId,
                                            @RequestBody @Valid FriendRequestRequest.deleteFriendRequestDTO request) {
 
         friendService.deleteFriendRequest(userId, request);
 
-        return ApiResponse.onSuccess(null);
+        return CustomApiResponse.onSuccess(null);
     }
 
     /**
@@ -87,12 +94,13 @@ public class FriendController {
      * @return
      */
     @PatchMapping
-    public ApiResponse acceptFriendRequest(@RequestHeader Long userId,
+    @Operation(summary = "친구 요청 승인", description = "상대방이 보낸 친구 요청을 승인합니다.")
+    public CustomApiResponse acceptFriendRequest(@RequestHeader Long userId,
                                            @RequestBody @Valid FriendRequestRequest.acceptFriendRequestDTO request) {
 
         friendService.acceptFriendRequest(userId, request);
 
-        return ApiResponse.onSuccess(null);
+        return CustomApiResponse.onSuccess(null);
     }
 
     /**
@@ -102,10 +110,11 @@ public class FriendController {
      * @return
      */
     @GetMapping("/yesterday")
-    public ApiResponse<FriendResponse.getFriendYesterdayDTO> searchFriend(@RequestHeader Long userId) {
+    @Operation(summary = "작일 친구 일기카드 목록 조회", description = "어제 날짜 기준으로 생성된 친구들의 일기카드를 조회합니다.")
+    public CustomApiResponse<FriendResponse.getFriendYesterdayDTO> searchFriend(@RequestHeader Long userId) {
 
         FriendResponse.getFriendYesterdayDTO friends = friendService.getFriendYesterday(userId);
 
-        return ApiResponse.onSuccess(friends);
+        return CustomApiResponse.onSuccess(friends);
     }
 }

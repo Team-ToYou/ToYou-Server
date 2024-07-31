@@ -174,6 +174,7 @@ public class CardServiceImpl implements CardService {
                     LocalDate cardDate = card.getCreatedAt().toLocalDate();
                     return cardDate.getYear() == year && cardDate.getMonthValue() == month;
                 })
+                .filter(DiaryCard::isExposure)
                 .toList();
 
         return CardConverter.toGetFriendsCardsDTO(filteredCards);
@@ -207,6 +208,7 @@ public class CardServiceImpl implements CardService {
                     LocalDate cardDate = card.getCreatedAt().toLocalDate();
                     return cardDate.getYear() == year && cardDate.getMonthValue() == month && cardDate.getDayOfMonth() == day;
                 })
+                .filter(DiaryCard::isExposure)
                 .toList();
 
         return CardConverter.toGetDailyFriendsCardsDTO(filteredCards);

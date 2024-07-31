@@ -17,7 +17,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _ENUM_TYPE_NOT_MATCH(HttpStatus.BAD_REQUEST, "COMMON404", "일치하는 타입이 없습니다"),
 
     // 유저 에러
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER400", "해당하는 사용자가 존재하지 않습니다"),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER400", "해당하는 사용자가 존재하지 않습니다."),
     CANNOT_REQUEST_MYSELF(HttpStatus.BAD_REQUEST, "USER401", "스스로에게 요청할 수 없습니다."),
     EMOTION_ALREADY_CHOSEN(HttpStatus.NOT_FOUND, "USER400", "이미 오늘 감정으로 선택한 상태입니다."),
 
@@ -39,8 +39,8 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_OWNER(HttpStatus.FORBIDDEN, "CARD402", "일기카드 주인이 아닙니다."),
 
     // 알림 에러
-    ALARM_NOT_FOUND(HttpStatus.NOT_FOUND, "ALARM400", "해당하는 알림이 존재하지 않습니다"),
-    ALARM_NOT_MINE(HttpStatus.NOT_FOUND, "ALARM400", "해당 유저의 알림이 아닙니다.");
+    ALARM_NOT_FOUND(HttpStatus.NOT_FOUND, "ALARM400", "해당하는 알림이 존재하지 않습니다."),
+    ALARM_NOT_MINE(HttpStatus.BAD_REQUEST, "ALARM400", "해당 유저의 알림이 아닙니다.");
 
 
     private final HttpStatus httpStatus;
