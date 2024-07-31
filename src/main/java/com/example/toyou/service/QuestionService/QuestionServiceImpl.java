@@ -103,8 +103,6 @@ public class QuestionServiceImpl implements QuestionService {
         return QuestionConverter.toGetQuestionDTO(questions);
     }
 
-    // Problem : Question delete 쿼리 안 나감(아래 메소드 둘 다)
-
     @Transactional
     public void deleteOldQuestions() {
         LocalDate today = LocalDate.now();

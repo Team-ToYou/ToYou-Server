@@ -10,13 +10,11 @@ import com.example.toyou.converter.UserConverter;
 import com.example.toyou.domain.*;
 import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.QuestionType;
-import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.CustomQuestionRepository;
 import com.example.toyou.repository.UserRepository;
 import com.example.toyou.service.QuestionService.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
