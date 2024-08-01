@@ -13,23 +13,24 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/home")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @Validated
 @Slf4j
-@Tag(name = "Home 컨트롤러", description = "Home 관련 API입니다.")
+@Tag(name = "USER", description = "USER 관련 API입니다.")
 public class HomeController {
 
     private final UserService userService;
 
     /**
-     * [GET] /home
+     * [GET] /users/home
      * 홈 화면 조회
      * @param userId 유저 식별자
      * @return
      */
-    @GetMapping
+    @GetMapping("/home")
     @Operation(summary = "홈 화면 조회", description = "홈 화면에 나타나는 유저의 정보를 조회합니다.")
+
     public CustomApiResponse<HomeResponse.GetHomeDTO> getHome(@RequestHeader Long userId){
 
         HomeResponse.GetHomeDTO getHomeDTO = userService.getHome(userId);
@@ -40,7 +41,7 @@ public class HomeController {
     }
 
     /**
-     * [PATCH] /home/emotions
+     * [PATCH] /users/emotions
      * 감정우표 선택
      * @param userId 유저 식별자
      * @param request

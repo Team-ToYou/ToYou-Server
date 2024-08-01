@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
-@Tag(name = "Question 컨트롤러", description = "Question 관련 API입니다.")
+@Tag(name = "Question", description = "Question 관련 API입니다.")
 public class QuestionController {
 
     private final QuestionService questionService;

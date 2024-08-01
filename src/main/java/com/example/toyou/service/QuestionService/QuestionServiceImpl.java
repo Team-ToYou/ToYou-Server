@@ -59,10 +59,10 @@ public class QuestionServiceImpl implements QuestionService {
         User target = userRepository.findByNickname(request.getTarget())
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
-        if(user == target) throw new GeneralException(ErrorStatus.CANNOT_REQUEST_MYSELF);
+        if (user == target) throw new GeneralException(ErrorStatus.CANNOT_REQUEST_MYSELF);
 
         // 익명 선택시
-        if(request.isAnonymous()) {
+        if (request.isAnonymous()) {
             Random random = new Random();
             questioner = ANONYMOUS_NAMES.get(random.nextInt(ANONYMOUS_NAMES.size()));
         }
@@ -74,12 +74,13 @@ public class QuestionServiceImpl implements QuestionService {
         questionRepository.save(newQuestion);
 
         // 선택형 일때만 답변 선택란 입력 가능
-        if(questionType != QuestionType.OPTIONAL && request.getAnswerOptionList() != null) throw new GeneralException(ErrorStatus.INCORRECT_QUESTION_TYPE);
+        if (questionType != QuestionType.OPTIONAL && request.getAnswerOptionList() != null)
+            throw new GeneralException(ErrorStatus.INCORRECT_QUESTION_TYPE);
 
         // 선택형
-        if(questionType == QuestionType.OPTIONAL) {
+        if (questionType == QuestionType.OPTIONAL) {
 
-            if(request.getAnswerOptionList() == null) throw new GeneralException(ErrorStatus.EMPTIED_LIST);
+            if (request.getAnswerOptionList() == null) throw new GeneralException(ErrorStatus.EMPTIED_LIST);
 
             // answerOptionList를 AnswerOption 객체 리스트로 변환
             List<AnswerOption> answerOptions = QuestionConverter.toAnswerOptionList(request.getAnswerOptionList(), newQuestion);
@@ -153,9 +154,9 @@ public class QuestionServiceImpl implements QuestionService {
         log.info("list={}", request.getAnswerOptionList());
 
         // 선택형
-        if(questionType == QuestionType.OPTIONAL) {
+        if (questionType == QuestionType.OPTIONAL) {
 
-            if(request.getAnswerOptionList() == null) throw new GeneralException(ErrorStatus.EMPTIED_LIST);
+            if (request.getAnswerOptionList() == null) throw new GeneralException(ErrorStatus.EMPTIED_LIST);
 
             // answerOptionList를 AnswerOption 객체 리스트로 변환
             List<AnswerOption> answerOptions = QuestionConverter.toAnswerOptionList(request.getAnswerOptionList(), newQuestion);

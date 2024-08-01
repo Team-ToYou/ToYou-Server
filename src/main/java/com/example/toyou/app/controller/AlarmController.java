@@ -1,14 +1,9 @@
 package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.CustomApiResponse;
-import com.example.toyou.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.AlarmResponse;
 import com.example.toyou.service.AlarmService.AlarmService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
-@Tag(name = "Alarm 컨트롤러", description = "Alarm 관련 API입니다.")
+@Tag(name = "Alarm", description = "Alarm 관련 API입니다.")
 public class AlarmController {
 
     private final AlarmService alarmService;

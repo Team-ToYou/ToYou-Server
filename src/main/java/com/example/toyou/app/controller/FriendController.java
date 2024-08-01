@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
-@Tag(name = "Friend 컨트롤러", description = "Friend 관련 API입니다.")
+@Tag(name = "Friend", description = "Friend 관련 API입니다.")
 public class FriendController {
 
     private final FriendService friendService;
@@ -56,12 +56,12 @@ public class FriendController {
     }
 
     /**
-     * [POST] /friends
+     * [POST] /friends/requests
      * 친구 요청
      * @param userId 유저 식별자
      * @return
      */
-    @PostMapping
+    @PostMapping("/requests")
     @Operation(summary = "친구 요청", description = "다른 유저에게 친구 요청을 보냅니다.")
     public CustomApiResponse createFriendRequest(@RequestHeader Long userId,
                                            @RequestBody @Valid FriendRequestRequest.createFriendRequestDTO request) {
@@ -73,7 +73,7 @@ public class FriendController {
 
     /**
      * [DELETE] /friends
-     * 친구 요청 취소
+     * 친구 삭제, 요청 취소, 요청 거절
      * @param userId 유저 식별자
      * @return
      */
@@ -88,12 +88,12 @@ public class FriendController {
     }
 
     /**
-     * [PATCH] /friends
+     * [PATCH] /friends/requests/approve
      * 친구 요청 승인
      * @param userId 유저 식별자
      * @return
      */
-    @PatchMapping
+    @PatchMapping("/requests/approve")
     @Operation(summary = "친구 요청 승인", description = "상대방이 보낸 친구 요청을 승인합니다.")
     public CustomApiResponse acceptFriendRequest(@RequestHeader Long userId,
                                            @RequestBody @Valid FriendRequestRequest.acceptFriendRequestDTO request) {

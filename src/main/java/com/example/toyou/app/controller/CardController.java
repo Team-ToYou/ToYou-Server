@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
-@Tag(name = "Card 컨트롤러", description = "Card 관련 API입니다.")
+@Tag(name = "Card", description = "Card 관련 API입니다.")
 public class CardController {
 
     private final CardService cardService;
