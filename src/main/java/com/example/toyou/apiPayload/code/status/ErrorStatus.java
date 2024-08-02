@@ -19,7 +19,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // 유저 에러
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER400", "해당하는 사용자가 존재하지 않습니다."),
     CANNOT_REQUEST_MYSELF(HttpStatus.BAD_REQUEST, "USER401", "스스로에게 요청할 수 없습니다."),
-    EMOTION_ALREADY_CHOSEN(HttpStatus.NOT_FOUND, "USER402", "이미 오늘 감정으로 선택한 상태입니다."),
+    EMOTION_ALREADY_CHOSEN(HttpStatus.NOT_FOUND, "USER40", "이미 오늘 감정으로 선택한 상태입니다."),
 
     // 친구 에러
     FRIEND_REQUEST_ALREADY_EXISTING(HttpStatus.BAD_REQUEST, "FRIEND400", "이미 친구 요청 정보가 존재합니다."),
@@ -40,7 +40,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 알림 에러
     ALARM_NOT_FOUND(HttpStatus.NOT_FOUND, "ALARM400", "해당하는 알림이 존재하지 않습니다."),
-    ALARM_NOT_MINE(HttpStatus.BAD_REQUEST, "ALARM400", "해당 유저의 알림이 아닙니다.");
+    ALARM_NOT_MINE(HttpStatus.FORBIDDEN, "ALARM401", "해당 유저의 알림이 아닙니다.");
 
 
     private final HttpStatus httpStatus;
