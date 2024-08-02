@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-#
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -21,4 +21,4 @@ jobs:
             git pull origin main
             ./gradlew clean build
             sudo fuser -k -n tcp 80 || true
-            nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
+            sudo nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
