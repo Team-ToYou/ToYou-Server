@@ -1,12 +1,3 @@
----
-name: issue-template
-about: 이슈를 생성해 주세요.
-title: ''
-labels: ''
-assignees: ''
-
----
-
 ## 📝 개요
 - 자세한 개요 작성
 
