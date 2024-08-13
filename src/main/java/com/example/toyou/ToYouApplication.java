@@ -11,7 +11,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableJpaAuditing
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
-@OpenAPIDefinition(servers = {@Server(url = "https://to-you.store", description = "Default Server URL")})
+@OpenAPIDefinition(
+		servers = {
+				@Server(url = "https://to-you.store", description = "Production Server"),
+				@Server(url = "http://localhost:8080", description = "Local Development Server")
+		}
+)
 public class ToYouApplication {
 
 	public static void main(String[] args) {

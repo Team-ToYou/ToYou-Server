@@ -1,6 +1,7 @@
 package com.example.toyou.app.controller;
 
 import com.example.toyou.service.OauthService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +30,7 @@ public class OauthController {
      * @return
      */
     @PostMapping("/kakao")
+    @Operation(summary = "카카오 로그인", description = "카카오 측에서 얻은 액세스 토큰으로 보낸 후 jwt 토큰을 헤더로 받아옵니다.")
         public ResponseEntity<Void> kakaoLogin(@RequestHeader String token, HttpServletRequest request, HttpServletResponse response) {
             oauthService.kakaoLogin(token, request, response);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -42,6 +44,7 @@ public class OauthController {
      * @return
      */
     @PostMapping("/kakao/test")
+    @Operation(summary = "카카오 로그인(서버 테스트용)", description = "프론트 사용 X")
     public ResponseEntity<Void> kakaoLoginTest(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) {
         oauthService.kakaoLoginTest(code, request, response);
         return new ResponseEntity<>(HttpStatus.OK);
