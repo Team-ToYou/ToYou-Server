@@ -150,4 +150,9 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.saveAll(users);
     }
+
+    public User findById(Long memberId) {
+        return userRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Unexpected member"));
+    }
 }

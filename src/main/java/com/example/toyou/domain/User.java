@@ -5,7 +5,6 @@ import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.context.annotation.Profile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +20,13 @@ public class User extends BaseEntity {
     private Long id;
 
     private String nickname;
+
+    @Embedded
+    private OauthInfo oauthInfo;
+
+    private String profileImage;
+
+    private String accessToken;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -42,5 +48,10 @@ public class User extends BaseEntity {
 
     public void setEmotion(Emotion emotion){
         this.todayEmotion = emotion;
+    }
+
+    public User updateAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+        return this;
     }
 }

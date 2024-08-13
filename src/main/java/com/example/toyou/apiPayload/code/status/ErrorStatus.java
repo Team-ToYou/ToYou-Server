@@ -40,7 +40,13 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 알림 에러
     ALARM_NOT_FOUND(HttpStatus.NOT_FOUND, "ALARM400", "해당하는 알림이 존재하지 않습니다."),
-    ALARM_NOT_MINE(HttpStatus.FORBIDDEN, "ALARM401", "해당 유저의 알림이 아닙니다.");
+    ALARM_NOT_MINE(HttpStatus.FORBIDDEN, "ALARM401", "해당 유저의 알림이 아닙니다."),
+
+    // Oauth 에러
+    OAUTH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "OAUTH400", "유효하지 않은 OAUTH 토큰입니다."),
+
+    // JWT 에러
+    TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "JWT400", "유효하지 않은 JWT 토큰입니다.");
 
 
     private final HttpStatus httpStatus;
