@@ -50,7 +50,7 @@ public class SecurityConfig {
 
                 // 인증, 인가 설정
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated())
 
                 // 헤더를 확인할 커스텀 필터 추가

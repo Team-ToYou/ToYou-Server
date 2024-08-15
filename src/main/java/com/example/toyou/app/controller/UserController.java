@@ -35,8 +35,6 @@ public class UserController {
     @Operation(summary = "홈 화면 조회", description = "홈 화면에 나타나는 유저의 정보를 조회합니다.")
     public CustomApiResponse<HomeResponse.GetHomeDTO> getHome(Principal principal){
 
-        if(principal == null) throw new GeneralException(ErrorStatus.TOKEN_INVALID);
-
         Long userId = Long.parseLong(principal.getName());
 
         HomeResponse.GetHomeDTO getHomeDTO = userService.getHome(userId);

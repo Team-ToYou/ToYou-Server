@@ -33,7 +33,7 @@ public class OauthService {
 
     private final TokenProvider tokenProvider;
 
-//    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String CLIENT_ID;
@@ -41,40 +41,32 @@ public class OauthService {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String REDIRECT_URI;
 
-    @Value("${spring.jwt.header}")
-    private String ACCESS_HEADER;
-
-    private static final Duration ACCESS_TOKEN_DURATION = Duration.ofDays(1);
-
     @Transactional
     public void kakaoLogin(String oauthAccessToken, HttpServletRequest request, HttpServletResponse response) {
-        // 1. OAuth2 액세스 토큰으로 회원 정보 요청
+        //OAuth2 액세스 토큰으로 회원 정보 요청
         JsonNode responseJson = getKakaoUserInfo(oauthAccessToken);
 
-        // 2. 회원 정보 저장
+        //회원 정보 저장
         User user = registerKakaoUser(responseJson, oauthAccessToken);
 
-        // 3. JWT 액세스 토큰 발급
-        String accessToken = tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
-        System.out.println("jwt_access_token : " + accessToken);
-        response.setHeader(ACCESS_HEADER, accessToken);
+        //토큰 생성
+        String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2), "access");
+        String refreshToken = tokenProvider.generateToken(user, Duration.ofDays(14),"refresh");
+        System.out.println("jwt_access: " + accessToken);
+        System.out.println("jwt_refresh : " + refreshToken);
+
+        //Refresh 토큰 저장
+        refreshTokenService.addRefreshEntity(user, refreshToken, Duration.ofDays(14));
+
+        //응답 설정
+        response.setHeader("access_token", accessToken);
+        response.setHeader("refresh_token", refreshToken);
+        response.setStatus(HttpStatus.OK.value());
     }
 
     @Transactional
-    public void kakaoLoginTest(String code, HttpServletRequest request, HttpServletResponse response) {
-        // 1. 인가 코드로 OAuth2 액세스 토큰 요청
-        String oauthAccessToken = getAccessToken(code);
-
-        // 2. OAuth2 액세스 토큰으로 회원 정보 요청
-        JsonNode responseJson = getKakaoUserInfo(oauthAccessToken);
-
-        // 3. 회원 정보 저장
-        User user = registerKakaoUser(responseJson, oauthAccessToken);
-
-        // 4. JWT 액세스 토큰 발급
-        String accessToken = tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
-        System.out.println("jwt_access_token : " + accessToken);
-        response.setHeader(ACCESS_HEADER, accessToken);
+    public String requestAccess(String code, HttpServletRequest request, HttpServletResponse response) {
+        return getAccessToken(code);
     }
 
     /**
