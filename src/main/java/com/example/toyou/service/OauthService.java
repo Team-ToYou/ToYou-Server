@@ -30,10 +30,8 @@ import java.time.Duration;
 public class OauthService {
 
     private final UserRepository userRepository;
-
     private final TokenProvider tokenProvider;
-
-    private final RefreshTokenService refreshTokenService;
+    private final RedisService redisService;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String CLIENT_ID;
@@ -56,7 +54,7 @@ public class OauthService {
         System.out.println("jwt_refresh : " + refreshToken);
 
         //Refresh 토큰 저장
-        refreshTokenService.addRefreshEntity(user, refreshToken, Duration.ofDays(14));
+        redisService.setValues(user.getId(), refreshToken, Duration.ofDays(14));
 
         //응답 설정
         response.setHeader("access_token", accessToken);

@@ -3,10 +3,8 @@ package com.example.toyou.service;
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.TokenResponse;
-import com.example.toyou.domain.RefreshToken;
 import com.example.toyou.domain.User;
 import com.example.toyou.oauth2.jwt.TokenProvider;
-import com.example.toyou.repository.RefreshTokenRepository;
 import com.example.toyou.service.HomeService.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.util.Date;
 
 @Service
 @Slf4j
@@ -25,7 +22,7 @@ public class RefreshTokenService {
 
     private final TokenProvider tokenProvider;
     private final UserService userService;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisService redisService;
 
     @Transactional
     public TokenResponse.reissueDTO reissue(String refreshToken) {
@@ -46,35 +43,20 @@ public class RefreshTokenService {
             throw new GeneralException(ErrorStatus.DIFFERENT_CATEGORY);
         }
 
-        //DB에 저장되어 있는지 확인
-        RefreshToken existingRefresh = refreshTokenRepository.findByRefresh(refreshToken)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.TOKEN_INVALID));
+        //토큰에서 유저 조회
+        Long userId = tokenProvider.getUserId(refreshToken);
+        User user = userService.findById(userId);
 
-        User user = userService.findById(existingRefresh.getUserId());
+        //DB에 저장되어 있는지 확인
+        if(!redisService.getValues(userId).equals(refreshToken)) throw new GeneralException(ErrorStatus.TOKEN_INVALID);
 
         //make new JWT
         String newAccess = tokenProvider.generateToken(user, Duration.ofHours(2), "access");
         String newRefresh = tokenProvider.generateToken(user, Duration.ofDays(14), "refresh");
 
-        //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
-        refreshTokenRepository.deleteByRefresh(refreshToken);
-        addRefreshEntity(user, newRefresh, Duration.ofDays(14));
+        //새 Refresh 토큰 저장
+        redisService.setValues(userId, newRefresh, Duration.ofDays(14));
 
         return new TokenResponse.reissueDTO(newAccess, newRefresh);
-    }
-
-    @Transactional
-    public void addRefreshEntity(User user, String refresh, Duration expiredAt) {
-
-        Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + expiredAt.toMillis());
-
-        RefreshToken refreshToken = RefreshToken.builder()
-                .userId(user.getId())
-                .refresh(refresh)
-                .expiration(expirationDate.toString())
-                .build();
-
-        refreshTokenRepository.save(refreshToken);
     }
 }
