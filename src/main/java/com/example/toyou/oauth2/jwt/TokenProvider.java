@@ -104,6 +104,16 @@ public class TokenProvider {
     }
 
     /**
+     * 토큰에서 회원 ID를 가져오는 메서드이다.
+     * @param token JWT 토큰
+     * @return 회원 ID
+     */
+    public Long getUserId(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("id", Long.class);
+    }
+
+    /**
      * 토큰 기반으로 인증 정보를 가져오는 메서드이다.
      *
      * @param token 인증된 회원의 토큰
