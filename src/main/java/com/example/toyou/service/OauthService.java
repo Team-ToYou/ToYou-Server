@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -44,21 +47,33 @@ public class OauthService {
         //OAuth2 액세스 토큰으로 회원 정보 요청
         JsonNode responseJson = getKakaoUserInfo(oauthAccessToken);
 
-        //회원 정보 저장
-        User user = registerKakaoUser(responseJson, oauthAccessToken);
+        //oauthId 조회
+        String oauthId = responseJson.get("id").asText();
+        OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.KAKAO);
 
-        //토큰 생성
-        String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2), "access");
-        String refreshToken = tokenProvider.generateToken(user, Duration.ofDays(14),"refresh");
-        System.out.println("jwt_access: " + accessToken);
-        System.out.println("jwt_refresh : " + refreshToken);
+        String accessToken = null;
+        String refreshToken = null;
 
-        //Refresh 토큰 저장
-        redisService.setValues(user.getId(), refreshToken, Duration.ofDays(14));
+        Optional<User> optionalUser = userRepository.findByOauthInfo(oauthInfo);
+
+        //DB에 회원정보가 있을때 토큰 발급
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            //토큰 생성
+            accessToken = tokenProvider.generateToken(user, Duration.ofHours(2), "access");
+            refreshToken = tokenProvider.generateToken(user, Duration.ofDays(14), "refresh");
+            log.info("access: " + accessToken);
+            log.info("refresh : " + refreshToken);
+
+            //Refresh 토큰 저장
+            redisService.setValues(user.getId(), refreshToken, Duration.ofDays(14));
+        }
 
         //응답 설정
-        response.setHeader("access_token", accessToken);
-        response.setHeader("refresh_token", refreshToken);
+        response.setHeader("oauthId", oauthId);
+        response.setHeader("accessToken", accessToken);
+        response.setHeader("refreshToken", refreshToken);
         response.setStatus(HttpStatus.OK.value());
     }
 

@@ -1,6 +1,6 @@
 package com.example.toyou.app;
 
-import com.example.toyou.service.HomeService.UserService;
+import com.example.toyou.service.UserService.UserService;
 import com.example.toyou.service.QuestionService.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

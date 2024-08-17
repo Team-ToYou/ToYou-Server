@@ -1,9 +1,8 @@
-package com.example.toyou.service.HomeService;
+package com.example.toyou.service.UserService;
 
 import com.example.toyou.app.dto.HomeRequest;
 import com.example.toyou.app.dto.HomeResponse;
 import com.example.toyou.domain.User;
-import com.example.toyou.domain.enums.Emotion;
 
 public interface UserService {
 

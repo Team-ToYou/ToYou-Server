@@ -1,4 +1,4 @@
-package com.example.toyou.service.HomeService;
+package com.example.toyou.service.UserService;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;

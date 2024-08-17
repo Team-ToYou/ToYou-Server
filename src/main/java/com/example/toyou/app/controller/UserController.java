@@ -1,10 +1,8 @@
 package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.CustomApiResponse;
-import com.example.toyou.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.HomeRequest;
-import com.example.toyou.service.HomeService.UserService;
+import com.example.toyou.service.UserService.UserService;
 import com.example.toyou.app.dto.HomeResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

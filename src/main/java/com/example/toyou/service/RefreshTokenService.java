@@ -5,7 +5,7 @@ import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.TokenResponse;
 import com.example.toyou.domain.User;
 import com.example.toyou.oauth2.jwt.TokenProvider;
-import com.example.toyou.service.HomeService.UserService;
+import com.example.toyou.service.UserService.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
