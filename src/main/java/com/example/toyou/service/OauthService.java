@@ -71,9 +71,9 @@ public class OauthService {
         }
 
         //응답 설정
-        response.setHeader("oauthId", oauthId);
-        response.setHeader("accessToken", accessToken);
-        response.setHeader("refreshToken", refreshToken);
+        response.setHeader("oauth_id", oauthId);
+        response.setHeader("access_token", accessToken);
+        response.setHeader("refresh_token", refreshToken);
         response.setStatus(HttpStatus.OK.value());
     }
 
