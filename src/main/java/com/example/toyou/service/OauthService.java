@@ -2,6 +2,8 @@ package com.example.toyou.service;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
+import com.example.toyou.app.dto.UserRequest;
+import com.example.toyou.app.dto.UserResponse;
 import com.example.toyou.domain.OauthInfo;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.OauthProvider;
@@ -42,6 +44,7 @@ public class OauthService {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String REDIRECT_URI;
 
+    // 카카오 로그인
     @Transactional
     public void kakaoLogin(String oauthAccessToken, HttpServletRequest request, HttpServletResponse response) {
         //OAuth2 액세스 토큰으로 회원 정보 요청
@@ -49,6 +52,7 @@ public class OauthService {
 
         //oauthId 조회
         String oauthId = responseJson.get("id").asText();
+
         OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.KAKAO);
 
         String accessToken = null;
@@ -77,6 +81,43 @@ public class OauthService {
         response.setStatus(HttpStatus.OK.value());
     }
 
+    // 회원 가입
+    @Transactional
+    public void registerOauthUser(String oauthId, UserRequest.registerUserDTO request, HttpServletResponse response) {
+        OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.KAKAO);
+
+        // 이미 존재하는 회원 정보인지 검사
+        if(userRepository.existsByOauthInfo(oauthInfo)) throw new GeneralException(ErrorStatus.ALREADY_JOINED);
+
+        // 이미 존재하는 닉네임인지 검사
+        if(userRepository.existsByNickname(request.getNickname())) throw new GeneralException(ErrorStatus.EXISTING_NICKNAME);
+
+        // 유저 정보 저장
+        User user = userRepository.findByOauthInfo(oauthInfo)
+                .orElse(User.builder()
+                        .nickname(request.getNickname())
+                        .oauthInfo(oauthInfo)
+                        .adConsent(request.isAdConsent())
+                        .status(request.getStatus())
+                        .build());
+        userRepository.save(user);
+
+        //토큰 발급
+        String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2), "access");
+        String refreshToken = tokenProvider.generateToken(user, Duration.ofDays(14), "refresh");
+        log.info("access: " + accessToken);
+        log.info("refresh : " + refreshToken);
+
+        //Refresh 토큰 저장
+        redisService.setValues(user.getId(), refreshToken, Duration.ofDays(14));
+
+        //응답 설정
+        response.setHeader("access_token", accessToken);
+        response.setHeader("refresh_token", refreshToken);
+        response.setStatus(HttpStatus.OK.value());
+    }
+
+    // 인가코드로 카카오 액세스 토큰 요청
     @Transactional
     public String requestAccess(String code, HttpServletRequest request, HttpServletResponse response) {
         return getAccessToken(code);
@@ -160,33 +201,6 @@ public class OauthService {
         } catch (JsonProcessingException e) { // JSON 파싱 오류 처리
             throw new RuntimeException("JSON processing error", e);
         }
-    }
-
-    /**
-     * 카카오 회원 정보를 데이터베이스에 저장하는 메서드이다.
-     * @param responseJson JSON 형식의 카카오 회원 정보
-     * @return 저장된 user 객체
-     */
-    private User registerKakaoUser(JsonNode responseJson, String accessToken) {
-        String oauthId = responseJson.get("id").asText();
-        JsonNode profile = responseJson.get("kakao_account").get("profile");
-        String nickname = profile.get("nickname").asText();
-        String profileImage = profile.get("profile_image_url").asText();
-
-        System.out.println("이름 : " + nickname);
-
-        OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.KAKAO);
-
-        User user = userRepository.findByOauthInfo(oauthInfo)
-                .map(entity -> entity.updateAccessToken(accessToken))
-                .orElse(User.builder()
-                        .accessToken(accessToken)
-                        .nickname(nickname)
-                        .profileImage(profileImage)
-                        .oauthInfo(oauthInfo)
-                        .build());
-
-        return userRepository.save(user);
     }
 }
 

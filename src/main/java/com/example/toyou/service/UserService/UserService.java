@@ -2,6 +2,7 @@ package com.example.toyou.service.UserService;
 
 import com.example.toyou.app.dto.HomeRequest;
 import com.example.toyou.app.dto.HomeResponse;
+import com.example.toyou.app.dto.UserResponse;
 import com.example.toyou.domain.User;
 
 public interface UserService {
@@ -13,4 +14,6 @@ public interface UserService {
     void resetTodayEmotion();
 
     User findById(Long userId);
+
+    UserResponse.checkUserNicknameDTO checkUserNickname(String nickname);
 }

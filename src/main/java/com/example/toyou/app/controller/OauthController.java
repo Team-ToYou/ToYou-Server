@@ -2,14 +2,18 @@ package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.CustomApiResponse;
 import com.example.toyou.app.dto.TokenResponse;
+import com.example.toyou.app.dto.UserRequest;
+import com.example.toyou.app.dto.UserResponse;
 import com.example.toyou.service.OauthService;
 import com.example.toyou.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,6 +70,16 @@ public class OauthController {
 
         response.setHeader("access_token", tokenResponse.getAccessToken());
         response.setHeader("refresh_token", tokenResponse.getRefreshToken());
+
+        return CustomApiResponse.onSuccess(null);
+    }
+
+    @PostMapping("/signup")
+    @Operation(summary = "회원가입", description = "oauthId를 통해 회원가입합니다.")
+    public CustomApiResponse<?> registerOauthUser(@RequestHeader String oauthId,
+                                                  @RequestBody @Valid UserRequest.registerUserDTO request, HttpServletResponse response) {
+
+        oauthService.registerOauthUser(oauthId, request, response);
 
         return CustomApiResponse.onSuccess(null);
     }

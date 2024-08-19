@@ -2,9 +2,7 @@ package com.example.toyou.service.UserService;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
-import com.example.toyou.app.dto.HomeRequest;
-import com.example.toyou.app.dto.HomeResponse;
-import com.example.toyou.app.dto.QuestionRequest;
+import com.example.toyou.app.dto.*;
 import com.example.toyou.converter.QuestionConverter;
 import com.example.toyou.converter.UserConverter;
 import com.example.toyou.domain.*;
@@ -71,6 +69,13 @@ public class UserServiceImpl implements UserService {
         }
 
         return UserConverter.toGetHomeDTO(user, cardId, questionNum, uncheckedAlarm);
+    }
+
+    // 닉네임 중복 확인
+    public UserResponse.checkUserNicknameDTO checkUserNickname(String nickname) {
+        return UserResponse.checkUserNicknameDTO.builder()
+                .exists(userRepository.existsByNickname(nickname))
+                .build();
     }
 
     /**

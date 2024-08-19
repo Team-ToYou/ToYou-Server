@@ -78,7 +78,7 @@ public class FriendController {
      * @return
      */
     @DeleteMapping
-    @Operation(summary = "친구 요청 취소", description = "이전에 보낸 친구 요청을 취소합니다.")
+    @Operation(summary = "친구 삭제, 요청 취소, 요청 거절", description = "친구 삭제, 친구 요청 취소, 친구 요청 거절시 사용합니다.")
     public CustomApiResponse deleteFriendRequest(@RequestHeader Long userId,
                                            @RequestBody @Valid FriendRequestRequest.deleteFriendRequestDTO request) {
 

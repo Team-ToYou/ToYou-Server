@@ -2,6 +2,8 @@ package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.CustomApiResponse;
 import com.example.toyou.app.dto.HomeRequest;
+import com.example.toyou.app.dto.UserRequest;
+import com.example.toyou.app.dto.UserResponse;
 import com.example.toyou.service.UserService.UserService;
 import com.example.toyou.app.dto.HomeResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,7 +53,7 @@ public class UserController {
      */
     @PatchMapping("/emotions")
     @Operation(summary = "감정우표 선택", description = "금일 감정우표를 선택합니다.")
-    public CustomApiResponse postEmotion(@RequestHeader Long userId,
+    public CustomApiResponse<?> postEmotion(@RequestHeader Long userId,
                                    @RequestBody @Valid HomeRequest.postEmotionDTO request){
 
         userService.updateEmotion(userId, request);
@@ -59,6 +61,15 @@ public class UserController {
         log.info("감정우표 선택: emotion={}", request.getEmotion());
 
         return CustomApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/nickname/check")
+    @Operation(summary = "닉네임 중복 확인", description = "닉네임 중복 여부를 체크합니다.")
+    public CustomApiResponse<UserResponse.checkUserNicknameDTO> checkUserNickname(@RequestParam String nickname){
+
+        UserResponse.checkUserNicknameDTO exists = userService.checkUserNickname(nickname);
+
+        return CustomApiResponse.onSuccess(exists);
     }
 
 //    @PatchMapping("/reset")

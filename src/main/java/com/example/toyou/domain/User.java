@@ -24,9 +24,7 @@ public class User extends BaseEntity {
     @Embedded
     private OauthInfo oauthInfo;
 
-    private String profileImage;
-
-    private String accessToken;
+    private boolean adConsent;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -48,10 +46,5 @@ public class User extends BaseEntity {
 
     public void setEmotion(Emotion emotion){
         this.todayEmotion = emotion;
-    }
-
-    public User updateAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-        return this;
     }
 }
