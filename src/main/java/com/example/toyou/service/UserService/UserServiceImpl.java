@@ -22,6 +22,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static com.example.toyou.apiPayload.code.status.ErrorStatus.EXISTING_NICKNAME;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -76,6 +78,17 @@ public class UserServiceImpl implements UserService {
         return UserResponse.checkUserNicknameDTO.builder()
                 .exists(userRepository.existsByNickname(nickname))
                 .build();
+    }
+
+    // 닉네임 수정
+    @Transactional
+    public void updateNickname(Long userId, String nickname) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        if(userRepository.existsByNickname(nickname)) throw new GeneralException(EXISTING_NICKNAME);
+
+        user.setNickname(nickname);
     }
 
     /**

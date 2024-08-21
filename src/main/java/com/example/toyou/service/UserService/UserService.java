@@ -16,4 +16,6 @@ public interface UserService {
     User findById(Long userId);
 
     UserResponse.checkUserNicknameDTO checkUserNickname(String nickname);
+
+    void updateNickname(Long userId, String nickname);
 }

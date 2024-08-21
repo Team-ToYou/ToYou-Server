@@ -72,6 +72,17 @@ public class UserController {
         return CustomApiResponse.onSuccess(exists);
     }
 
+    @PatchMapping("/nickname")
+    @Operation(summary = "닉네임 수정", description = "닉네임을 수정합니다.")
+    public CustomApiResponse<?> updateNickname(@RequestHeader Long userId, @RequestBody UserRequest.updateNicknameDTO request){
+
+        userService.updateNickname(userId, request.getNickname());
+
+        log.info("닉네임 수정: nickname={}", request.getNickname());
+
+        return CustomApiResponse.onSuccess(null);
+    }
+
 //    @PatchMapping("/reset")
 //    public CustomApiResponse resetEmotions(){
 //

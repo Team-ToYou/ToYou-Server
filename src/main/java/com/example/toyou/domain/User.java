@@ -47,4 +47,8 @@ public class User extends BaseEntity {
     public void setEmotion(Emotion emotion){
         this.todayEmotion = emotion;
     }
+
+    public void setNickname(String nickname){
+        this.nickname = nickname;
+    }
 }
