@@ -26,11 +26,6 @@ public class UserController {
 
     private final UserService userService;
 
-    /**
-     * [GET] /users/home
-     * 홈 화면 조회
-     * @return
-     */
     @GetMapping("/home")
     @Operation(summary = "홈 화면 조회", description = "홈 화면에 나타나는 유저의 정보를 조회합니다.")
     public CustomApiResponse<HomeResponse.GetHomeDTO> getHome(Principal principal){
@@ -44,13 +39,6 @@ public class UserController {
         return CustomApiResponse.onSuccess(getHomeDTO);
     }
 
-    /**
-     * [PATCH] /users/emotions
-     * 감정우표 선택
-     * @param userId 유저 식별자
-     * @param request
-     * @return
-     */
     @PatchMapping("/emotions")
     @Operation(summary = "감정우표 선택", description = "금일 감정우표를 선택합니다.")
     public CustomApiResponse<?> postEmotion(@RequestHeader Long userId,
@@ -82,12 +70,4 @@ public class UserController {
 
         return CustomApiResponse.onSuccess(null);
     }
-
-//    @PatchMapping("/reset")
-//    public CustomApiResponse resetEmotions(){
-//
-//        userService.resetTodayEmotion();
-//
-//        return CustomApiResponse.onSuccess(null);
-//    }
 }

@@ -61,15 +61,13 @@ public class TokenProvider {
      * JWT 토큰의 유효성을 검증하는 메서드이다.
      *
      * @param token 검증할 JWT 토큰
-     * @return 토큰 유효 여부
      */
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(getSecretKey())
                     .build()
                     .parseClaimsJws(token);
-            return true;
         } catch (ExpiredJwtException e) {
             // 토큰이 만료되었음을 명시적으로 처리
             System.out.println("Expired JWT token: " + e.getMessage());
@@ -85,11 +83,10 @@ public class TokenProvider {
      * JWT 토큰의 만료 시간을 조회하는 메서드이다.
      *
      * @param token 검증할 JWT 토큰
-     * @return 토큰 만료 여부
      */
-    public boolean isExpired(String token) {
+    public void isExpired(String token) {
         Claims claims = getClaims(token);
-        return claims.getExpiration().before(new Date());
+        claims.getExpiration();
     }
 
     /**

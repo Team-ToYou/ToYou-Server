@@ -34,14 +34,11 @@ public class UserServiceImpl implements UserService {
     private final CustomQuestionRepository customQuestionRepository;
     private final QuestionService questionService;
 
-    /**
-     * 홈화면 조회
-     */
+    // 홈화면 조회
     public HomeResponse.GetHomeDTO getHome(Long userId){
 
         // 유저 검색
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+        User user = findById(userId);
 
         // 금일 생성한 일기카드 조회
         LocalDate today = LocalDate.now();
@@ -83,8 +80,7 @@ public class UserServiceImpl implements UserService {
     // 닉네임 수정
     @Transactional
     public void updateNickname(Long userId, String nickname) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+        User user = findById(userId);
 
         if(userRepository.existsByNickname(nickname)) throw new GeneralException(EXISTING_NICKNAME);
 
@@ -97,9 +93,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateEmotion(Long userId, HomeRequest.postEmotionDTO request){
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
-
+        User user = findById(userId);
         Emotion emotion = request.getEmotion();
 
         // 이미 선택한 감정 재선택 불가능
@@ -157,9 +151,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /**
-     * 감정 초기화(매일 자정 실행)
-     */
+    // 감정 초기화(매일 자정 실행)
     @Transactional
     public void resetTodayEmotion() {
         List<User> users = userRepository.findAll();
@@ -169,8 +161,9 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAll(users);
     }
 
+    // 유저 검색
     public User findById(Long memberId) {
         return userRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("Unexpected member"));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
     }
 }

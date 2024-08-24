@@ -12,7 +12,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByOauthInfo(OauthInfo oauthInfo);
 
-    boolean existsByOauthInfo(OauthInfo oauthInfo);
+    Optional<User> findByOauthInfo_OauthId(String oauthId);
+
+    boolean existsByOauthInfo_OauthId(String oauthId);
 
     boolean existsByNickname(String nickname);
 }

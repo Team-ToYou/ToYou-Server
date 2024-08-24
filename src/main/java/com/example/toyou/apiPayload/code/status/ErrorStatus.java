@@ -46,6 +46,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // Oauth 에러
     OAUTH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "OAUTH400", "유효하지 않은 OAUTH 토큰입니다."),
+    INVALID_CODE(HttpStatus.UNAUTHORIZED, "OAUTH401", "유효하지 않은 인가코드입니다."),
 
     // JWT 에러
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "JWT400", "유효하지 않은 토큰입니다."),

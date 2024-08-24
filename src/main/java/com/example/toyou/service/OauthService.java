@@ -3,15 +3,16 @@ package com.example.toyou.service;
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.UserRequest;
-import com.example.toyou.app.dto.UserResponse;
 import com.example.toyou.domain.OauthInfo;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.OauthProvider;
 import com.example.toyou.oauth2.jwt.TokenProvider;
 import com.example.toyou.repository.UserRepository;
+import com.example.toyou.service.UserService.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,8 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 import java.util.Optional;
 
+import static com.example.toyou.apiPayload.code.status.ErrorStatus.INVALID_CODE;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -35,6 +38,7 @@ import java.util.Optional;
 public class OauthService {
 
     private final UserRepository userRepository;
+    private final UserService userService;
     private final TokenProvider tokenProvider;
     private final RedisService redisService;
 
@@ -46,23 +50,24 @@ public class OauthService {
 
     // 카카오 로그인
     @Transactional
-    public void kakaoLogin(String oauthAccessToken, HttpServletRequest request, HttpServletResponse response) {
+    public void kakaoLogin(String oauthAccessToken, HttpServletResponse response) {
         //OAuth2 액세스 토큰으로 회원 정보 요청
         JsonNode responseJson = getKakaoUserInfo(oauthAccessToken);
 
         //oauthId 조회
         String oauthId = responseJson.get("id").asText();
 
-        OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.KAKAO);
+        String accessToken = "";
+        String refreshToken = "";
 
-        String accessToken = null;
-        String refreshToken = null;
-
-        Optional<User> optionalUser = userRepository.findByOauthInfo(oauthInfo);
+        Optional<User> optionalUser = userRepository.findByOauthInfo_OauthId(oauthId);
 
         //DB에 회원정보가 있을때 토큰 발급
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
+
+            //카카오 액세스 토큰 저장
+            user.getOauthInfo().setOauthAccessToken(oauthAccessToken);
 
             //토큰 생성
             accessToken = tokenProvider.generateToken(user, Duration.ofHours(2), "access");
@@ -75,22 +80,80 @@ public class OauthService {
         }
 
         //응답 설정
-        response.setHeader("oauth_id", oauthId);
         response.setHeader("access_token", accessToken);
         response.setHeader("refresh_token", refreshToken);
         response.setStatus(HttpStatus.OK.value());
     }
 
+    // 카카오 로그아웃
+    @Transactional
+    public void kakaoLogout(String refreshToken) {
+
+        //유효 검사
+        try {
+            tokenProvider.validateToken(refreshToken);
+        } catch (ExpiredJwtException e) {
+            throw new GeneralException(ErrorStatus.TOKEN_EXPIRED); // 만료 검사
+        } catch (Exception e) {
+            throw new GeneralException(ErrorStatus.TOKEN_INVALID);
+        }
+
+        //토큰이 refresh인지 확인 (발급시 페이로드에 명시)
+        String category = tokenProvider.getCategory(refreshToken);
+        if (!"refresh".equals(category)) {
+            log.info("category: {}", category);
+            throw new GeneralException(ErrorStatus.DIFFERENT_CATEGORY);
+        }
+
+        //토큰에서 유저 조회
+        Long userId = tokenProvider.getUserId(refreshToken);
+        User user = userService.findById(userId);
+
+        //DB에 저장되어 있는지 확인
+        if (!redisService.getValues(userId).equals(refreshToken)) throw new GeneralException(ErrorStatus.TOKEN_INVALID);
+
+        //리프레시 토큰 삭제 from Redis
+        redisService.deleteValues(userId);
+
+        //액세스 토큰만 만료 처리(웹 브라우저의 카카오계정 세션은 만료하려면 "카카오계정과 함께 로그아웃" 방식 사용 필요)
+        //카카오 액세스 토큰 조회
+        String oauthAccessToken = user.getOauthInfo().getOauthAccessToken();
+
+        //HTTP Header 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + oauthAccessToken);
+
+        //HTTP 요청 보내기
+        HttpEntity<MultiValueMap<String, String>> logoutRequest = new HttpEntity<>(headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(
+                "https://kapi.kakao.com/v1/user/logout",
+                HttpMethod.POST,
+                logoutRequest,
+                String.class
+        );
+
+        log.info("logoutResponse: " + response.getBody());
+    }
+
     // 회원 가입
     @Transactional
-    public void registerOauthUser(String oauthId, UserRequest.registerUserDTO request, HttpServletResponse response) {
-        OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.KAKAO);
+    public void registerOauthUser(String oauthAccessToken, UserRequest.registerUserDTO request, HttpServletResponse response) {
+
+        //OAuth2 액세스 토큰으로 회원 정보 요청
+        JsonNode responseJson = getKakaoUserInfo(oauthAccessToken);
+
+        //oauthId 조회
+        String oauthId = responseJson.get("id").asText();
+
+        OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.KAKAO, oauthAccessToken);
 
         // 이미 존재하는 회원 정보인지 검사
-        if(userRepository.existsByOauthInfo(oauthInfo)) throw new GeneralException(ErrorStatus.ALREADY_JOINED);
+        if (userRepository.existsByOauthInfo_OauthId(oauthId)) throw new GeneralException(ErrorStatus.ALREADY_JOINED);
 
         // 이미 존재하는 닉네임인지 검사
-        if(userRepository.existsByNickname(request.getNickname())) throw new GeneralException(ErrorStatus.EXISTING_NICKNAME);
+        if (userRepository.existsByNickname(request.getNickname()))
+            throw new GeneralException(ErrorStatus.EXISTING_NICKNAME);
 
         // 유저 정보 저장
         User user = userRepository.findByOauthInfo(oauthInfo)
@@ -125,6 +188,7 @@ public class OauthService {
 
     /**
      * 인가 코드로 카카오 서버에 액세스 토큰을 요청하는 메서드이다.
+     *
      * @param code 인가 코드
      * @return 액세스 토큰
      */
@@ -144,29 +208,36 @@ public class OauthService {
         // HTTP 요청 보내기
         HttpEntity<MultiValueMap<String, String>> tokenRequest = new HttpEntity<>(body, headers);
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(
-                "https://kauth.kakao.com/oauth/token",
-                HttpMethod.POST,
-                tokenRequest,
-                String.class
-        );
 
-        // HTTP 응답에서 액세스 토큰 꺼내기
-        String responseBody = response.getBody();
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = null;
         try {
-            jsonNode = objectMapper.readTree(responseBody);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
 
-        System.out.println("kakao_access_token : " + jsonNode.get("access_token").asText());
-        return jsonNode.get("access_token").asText();
+            ResponseEntity<String> response = restTemplate.exchange(
+                    "https://kauth.kakao.com/oauth/token",
+                    HttpMethod.POST,
+                    tokenRequest,
+                    String.class
+            );
+
+            // HTTP 응답에서 액세스 토큰 꺼내기
+            String responseBody = response.getBody();
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = null;
+            try {
+                jsonNode = objectMapper.readTree(responseBody);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+
+            System.out.println("kakao_access_token : " + jsonNode.get("access_token").asText());
+            return jsonNode.get("access_token").asText();
+        } catch (HttpClientErrorException e) {
+            throw new GeneralException(INVALID_CODE);
+        }
     }
 
     /**
      * 액세스 토큰으로 카카오 서버에 회원 정보를 요청하는 메서드이다.
+     *
      * @param accessToken 액세스 토큰
      * @return JSON 형식의 회원 정보
      */
