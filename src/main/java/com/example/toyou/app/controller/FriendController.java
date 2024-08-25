@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 
 @RestController
 @RequestMapping("/friends")
@@ -23,12 +25,6 @@ public class FriendController {
 
     private final FriendService friendService;
 
-    /**
-     * [GET] /friends
-     * 친구 목록 조회
-     * @param userId 유저 식별자
-     * @return
-     */
     @GetMapping
     @Operation(summary = "친구 목록 조회", description = "친구 목록을 조회합니다.")
     public CustomApiResponse<FriendResponse.GetFriendsDTO> getFriends(@RequestHeader Long userId){
@@ -38,13 +34,17 @@ public class FriendController {
         return CustomApiResponse.onSuccess(friendList);
     }
 
-    /**
-     * [GET] /friends/search
-     * 친구(유저) 검색
-     * @param userId 유저 식별자
-     * @param keyword 검색어
-     * @return
-     */
+    @GetMapping("/count")
+    @Operation(summary = "친구 수 조회", description = "친구 수를 조회합니다.")
+    public CustomApiResponse<FriendResponse.GetFriendNumDTO> getFriendNum(Principal principal){
+
+        Long userId = Long.parseLong(principal.getName());
+
+        FriendResponse.GetFriendNumDTO friendNum = friendService.getFriendNum(userId);
+
+        return CustomApiResponse.onSuccess(friendNum);
+    }
+
     @GetMapping("/search")
     @Operation(summary = "친구(유저) 검색", description = "닉네임 검색을 통해 유저를 조회합니다.")
     public CustomApiResponse<FriendResponse.searchFriendDTO> searchFriend(@RequestHeader Long userId,
@@ -55,12 +55,6 @@ public class FriendController {
         return CustomApiResponse.onSuccess(friend);
     }
 
-    /**
-     * [POST] /friends/requests
-     * 친구 요청
-     * @param userId 유저 식별자
-     * @return
-     */
     @PostMapping("/requests")
     @Operation(summary = "친구 요청", description = "다른 유저에게 친구 요청을 보냅니다.")
     public CustomApiResponse createFriendRequest(@RequestHeader Long userId,
@@ -71,12 +65,6 @@ public class FriendController {
         return CustomApiResponse.onSuccess(null);
     }
 
-    /**
-     * [DELETE] /friends
-     * 친구 삭제, 요청 취소, 요청 거절
-     * @param userId 유저 식별자
-     * @return
-     */
     @DeleteMapping
     @Operation(summary = "친구 삭제, 요청 취소, 요청 거절", description = "친구 삭제, 친구 요청 취소, 친구 요청 거절시 사용합니다.")
     public CustomApiResponse deleteFriendRequest(@RequestHeader Long userId,
@@ -87,12 +75,6 @@ public class FriendController {
         return CustomApiResponse.onSuccess(null);
     }
 
-    /**
-     * [PATCH] /friends/requests/approve
-     * 친구 요청 승인
-     * @param userId 유저 식별자
-     * @return
-     */
     @PatchMapping("/requests/approve")
     @Operation(summary = "친구 요청 승인", description = "상대방이 보낸 친구 요청을 승인합니다.")
     public CustomApiResponse acceptFriendRequest(@RequestHeader Long userId,
@@ -103,12 +85,6 @@ public class FriendController {
         return CustomApiResponse.onSuccess(null);
     }
 
-    /**
-     * [GET] /friends/yesterday
-     * 작일 친구 일기카드 목록 조회
-     * @param userId 유저 식별자
-     * @return
-     */
     @GetMapping("/yesterday")
     @Operation(summary = "작일 친구 일기카드 목록 조회", description = "어제 날짜 기준으로 생성된 친구들의 일기카드를 조회합니다.")
     public CustomApiResponse<FriendResponse.getFriendYesterdayDTO> searchFriend(@RequestHeader Long userId) {

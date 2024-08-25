@@ -67,6 +67,24 @@ public class FriendServiceImpl implements FriendService {
     }
 
     /**
+     * 친구 수 조회
+     */
+    public FriendResponse.GetFriendNumDTO getFriendNum(Long userId) {
+
+        // 유저 검색
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        // 친구 리스트 조회
+        List<User> friends = getFriendList(user);
+        int friendNum = friends.size();
+
+        return FriendResponse.GetFriendNumDTO.builder()
+                .friendNum(friendNum)
+                .build();
+    }
+
+    /**
      * 친구(유저) 검색
      */
     public FriendResponse.searchFriendDTO searchFriend(Long userId, String keyword) {
