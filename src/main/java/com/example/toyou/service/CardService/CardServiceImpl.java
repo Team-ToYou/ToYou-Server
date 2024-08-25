@@ -14,6 +14,8 @@ import com.example.toyou.repository.CardRepository;
 import com.example.toyou.repository.FriendRepository;
 import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
+import com.example.toyou.service.FriendService.FriendService;
+import com.example.toyou.service.UserService.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,11 +32,14 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
 
-    private final UserRepository userRepository;
     private final CardRepository cardRepository;
-    private final FriendRepository friendRepository;
     private final QuestionRepository questionRepository;
+    private final FriendService friendService;
+    private final UserRepository userRepository;
 
+    /**
+     * 일기카드 생성
+     */
     @Transactional
     public CardResponse.createCardDTO createCard(Long userId, CardRequest.createCardDTO request) {
 
@@ -79,6 +84,9 @@ public class CardServiceImpl implements CardService {
         return CardConverter.toCreateCardDTO(newCard.getId());
     }
 
+    /**
+     * 일기카드 상세 조회
+     */
     public CardResponse.getCardDTO getCard(Long userId, Long cardId) {
 
         User user = userRepository.findById(userId)
@@ -89,11 +97,17 @@ public class CardServiceImpl implements CardService {
 
         if(!card.isExposure() && (user != card.getUser())) throw new GeneralException(ErrorStatus.PRIVATE_CARD);
 
+        if(card.getUser().isDeleted()) throw new GeneralException(ErrorStatus.CARD_NOT_FOUND);
+
         return CardConverter.toGetCardDTO(card);
     }
 
+    /**
+     * 일가카드 수정
+     */
     @Transactional
     public void updateCard(Long userId, Long cardId, CardRequest.updateCardDTO request) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
@@ -127,6 +141,9 @@ public class CardServiceImpl implements CardService {
         card.setExposure(request.isExposure()); // 공개 여부 설정
     }
 
+    /**
+     * 내 일기카드 목록 조회
+     */
     public CardResponse.getMyCardsDTO getMyCards(Long userId, int year, int month) {
 
         User user = userRepository.findById(userId)
@@ -146,22 +163,15 @@ public class CardServiceImpl implements CardService {
         return CardConverter.toGetMyCardsDTO(filteredCards);
     }
 
+    /**
+     * 친구 일기카드 조회(월별)
+     */
     public CardResponse.getFriendsCardsDTO getFriendsCards(Long userId, int year, int month) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
-        // accepted가 true인 친구 요청 리스트 검색
-        List<FriendRequest> friendRequests1 = friendRepository.findByUserAndAcceptedTrue(user);
-        List<FriendRequest> friendRequests2 = friendRepository.findByFriendAndAcceptedTrue(user);
-
-        // 두 리스트 합치기
-        List<User> friends = Stream.concat(
-                        friendRequests1.stream().map(FriendRequest::getFriend),
-                        friendRequests2.stream().map(FriendRequest::getUser)
-                )
-                .distinct() // 중복 제거
-                .toList();
+        List<User> friends = friendService.getFriendList(user);
 
         List<DiaryCard> friendsCards = friends.stream()
                 .flatMap(friend -> friend.getDiaryCardList().stream()) // 각 친구의 diaryCard 리스트를 flatMap으로 평면화
@@ -180,22 +190,16 @@ public class CardServiceImpl implements CardService {
         return CardConverter.toGetFriendsCardsDTO(filteredCards);
     }
 
+    /**
+     * 친구 일기카드 조회(일별)
+     */
     public CardResponse.getDailyFriendsCardsDTO getDailyFriendsCards(Long userId, int year, int month, int day) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
-        // accepted가 true인 친구 요청 리스트 검색
-        List<FriendRequest> friendRequests1 = friendRepository.findByUserAndAcceptedTrue(user);
-        List<FriendRequest> friendRequests2 = friendRepository.findByFriendAndAcceptedTrue(user);
-
-        // 두 리스트 합치기
-        List<User> friends = Stream.concat(
-                        friendRequests1.stream().map(FriendRequest::getFriend),
-                        friendRequests2.stream().map(FriendRequest::getUser)
-                )
-                .distinct() // 중복 제거
-                .toList();
+        // 친구 리스트 조회
+        List<User> friends = friendService.getFriendList(user);
 
         List<DiaryCard> friendsCards = friends.stream()
                 .flatMap(friend -> friend.getDiaryCardList().stream()) // 각 친구의 diaryCard 리스트를 flatMap으로 평면화

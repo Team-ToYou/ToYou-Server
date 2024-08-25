@@ -15,6 +15,7 @@ import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.AnswerOptionRepository;
 import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
+import com.example.toyou.service.UserService.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,10 +35,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
 
-    private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final AnswerOptionRepository answerOptionRepository;
     private final AlarmRepository alarmRepository;
+    private final UserRepository userRepository;
 
     // 익명 이름 리스트
     private static final List<String> ANONYMOUS_NAMES = Arrays.asList(
@@ -47,6 +48,10 @@ public class QuestionServiceImpl implements QuestionService {
             "피곤한 사자", "말많은 원숭이", "달리는 치타", "화려한 플라밍고", "활기찬 호랑이"
     );
 
+
+    /**
+     * 질문 생성
+     */
     @Transactional
     public void createQuestion(Long userId, QuestionRequest.createQuestionDTO request) {
         // 본인 검색
@@ -94,6 +99,9 @@ public class QuestionServiceImpl implements QuestionService {
         alarmRepository.save(newAlarm);
     }
 
+    /**
+     * 질문 목록 조회
+     */
     public QuestionResponse.GetQuestionsDTO getQuestions(Long userId) {
 
         User user = userRepository.findById(userId)
@@ -104,6 +112,7 @@ public class QuestionServiceImpl implements QuestionService {
         return QuestionConverter.toGetQuestionDTO(questions);
     }
 
+    // 미채택 질문 삭제
     @Transactional
     public void deleteOldQuestions() {
         LocalDate today = LocalDate.now();
@@ -119,12 +128,12 @@ public class QuestionServiceImpl implements QuestionService {
         }
     }
 
+    // 투유 자체 생성 질문 삭제
     @Transactional
     public void deleteToYouQuestions(User user) {
         LocalDate today = LocalDate.now();
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
-
 
         List<Question> questionsToDelete = user.getQuestionList().stream()
                 .filter(question -> question.getCreatedAt().isAfter(startOfDay) && question.getCreatedAt().isBefore(endOfDay))
@@ -137,6 +146,7 @@ public class QuestionServiceImpl implements QuestionService {
         }
     }
 
+    // 투유 질문 자체 생성
     @Transactional
     public void autoCreateQuestion(QuestionRequest.createQuestionDTO request) {
 

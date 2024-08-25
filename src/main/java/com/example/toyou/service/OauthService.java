@@ -12,8 +12,6 @@ import com.example.toyou.service.UserService.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 import java.util.Optional;
 
-import static com.example.toyou.apiPayload.code.status.ErrorStatus.INVALID_CODE;
+import static com.example.toyou.apiPayload.code.status.ErrorStatus.*;
 
 @Slf4j
 @Service
@@ -48,7 +46,14 @@ public class OauthService {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String REDIRECT_URI;
 
-    // 카카오 로그인
+    private static final Duration ACCESS_TOKEN_DURATION = Duration.ofHours(2);
+    private static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
+    private static final String REFRESH_TOKEN_CATEGORY = "refresh";
+    private static final String ACCESS_TOKEN_CATEGORY = "access";
+
+    /**
+     * 카카오 로그인
+     */
     @Transactional
     public void kakaoLogin(String oauthAccessToken, HttpServletResponse response) {
         //OAuth2 액세스 토큰으로 회원 정보 요청
@@ -70,13 +75,10 @@ public class OauthService {
             user.getOauthInfo().setOauthAccessToken(oauthAccessToken);
 
             //토큰 생성
-            accessToken = tokenProvider.generateToken(user, Duration.ofHours(2), "access");
-            refreshToken = tokenProvider.generateToken(user, Duration.ofDays(14), "refresh");
+            accessToken = issueAccessToken(user);
+            refreshToken = issueRefreshToken(user);
             log.info("access: " + accessToken);
             log.info("refresh : " + refreshToken);
-
-            //Refresh 토큰 저장
-            redisService.setValues(user.getId(), refreshToken, Duration.ofDays(14));
         }
 
         //응답 설정
@@ -85,37 +87,23 @@ public class OauthService {
         response.setStatus(HttpStatus.OK.value());
     }
 
-    // 카카오 로그아웃
+    /**
+     * 카카오 로그아웃
+     */
     @Transactional
-    public void kakaoLogout(String refreshToken) {
+    public void kakaoLogout(Long userId, String refreshToken) {
 
-        //유효 검사
-        try {
-            tokenProvider.validateToken(refreshToken);
-        } catch (ExpiredJwtException e) {
-            throw new GeneralException(ErrorStatus.TOKEN_EXPIRED); // 만료 검사
-        } catch (Exception e) {
-            throw new GeneralException(ErrorStatus.TOKEN_INVALID);
-        }
+        //refresh 토큰 검사 후 유저 id 추출
+        Long userIdFromRefresh = checkRefreshToken(refreshToken);
 
-        //토큰이 refresh인지 확인 (발급시 페이로드에 명시)
-        String category = tokenProvider.getCategory(refreshToken);
-        if (!"refresh".equals(category)) {
-            log.info("category: {}", category);
-            throw new GeneralException(ErrorStatus.DIFFERENT_CATEGORY);
-        }
+        // access 토큰과 refresh 토큰에 해당하는 유저 유저 비교
+        if (!userId.equals(userIdFromRefresh)) throw new GeneralException(TOKEN_OWNER_UNMATCHED);
 
-        //토큰에서 유저 조회
-        Long userId = tokenProvider.getUserId(refreshToken);
         User user = userService.findById(userId);
-
-        //DB에 저장되어 있는지 확인
-        if (!redisService.getValues(userId).equals(refreshToken)) throw new GeneralException(ErrorStatus.TOKEN_INVALID);
 
         //리프레시 토큰 삭제 from Redis
         redisService.deleteValues(userId);
 
-        //액세스 토큰만 만료 처리(웹 브라우저의 카카오계정 세션은 만료하려면 "카카오계정과 함께 로그아웃" 방식 사용 필요)
         //카카오 액세스 토큰 조회
         String oauthAccessToken = user.getOauthInfo().getOauthAccessToken();
 
@@ -136,7 +124,9 @@ public class OauthService {
         log.info("logoutResponse: " + response.getBody());
     }
 
-    // 회원 가입
+    /**
+     * 카카오 회원 가입
+     */
     @Transactional
     public void registerOauthUser(String oauthAccessToken, UserRequest.registerUserDTO request, HttpServletResponse response) {
 
@@ -166,13 +156,10 @@ public class OauthService {
         userRepository.save(user);
 
         //토큰 발급
-        String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2), "access");
-        String refreshToken = tokenProvider.generateToken(user, Duration.ofDays(14), "refresh");
+        String accessToken = issueAccessToken(user);
+        String refreshToken = issueRefreshToken(user);
         log.info("access: " + accessToken);
         log.info("refresh : " + refreshToken);
-
-        //Refresh 토큰 저장
-        redisService.setValues(user.getId(), refreshToken, Duration.ofDays(14));
 
         //응답 설정
         response.setHeader("access_token", accessToken);
@@ -180,10 +167,74 @@ public class OauthService {
         response.setStatus(HttpStatus.OK.value());
     }
 
-    // 인가코드로 카카오 액세스 토큰 요청
+    /**
+     * 카카오 회원 탈퇴
+     */
     @Transactional
-    public String requestAccess(String code, HttpServletRequest request, HttpServletResponse response) {
-        return getAccessToken(code);
+    public void kakaoUnlink(Long userId, String refreshToken) {
+
+        //refresh 토큰 검사 후 유저 id 추출
+        Long userIdFromRefresh = checkRefreshToken(refreshToken);
+
+        // access 토큰과 refresh 토큰에 해당하는 유저 유저 비교
+        if (!userId.equals(userIdFromRefresh)) throw new GeneralException(TOKEN_OWNER_UNMATCHED);
+
+        //리프레시 토큰 삭제 from Redis
+        redisService.deleteValues(userId);
+
+        User user = userService.findById(userId);
+
+        //유저 정보 soft delete
+        userRepository.delete(user);
+
+        //카카오 액세스 토큰 조회
+        String oauthAccessToken = user.getOauthInfo().getOauthAccessToken();
+
+        //HTTP Header 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + oauthAccessToken);
+
+        //HTTP 요청 보내기
+        HttpEntity<MultiValueMap<String, String>> unlinkRequest = new HttpEntity<>(headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(
+                "https://kapi.kakao.com/v1/user/unlink",
+                HttpMethod.POST,
+                unlinkRequest,
+                String.class
+        );
+
+        log.info("unlinkResponse: " + response.getBody());
+    }
+
+    /**
+     * JWT 토큰 재발급
+     */
+    @Transactional
+    public void reissue(String refreshToken, HttpServletResponse response) {
+
+        //refresh 토큰 검사 후 유저 id 추출
+        Long userId = checkRefreshToken(refreshToken);
+        User user = userService.findById(userId);
+
+        //make new JWT
+        String newAccess = issueAccessToken(user);
+        String newRefresh = issueRefreshToken(user);
+
+        response.setHeader("access_token", newAccess);
+        response.setHeader("refresh_token", newRefresh);
+        response.setStatus(HttpStatus.OK.value());
+    }
+
+    /**
+     * 인가코드로 카카오 액세스 토큰 요청
+     */
+    @Transactional
+    public void requestAccess(String code, HttpServletResponse response) {
+        String access = getAccessToken(code);
+
+        response.setHeader("kakao_access", access);
+        response.setStatus(HttpStatus.OK.value());
     }
 
     /**
@@ -272,6 +323,46 @@ public class OauthService {
         } catch (JsonProcessingException e) { // JSON 파싱 오류 처리
             throw new RuntimeException("JSON processing error", e);
         }
+    }
+
+    /**
+     * AccessToken 생성
+     */
+    public String issueAccessToken(User user) {
+        return tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION, ACCESS_TOKEN_CATEGORY);
+    }
+
+    /**
+     * RefreshToken 생성 및 저장
+     */
+    public String issueRefreshToken(User user) {
+        String refreshToken = tokenProvider.generateToken(user, REFRESH_TOKEN_DURATION, REFRESH_TOKEN_CATEGORY);
+        redisService.setValues(user.getId(), refreshToken, REFRESH_TOKEN_DURATION);
+        return refreshToken;
+    }
+
+    /**
+     * refresh 토큰 검사 후 유저 id 추출
+     */
+    private Long checkRefreshToken(String refreshToken) {
+        // 유효 검사
+        tokenProvider.validateToken(refreshToken);
+
+        // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
+        String category = tokenProvider.getCategory(refreshToken);
+        if (!"refresh".equals(category)) {
+            log.info("category: {}", category);
+            throw new GeneralException(DIFFERENT_CATEGORY);
+        }
+
+        //토큰에서 유저 조회
+        Long userId = tokenProvider.getUserId(refreshToken);
+
+        //DB(Redis)에 저장되어 있는지 확인
+        if (!redisService.getValues(userId).equals(refreshToken))
+            throw new GeneralException(TOKEN_INVALID);
+
+        return userId;
     }
 }
 

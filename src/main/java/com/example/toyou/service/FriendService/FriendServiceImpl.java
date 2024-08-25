@@ -13,6 +13,7 @@ import com.example.toyou.domain.enums.FriendStatus;
 import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.FriendRepository;
 import com.example.toyou.repository.UserRepository;
+import com.example.toyou.service.UserService.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,31 +32,38 @@ import java.util.stream.Stream;
 public class FriendServiceImpl implements FriendService {
 
     private final FriendRepository friendRepository;
-    private final UserRepository userRepository;
     private final AlarmRepository alarmRepository;
+    private final UserRepository userRepository;
 
     /**
      * 친구 목록 조회
      */
-    public FriendResponse.GetFriendsDTO getFriends(Long userId){
+    public FriendResponse.GetFriendsDTO getFriends(Long userId) {
 
         // 유저 검색
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        // 친구 리스트 조회
+        List<User> friends = getFriendList(user);
+
+        return FriendConverter.toGetFriendsDTO(friends);
+    }
+
+    // 친구 리스트 조회
+    public List<User> getFriendList(User user) {
 
         // accepted가 true인 친구 요청 리스트 검색
         List<FriendRequest> friendRequests1 = friendRepository.findByUserAndAcceptedTrue(user);
         List<FriendRequest> friendRequests2 = friendRepository.findByFriendAndAcceptedTrue(user);
 
         // 두 리스트 합치기
-        List<User> friends = Stream.concat(
+        return Stream.concat(
                         friendRequests1.stream().map(FriendRequest::getFriend),
                         friendRequests2.stream().map(FriendRequest::getUser)
                 )
                 .distinct() // 중복 제거
-                .collect(Collectors.toList());
-
-        return FriendConverter.toGetFriendsDTO(friends);
+                .toList();
     }
 
     /**
@@ -71,7 +79,7 @@ public class FriendServiceImpl implements FriendService {
         User friend = userRepository.findByNickname(keyword)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
-        if(user == friend) throw new GeneralException(ErrorStatus.CANNOT_REQUEST_MYSELF);
+        if (user == friend) throw new GeneralException(ErrorStatus.CANNOT_REQUEST_MYSELF);
 
         // 친구 상태 확인
         FriendStatus friendStatus;
@@ -95,6 +103,7 @@ public class FriendServiceImpl implements FriendService {
      */
     @Transactional
     public void createFriendRequest(Long userId, FriendRequestRequest.createFriendRequestDTO request) {
+
         // 본인 검색
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -104,10 +113,10 @@ public class FriendServiceImpl implements FriendService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 본인 스스로에게 친구 요청 불가능
-        if(user == friend) throw new GeneralException(ErrorStatus.CANNOT_REQUEST_MYSELF);
+        if (user == friend) throw new GeneralException(ErrorStatus.CANNOT_REQUEST_MYSELF);
 
         // 친구 요청 정보가 이미 존재하는지 확인
-        if(friendRepository.existsByUserAndFriend(user, friend) || friendRepository.existsByUserAndFriend(friend, user))
+        if (friendRepository.existsByUserAndFriend(user, friend) || friendRepository.existsByUserAndFriend(friend, user))
             throw new GeneralException(ErrorStatus.FRIEND_REQUEST_ALREADY_EXISTING);
 
         FriendRequest newFriendRequest = FriendConverter.toFriendRequest(user, friend);
@@ -124,7 +133,7 @@ public class FriendServiceImpl implements FriendService {
      * 친구 삭제 & 친구 요청 취소
      */
     @Transactional
-    public void deleteFriendRequest(Long userId, FriendRequestRequest.deleteFriendRequestDTO request){
+    public void deleteFriendRequest(Long userId, FriendRequestRequest.deleteFriendRequestDTO request) {
 
         // 유저 검색
         User user = userRepository.findById(userId)
@@ -153,7 +162,7 @@ public class FriendServiceImpl implements FriendService {
      * 친구 요청 승인
      */
     @Transactional
-    public void acceptFriendRequest(Long userId, FriendRequestRequest.acceptFriendRequestDTO request){
+    public void acceptFriendRequest(Long userId, FriendRequestRequest.acceptFriendRequestDTO request) {
 
         // 친구 신청 대상(본인)
         User receiver = userRepository.findById(userId)
@@ -167,7 +176,7 @@ public class FriendServiceImpl implements FriendService {
         FriendRequest friendRequestToAccept = friendRepository.findByUserAndFriend(requester, receiver)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND));
 
-        if(friendRequestToAccept.getAccepted()) throw new GeneralException(ErrorStatus.ALREADY_FRIENDS);
+        if (friendRequestToAccept.getAccepted()) throw new GeneralException(ErrorStatus.ALREADY_FRIENDS);
 
         friendRequestToAccept.setAccepted();
 
@@ -180,7 +189,7 @@ public class FriendServiceImpl implements FriendService {
     /**
      * 작일 친구 일기카드 목록 조회
      */
-    public FriendResponse.getFriendYesterdayDTO getFriendYesterday(Long userId){
+    public FriendResponse.getFriendYesterdayDTO getFriendYesterday(Long userId) {
 
         // 유저 검색
         User user = userRepository.findById(userId)
@@ -193,15 +202,17 @@ public class FriendServiceImpl implements FriendService {
         List<User> friendsWithDiaryCardYesterday = Stream.concat(
                         // User가 요청자인 경우
                         friendRepository.findByUserAndAcceptedTrue(user).stream()
-                                .filter(friendRequest -> friendRequest.getFriend().getDiaryCardList().stream()
-                                        .anyMatch(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday)))
-                                .map(FriendRequest::getFriend),
+                                .map(FriendRequest::getFriend)
+                                .filter(friend -> !friend.isDeleted()) // isDeleted가 false인 경우만 포함
+                                .filter(friend -> friend.getDiaryCardList().stream()
+                                        .anyMatch(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday))),
 
                         // Friend가 요청자인 경우
                         friendRepository.findByFriendAndAcceptedTrue(user).stream()
-                                .filter(friendRequest -> friendRequest.getUser().getDiaryCardList().stream()
-                                        .anyMatch(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday)))
                                 .map(FriendRequest::getUser)
+                                .filter(friendRequestUser -> !friendRequestUser.isDeleted()) // isDeleted가 false인 경우만 포함
+                                .filter(friendRequestUser -> friendRequestUser.getDiaryCardList().stream()
+                                        .anyMatch(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday)))
                 )
                 .distinct() // 중복 제거
                 .toList();

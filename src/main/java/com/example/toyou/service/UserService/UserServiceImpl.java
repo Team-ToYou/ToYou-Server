@@ -34,7 +34,9 @@ public class UserServiceImpl implements UserService {
     private final CustomQuestionRepository customQuestionRepository;
     private final QuestionService questionService;
 
-    // 홈화면 조회
+    /**
+     * 홈화면 조회
+     */
     public HomeResponse.GetHomeDTO getHome(Long userId){
 
         // 유저 검색
@@ -70,14 +72,18 @@ public class UserServiceImpl implements UserService {
         return UserConverter.toGetHomeDTO(user, cardId, questionNum, uncheckedAlarm);
     }
 
-    // 닉네임 중복 확인
+    /**
+     * 닉네임 중복 확인
+     */
     public UserResponse.checkUserNicknameDTO checkUserNickname(String nickname) {
         return UserResponse.checkUserNicknameDTO.builder()
                 .exists(userRepository.existsByNickname(nickname))
                 .build();
     }
 
-    // 닉네임 수정
+    /**
+     * 닉네임 수정
+     */
     @Transactional
     public void updateNickname(Long userId, String nickname) {
         User user = findById(userId);
@@ -161,9 +167,15 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAll(users);
     }
 
-    // 유저 검색
+    // id로 유저 검색
     public User findById(Long memberId) {
         return userRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+    }
+
+    // 닉네임으로 유저 검색
+    public User findByNickname(String nickname) {
+        return userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
     }
 }

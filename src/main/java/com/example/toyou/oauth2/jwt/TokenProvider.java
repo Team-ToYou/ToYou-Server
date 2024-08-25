@@ -1,5 +1,7 @@
 package com.example.toyou.oauth2.jwt;
 
+import com.example.toyou.apiPayload.code.status.ErrorStatus;
+import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.domain.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -16,6 +18,9 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
+
+import static com.example.toyou.apiPayload.code.status.ErrorStatus.TOKEN_EXPIRED;
+import static com.example.toyou.apiPayload.code.status.ErrorStatus.TOKEN_INVALID;
 
 @RequiredArgsConstructor
 @Service
@@ -70,12 +75,12 @@ public class TokenProvider {
                     .parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
             // 토큰이 만료되었음을 명시적으로 처리
-            System.out.println("Expired JWT token: " + e.getMessage());
-            throw e;
+            log.info("Expired JWT token: {}", e.getMessage());
+            throw new GeneralException(TOKEN_EXPIRED);
         } catch (Exception e) {
             // 서명 오류, 잘못된 토큰 등 기타 JWT 관련 오류를 처리
-            System.out.println("Invalid JWT token: " + e.getMessage());
-            throw e;
+            log.info("Invalid JWT token: {}", e.getMessage());
+            throw new GeneralException(TOKEN_INVALID);
         }
     }
 

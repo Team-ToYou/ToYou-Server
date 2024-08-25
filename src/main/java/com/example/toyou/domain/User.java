@@ -5,7 +5,10 @@ import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +17,8 @@ import java.util.List;
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE user SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 //@Table(name = "users")
 public class User extends BaseEntity {
     @Id
@@ -32,6 +37,10 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Emotion todayEmotion;
+
+    private boolean isDeleted;
+
+    private LocalDateTime deletedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<FriendRequest> friendRequestList = new ArrayList<>();
