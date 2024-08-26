@@ -97,7 +97,7 @@ public class OauthService {
         Long userIdFromRefresh = checkRefreshToken(refreshToken);
 
         // access 토큰과 refresh 토큰에 해당하는 유저 유저 비교
-        if (!userId.equals(userIdFromRefresh)) throw new GeneralException(TOKEN_OWNER_UNMATCHED);
+        if (!userId.equals(userIdFromRefresh)) throw new GeneralException(TOKEN_INVALID);
 
         User user = userService.findById(userId);
 
@@ -177,7 +177,7 @@ public class OauthService {
         Long userIdFromRefresh = checkRefreshToken(refreshToken);
 
         // access 토큰과 refresh 토큰에 해당하는 유저 유저 비교
-        if (!userId.equals(userIdFromRefresh)) throw new GeneralException(TOKEN_OWNER_UNMATCHED);
+        if (!userId.equals(userIdFromRefresh)) throw new GeneralException(TOKEN_INVALID);
 
         //리프레시 토큰 삭제 from Redis
         redisService.deleteValues(userId);
