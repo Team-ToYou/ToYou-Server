@@ -22,6 +22,7 @@ jobs:
           script_stop: true
           script: |
             cd /home/ubuntu/ToYou-Server
+            rm -rf src/main/resources/firebase/firebase_service_key.json
             rm -rf src/main/resources/application.yml
             git pull origin main
             echo "$APPLICATION_PROPERTIES" > src/main/resources/application.yml
