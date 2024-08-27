@@ -13,17 +13,19 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         env:
           APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
+          FIREBASE_KEY: ${{ secrets.FIREBASE_KEY }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          envs: APPLICATION_PROPERTIES
+          envs: APPLICATION_PROPERTIES, FIREBASE_KEY
           script_stop: true
           script: |
             cd /home/ubuntu/ToYou-Server
             rm -rf src/main/resources/application.yml
             git pull origin main
             echo "$APPLICATION_PROPERTIES" > src/main/resources/application.yml
+            echo "$FIREBASE_KEY" > src/main/resources/firebase/firebase_service_key.json
             ./gradlew clean build
             sudo fuser -k -n tcp 80 || true
             sudo nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &

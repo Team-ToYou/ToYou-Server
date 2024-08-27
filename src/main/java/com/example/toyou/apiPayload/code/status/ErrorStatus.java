@@ -51,7 +51,10 @@ public enum ErrorStatus implements BaseErrorCode {
     // JWT 에러
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "JWT400", "유효하지 않은 토큰입니다."),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT401", "만료된 토큰입니다."),
-    DIFFERENT_CATEGORY(HttpStatus.UNAUTHORIZED, "JWT402", "카테고리가 다른 토큰입니다.");
+    DIFFERENT_CATEGORY(HttpStatus.UNAUTHORIZED, "JWT402", "카테고리가 다른 토큰입니다."),
+
+    // FCM 에러
+    FCM_TOKEN_INVALID(HttpStatus.BAD_REQUEST, "FCM400", "유효하지 않은 FCM 토큰입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

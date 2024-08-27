@@ -10,10 +10,10 @@ import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.FriendStatus;
+import com.example.toyou.service.FcmService;
 import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.FriendRepository;
 import com.example.toyou.repository.UserRepository;
-import com.example.toyou.service.UserService.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -34,6 +32,7 @@ public class FriendServiceImpl implements FriendService {
     private final FriendRepository friendRepository;
     private final AlarmRepository alarmRepository;
     private final UserRepository userRepository;
+    private final FcmService fcmService;
 
     /**
      * 친구 목록 조회

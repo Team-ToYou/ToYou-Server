@@ -5,9 +5,11 @@ import com.example.toyou.app.dto.QuestionResponse;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.Emotion;
 
+import java.io.IOException;
+
 public interface QuestionService {
 
-    void createQuestion(Long userId, QuestionRequest.createQuestionDTO request);
+    void createQuestion(Long userId, QuestionRequest.createQuestionDTO request) ;
 
     QuestionResponse.GetQuestionsDTO getQuestions(Long userId);
 

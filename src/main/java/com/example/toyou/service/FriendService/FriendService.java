@@ -4,6 +4,7 @@ import com.example.toyou.app.dto.FriendRequestRequest;
 import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.domain.User;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface FriendService {

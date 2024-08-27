@@ -101,6 +101,9 @@ public class OauthService {
 
         User user = userService.findById(userId);
 
+        //FCM 토큰 삭제
+        user.setFcmToken(null);
+
         //리프레시 토큰 삭제 from Redis
         redisService.deleteValues(userId);
 
@@ -183,6 +186,9 @@ public class OauthService {
         redisService.deleteValues(userId);
 
         User user = userService.findById(userId);
+
+        //FCM 토큰 삭제
+        user.setFcmToken(null);
 
         //유저 정보 soft delete
         userRepository.delete(user);
