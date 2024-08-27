@@ -11,6 +11,6 @@ public class RootController {
 
     @GetMapping("/health")
     public ResponseEntity<String> HealthCheck() {
-        return ResponseEntity.ok("Health Check..");
+        return ResponseEntity.ok("Health Check");
     }
 }
