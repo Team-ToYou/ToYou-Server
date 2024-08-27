@@ -1,6 +1,7 @@
 package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.CustomApiResponse;
+import com.example.toyou.app.dto.FcmResponse;
 import com.example.toyou.app.dto.FriendRequestRequest;
 import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.service.FriendService.FriendService;
@@ -58,12 +59,12 @@ public class FriendController {
 
     @PostMapping("/requests")
     @Operation(summary = "친구 요청", description = "다른 유저에게 친구 요청을 보냅니다.")
-    public CustomApiResponse createFriendRequest(@RequestHeader Long userId,
-                                           @RequestBody @Valid FriendRequestRequest.createFriendRequestDTO request) {
+    public CustomApiResponse<FcmResponse.getMyNameDto> createFriendRequest(@RequestHeader Long userId,
+                                                              @RequestBody @Valid FriendRequestRequest.createFriendRequestDTO request) {
 
-        friendService.createFriendRequest(userId, request);
+        FcmResponse.getMyNameDto myName = friendService.createFriendRequest(userId, request);
 
-        return CustomApiResponse.onSuccess(null);
+        return CustomApiResponse.onSuccess(myName);
     }
 
     @DeleteMapping
@@ -78,12 +79,12 @@ public class FriendController {
 
     @PatchMapping("/requests/approve")
     @Operation(summary = "친구 요청 승인", description = "상대방이 보낸 친구 요청을 승인합니다.")
-    public CustomApiResponse acceptFriendRequest(@RequestHeader Long userId,
+    public CustomApiResponse<FcmResponse.getMyNameDto> acceptFriendRequest(@RequestHeader Long userId,
                                            @RequestBody @Valid FriendRequestRequest.acceptFriendRequestDTO request) {
 
-        friendService.acceptFriendRequest(userId, request);
+        FcmResponse.getMyNameDto myName = friendService.acceptFriendRequest(userId, request);
 
-        return CustomApiResponse.onSuccess(null);
+        return CustomApiResponse.onSuccess(myName);
     }
 
     @GetMapping("/yesterday")

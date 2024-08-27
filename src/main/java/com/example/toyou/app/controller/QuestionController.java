@@ -1,6 +1,7 @@
 package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.CustomApiResponse;
+import com.example.toyou.app.dto.FcmResponse;
 import com.example.toyou.app.dto.QuestionRequest;
 import com.example.toyou.app.dto.QuestionResponse;
 import com.example.toyou.service.QuestionService.QuestionService;
@@ -32,12 +33,12 @@ public class QuestionController {
      */
     @PostMapping
     @Operation(summary = "질문 생성", description = "상대방에게 보낼 질문을 생성합니다.")
-    public CustomApiResponse createQuestion(@RequestHeader Long userId,
-                                           @RequestBody @Valid QuestionRequest.createQuestionDTO request) {
+    public CustomApiResponse<FcmResponse.getMyNameDto> createQuestion(@RequestHeader Long userId,
+                                                                      @RequestBody @Valid QuestionRequest.createQuestionDTO request) {
 
-        questionService.createQuestion(userId, request);
+        FcmResponse.getMyNameDto myName = questionService.createQuestion(userId, request);
 
-        return CustomApiResponse.onSuccess(null);
+        return CustomApiResponse.onSuccess(myName);
     }
 
     /**

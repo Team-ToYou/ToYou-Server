@@ -2,6 +2,7 @@ package com.example.toyou.service.QuestionService;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
+import com.example.toyou.app.dto.FcmResponse;
 import com.example.toyou.app.dto.QuestionRequest;
 import com.example.toyou.app.dto.QuestionResponse;
 import com.example.toyou.converter.AlarmConverter;
@@ -51,7 +52,7 @@ public class QuestionServiceImpl implements QuestionService {
      * 질문 생성
      */
     @Transactional
-    public void createQuestion(Long userId, QuestionRequest.createQuestionDTO request) {
+    public FcmResponse.getMyNameDto createQuestion(Long userId, QuestionRequest.createQuestionDTO request) {
         // 본인 검색
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -95,6 +96,10 @@ public class QuestionServiceImpl implements QuestionService {
         Alarm newAlarm = AlarmConverter.toNewQuestionAlarm(user, target, newQuestion);
 
         alarmRepository.save(newAlarm);
+
+        return FcmResponse.getMyNameDto.builder()
+                .myName(questioner)
+                .build();
     }
 
     /**

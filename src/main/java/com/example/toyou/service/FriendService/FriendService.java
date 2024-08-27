@@ -1,5 +1,6 @@
 package com.example.toyou.service.FriendService;
 
+import com.example.toyou.app.dto.FcmResponse;
 import com.example.toyou.app.dto.FriendRequestRequest;
 import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.domain.User;
@@ -17,11 +18,11 @@ public interface FriendService {
 
     List<User> getFriendList(User user);
 
-    void createFriendRequest(Long userId, FriendRequestRequest.createFriendRequestDTO request);
+    FcmResponse.getMyNameDto createFriendRequest(Long userId, FriendRequestRequest.createFriendRequestDTO request);
 
     void deleteFriendRequest(Long userId, FriendRequestRequest.deleteFriendRequestDTO request);
 
-    void acceptFriendRequest(Long userId, FriendRequestRequest.acceptFriendRequestDTO request);
+    FcmResponse.getMyNameDto acceptFriendRequest(Long userId, FriendRequestRequest.acceptFriendRequestDTO request);
 
     FriendResponse.getFriendYesterdayDTO getFriendYesterday(Long userId);
 }

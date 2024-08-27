@@ -2,6 +2,7 @@ package com.example.toyou.service.FriendService;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
+import com.example.toyou.app.dto.FcmResponse;
 import com.example.toyou.app.dto.FriendRequestRequest;
 import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.converter.AlarmConverter;
@@ -119,7 +120,7 @@ public class FriendServiceImpl implements FriendService {
      * 친구 요청
      */
     @Transactional
-    public void createFriendRequest(Long userId, FriendRequestRequest.createFriendRequestDTO request) {
+    public FcmResponse.getMyNameDto createFriendRequest(Long userId, FriendRequestRequest.createFriendRequestDTO request) {
 
         // 본인 검색
         User user = userRepository.findById(userId)
@@ -144,6 +145,10 @@ public class FriendServiceImpl implements FriendService {
         Alarm newAlarm = AlarmConverter.toFriendReqeustAlarm(user, friend, newFriendRequest);
 
         alarmRepository.save(newAlarm);
+
+        return FcmResponse.getMyNameDto.builder()
+                .myName(user.getNickname())
+                .build();
     }
 
     /**
@@ -179,7 +184,7 @@ public class FriendServiceImpl implements FriendService {
      * 친구 요청 승인
      */
     @Transactional
-    public void acceptFriendRequest(Long userId, FriendRequestRequest.acceptFriendRequestDTO request) {
+    public FcmResponse.getMyNameDto acceptFriendRequest(Long userId, FriendRequestRequest.acceptFriendRequestDTO request) {
 
         // 친구 신청 대상(본인)
         User receiver = userRepository.findById(userId)
@@ -201,6 +206,10 @@ public class FriendServiceImpl implements FriendService {
         Alarm alarmToUpdate = alarmRepository.findByFriendRequest(friendRequestToAccept);
 
         alarmToUpdate.updateForRequestAccepted(receiver, requester);
+
+        return FcmResponse.getMyNameDto.builder()
+                .myName(receiver.getNickname())
+                .build();
     }
 
     /**
