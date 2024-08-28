@@ -16,6 +16,7 @@ import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.AnswerOptionRepository;
 import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
+import com.example.toyou.util.NicknameUtils;
 import com.vane.badwordfiltering.BadWordFiltering;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 @Slf4j
 @Service
@@ -40,15 +39,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final AlarmRepository alarmRepository;
     private final UserRepository userRepository;
     private final BadWordFiltering badWordFiltering;
-
-    // 익명 이름 리스트
-    private static final List<String> ANONYMOUS_NAMES = Arrays.asList(
-            "심야의 족제비", "섬세한 독수리", "은밀한 여우", "산책하는 고양이", "졸린 판다",
-            "자유로운 돌고래", "따분한 곰", "차분한 거북이", "우아한 백조", "소심한 토끼",
-            "활발한 다람쥐", "용감한 강아지", "신비로운 올빼미", "산뜻한 오리", "겁많은 코끼리",
-            "피곤한 사자", "말많은 원숭이", "달리는 치타", "화려한 플라밍고", "활기찬 호랑이"
-    );
-
+    private final NicknameUtils nicknameUtils;
 
     /**
      * 질문 생성
@@ -69,8 +60,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         // 익명 선택시
         if (request.isAnonymous()) {
-            Random random = new Random();
-            questioner = ANONYMOUS_NAMES.get(random.nextInt(ANONYMOUS_NAMES.size()));
+            questioner = nicknameUtils.generateRandomNickname();
         }
 
         QuestionType questionType = request.getQuestionType();
