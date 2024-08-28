@@ -1,7 +1,7 @@
 package com.example.toyou.app;
 
-import com.example.toyou.service.UserService.UserService;
-import com.example.toyou.service.QuestionService.QuestionService;
+import com.example.toyou.service.QuestionService;
+import com.example.toyou.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

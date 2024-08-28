@@ -1,4 +1,4 @@
-package com.example.toyou.service.QuestionService;
+package com.example.toyou.service;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
@@ -32,7 +32,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class QuestionServiceImpl implements QuestionService {
+public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final AnswerOptionRepository answerOptionRepository;

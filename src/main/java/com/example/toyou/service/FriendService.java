@@ -1,4 +1,4 @@
-package com.example.toyou.service.FriendService;
+package com.example.toyou.service;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class FriendServiceImpl implements FriendService {
+public class FriendService {
 
     private final FriendRepository friendRepository;
     private final AlarmRepository alarmRepository;

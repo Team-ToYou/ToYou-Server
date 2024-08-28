@@ -1,4 +1,4 @@
-package com.example.toyou.service.UserService;
+package com.example.toyou.service;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
@@ -10,7 +10,7 @@ import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.QuestionType;
 import com.example.toyou.repository.CustomQuestionRepository;
 import com.example.toyou.repository.UserRepository;
-import com.example.toyou.service.QuestionService.QuestionService;
+import com.example.toyou.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ import static com.example.toyou.apiPayload.code.status.ErrorStatus.EXISTING_NICK
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final CustomQuestionRepository customQuestionRepository;

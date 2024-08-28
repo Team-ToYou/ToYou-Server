@@ -4,7 +4,7 @@ import com.example.toyou.apiPayload.CustomApiResponse;
 import com.example.toyou.app.dto.FcmResponse;
 import com.example.toyou.app.dto.FriendRequestRequest;
 import com.example.toyou.app.dto.FriendResponse;
-import com.example.toyou.service.FriendService.FriendService;
+import com.example.toyou.service.FriendService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.security.Principal;
 
 

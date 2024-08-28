@@ -1,4 +1,4 @@
-package com.example.toyou.service.CardService;
+package com.example.toyou.service;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
@@ -6,16 +6,13 @@ import com.example.toyou.app.dto.CardRequest;
 import com.example.toyou.app.dto.CardResponse;
 import com.example.toyou.converter.CardConverter;
 import com.example.toyou.domain.DiaryCard;
-import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.QuestionType;
 import com.example.toyou.repository.CardRepository;
-import com.example.toyou.repository.FriendRepository;
 import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
-import com.example.toyou.service.FriendService.FriendService;
-import com.example.toyou.service.UserService.UserService;
+import com.example.toyou.service.FriendService;
 import com.vane.badwordfiltering.BadWordFiltering;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class CardServiceImpl implements CardService {
+public class CardService {
 
     private final CardRepository cardRepository;
     private final QuestionRepository questionRepository;

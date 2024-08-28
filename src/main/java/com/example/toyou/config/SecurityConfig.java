@@ -1,10 +1,10 @@
 package com.example.toyou.config;
 
 
-import com.example.toyou.oauth2.jwt.JwtAccessDeniedHandler;
-import com.example.toyou.oauth2.jwt.JwtAuthenticationEntryPoint;
-import com.example.toyou.oauth2.jwt.TokenAuthenticationFilter;
-import com.example.toyou.oauth2.jwt.TokenProvider;
+import com.example.toyou.jwt.JwtAccessDeniedHandler;
+import com.example.toyou.jwt.JwtAuthenticationEntryPoint;
+import com.example.toyou.jwt.TokenAuthenticationFilter;
+import com.example.toyou.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;

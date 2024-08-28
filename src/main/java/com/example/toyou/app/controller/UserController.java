@@ -4,8 +4,8 @@ import com.example.toyou.apiPayload.CustomApiResponse;
 import com.example.toyou.app.dto.HomeRequest;
 import com.example.toyou.app.dto.UserRequest;
 import com.example.toyou.app.dto.UserResponse;
-import com.example.toyou.service.UserService.UserService;
 import com.example.toyou.app.dto.HomeResponse;
+import com.example.toyou.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 @RestController
 @RequestMapping("/users")

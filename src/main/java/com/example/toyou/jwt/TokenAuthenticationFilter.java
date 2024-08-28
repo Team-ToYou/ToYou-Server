@@ -1,4 +1,4 @@
-package com.example.toyou.oauth2.jwt;
+package com.example.toyou.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;

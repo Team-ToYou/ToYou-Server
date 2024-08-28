@@ -3,7 +3,7 @@ package com.example.toyou.app.controller;
 import com.example.toyou.apiPayload.CustomApiResponse;
 import com.example.toyou.app.dto.CardRequest;
 import com.example.toyou.app.dto.CardResponse;
-import com.example.toyou.service.CardService.CardService;
+import com.example.toyou.service.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -11,8 +11,6 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/diarycards")

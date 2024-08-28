@@ -1,4 +1,4 @@
-package com.example.toyou.service.AlarmService;
+package com.example.toyou.service;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class AlarmServiceImpl implements AlarmService{
+public class AlarmService {
 
     private final AlarmRepository alarmRepository;
     private final UserRepository userRepository;

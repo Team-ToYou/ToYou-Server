@@ -2,7 +2,7 @@ package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.CustomApiResponse;
 import com.example.toyou.app.dto.AlarmResponse;
-import com.example.toyou.service.AlarmService.AlarmService;
+import com.example.toyou.service.AlarmService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

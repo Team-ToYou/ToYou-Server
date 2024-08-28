@@ -4,7 +4,7 @@ import com.example.toyou.apiPayload.CustomApiResponse;
 import com.example.toyou.app.dto.FcmResponse;
 import com.example.toyou.app.dto.QuestionRequest;
 import com.example.toyou.app.dto.QuestionResponse;
-import com.example.toyou.service.QuestionService.QuestionService;
+import com.example.toyou.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/questions")

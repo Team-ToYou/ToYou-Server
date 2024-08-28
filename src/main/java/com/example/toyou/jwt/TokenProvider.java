@@ -1,4 +1,4 @@
-package com.example.toyou.oauth2.jwt;
+package com.example.toyou.jwt;
 
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
