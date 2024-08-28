@@ -1,5 +1,6 @@
 package com.example.toyou.app;
 
+import com.example.toyou.service.FcmService;
 import com.example.toyou.service.QuestionService;
 import com.example.toyou.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class ScheduleTask {
     private final QuestionService questionService;
     private final UserService userService;
+    private final FcmService fcmService;
 
     /**
      * 매일 자정, 질문 데이터 초기화
@@ -32,4 +34,12 @@ public class ScheduleTask {
         userService.resetTodayEmotion();
     }
 
+    /**
+     * 매일 자정, 60일 동안 사용되지 않은 FCM 토큰 삭제
+     */
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    public void cleanUpOldFcmTokens() {
+        log.info("Starting cleanUpOldFcmTokens");
+        fcmService.cleanUpOldFcmTokens();
+    }
 }

@@ -42,8 +42,6 @@ public class User extends BaseEntity {
 
     private LocalDateTime deletedAt;
 
-    private String fcmToken;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<FriendRequest> friendRequestList = new ArrayList<>();
 
@@ -62,9 +60,5 @@ public class User extends BaseEntity {
 
     public void setNickname(String nickname){
         this.nickname = nickname;
-    }
-
-    public void setFcmToken(String token){
-        this.fcmToken = token;
     }
 }

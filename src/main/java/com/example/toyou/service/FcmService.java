@@ -3,9 +3,11 @@ package com.example.toyou.service;
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.FcmResponse;
+import com.example.toyou.domain.FcmToken;
 import com.example.toyou.domain.User;
 import com.example.toyou.app.dto.FcmMessageDto;
 import com.example.toyou.app.dto.FcmRequest;
+import com.example.toyou.repository.FcmTokenRepository;
 import com.example.toyou.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,13 +18,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.toyou.apiPayload.code.status.ErrorStatus.*;
 
@@ -33,6 +38,7 @@ import static com.example.toyou.apiPayload.code.status.ErrorStatus.*;
 public class FcmService {
 
     private final UserRepository userRepository;
+    private final FcmTokenRepository fcmTokenRepository;
 
     @Value("${spring.firebase.project-id}")
     private String FIREBASE_PROJECT_ID;
@@ -46,7 +52,12 @@ public class FcmService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(USER_NOT_FOUND));
 
-        user.setFcmToken(token);
+        FcmToken newFcmToken = FcmToken.builder()
+                .user(user)
+                .token(token)
+                .build();
+
+        fcmTokenRepository.save(newFcmToken);
     }
 
     /**
@@ -58,13 +69,37 @@ public class FcmService {
         User user = userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
+        List<FcmToken> fcmTokens = fcmTokenRepository.findAllByUser(user);
+
+        List<String> tokenList = fcmTokens.stream()
+                .map(FcmToken::getToken)
+                .toList();
+
         return FcmResponse.getTokenDto.builder()
-                .token(user.getFcmToken())
+                .token(tokenList)
                 .build();
     }
 
+    /**
+     * FCM Token 삭제
+     */
+    @Transactional
+    public void deleteToken(Long userId, String token) {
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(USER_NOT_FOUND));
 
+        FcmToken fcmToken = fcmTokenRepository.findByToken(token)
+                .orElseThrow(() -> new GeneralException(FCM_TOKEN_INVALID));
+
+        if(fcmToken.getUser() != user) throw new GeneralException(FCM_TOKEN_NOT_MINE);
+
+        fcmTokenRepository.delete(fcmToken);
+    }
+
+    /**
+     * FCM 전송
+     */
     // 푸시 메시지 처리를 수행하는 비즈니스 로직
     public void sendMessageTo(FcmRequest.sendMessageDto fcmRequest) throws IOException {
 
@@ -87,6 +122,14 @@ public class FcmService {
         try {
             ResponseEntity<String> response = restTemplate.exchange(API_URL, HttpMethod.POST, entity, String.class);
             log.info("FCM 응답: {}", response.getBody());
+
+            // DB에 저장되어 있는지 검사
+            FcmToken fcmToken = fcmTokenRepository.findByToken(fcmRequest.getToken())
+                    .orElseThrow(() -> new GeneralException(FCM_TOKEN_NOT_FOUND));
+
+            // 성공시 최근 사용 시간 업데이트
+            fcmToken.setRecentlyUsed(LocalDateTime.now());
+            fcmTokenRepository.save(fcmToken);
 
         } catch (Exception e) {
             log.error("FCM 요청 실패: {}", e.getMessage());
@@ -122,5 +165,12 @@ public class FcmService {
                         ).build()).validateOnly(false).build();
 
         return om.writeValueAsString(fcmMessageDto);
+    }
+
+    // 60일 동안 사용하지 않은 FCM 토큰 정보 삭제
+    @Transactional
+    public void cleanUpOldFcmTokens() {
+        LocalDateTime limitDate = LocalDateTime.now().minusDays(60);
+        fcmTokenRepository.deleteByRecentlyUsedBefore(limitDate);
     }
 }

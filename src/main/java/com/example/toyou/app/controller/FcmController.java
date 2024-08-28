@@ -50,4 +50,13 @@ public class FcmController {
 
         return CustomApiResponse.onSuccess(null);
     }
+
+    @DeleteMapping("/token")
+    @Operation(summary = "FCM 토큰 삭제", description = "저장된 토큰 정보를 삭제합니다.")
+    public CustomApiResponse<?> deleteToken(@RequestHeader Long userId, @RequestBody @Valid FcmRequest.deleteTokenDto fcmRequest) {
+
+        fcmService.deleteToken(userId, fcmRequest.getToken());
+
+        return CustomApiResponse.onSuccess(null);
+    }
 }

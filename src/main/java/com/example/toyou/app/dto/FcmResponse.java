@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 public class FcmResponse {
 
     @Builder
@@ -13,7 +15,7 @@ public class FcmResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class getTokenDto {
-        private String token;
+        private List<String> token;
     }
 
     @Builder

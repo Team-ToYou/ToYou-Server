@@ -3,6 +3,8 @@ package com.example.toyou.app.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.util.List;
+
 public class FcmRequest {
 
     @Getter
@@ -26,5 +28,12 @@ public class FcmRequest {
 
         @Schema(description = "내용", nullable = false, example = "짱구님이 친구 요청을 보냈습니다.")
         private String body;
+    }
+
+    @Getter
+    public static class deleteTokenDto {
+
+        @Schema(description = "FCM 토큰", nullable = false, example = "...")
+        private String token;
     }
 }
