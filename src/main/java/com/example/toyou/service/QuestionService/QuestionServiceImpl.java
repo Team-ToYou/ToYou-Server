@@ -75,8 +75,9 @@ public class QuestionServiceImpl implements QuestionService {
 
         QuestionType questionType = request.getQuestionType();
 
-        String safeContent = badWordFiltering.change(request.getContent(), new String[]{" ", ",", ".", "!", "?", "@", "1"});
 
+        String safeContent = badWordFiltering.change(request.getContent(), new String[]{" ", ",", ".", "!", "?", "@", "1"});
+        log.info(safeContent);
         Question newQuestion = QuestionConverter.toQuestion(target, questionType, questioner, safeContent);
 
         questionRepository.save(newQuestion);
