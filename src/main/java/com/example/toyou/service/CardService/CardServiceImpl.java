@@ -16,6 +16,7 @@ import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
 import com.example.toyou.service.FriendService.FriendService;
 import com.example.toyou.service.UserService.UserService;
+import com.vane.badwordfiltering.BadWordFiltering;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class CardServiceImpl implements CardService {
     private final QuestionRepository questionRepository;
     private final FriendService friendService;
     private final UserRepository userRepository;
+    private final BadWordFiltering badWordFiltering;
 
     /**
      * 일기카드 생성
@@ -77,7 +79,9 @@ public class CardServiceImpl implements CardService {
                         if(!validAnswer) throw new GeneralException(ErrorStatus.NOT_IN_OPTIONS);
                     }
 
-                    question.setAnswer(qa.getAnswer());
+                    String safeContent = badWordFiltering.change(qa.getAnswer(), new String[]{" ", ",", ".", "!", "?", "@", "1"});
+
+                    question.setAnswer(safeContent);
                     question.setDiaryCard(newCard);
                 });
 
@@ -134,7 +138,9 @@ public class CardServiceImpl implements CardService {
                         if(!validAnswer) throw new GeneralException(ErrorStatus.NOT_IN_OPTIONS);
                     }
 
-                    question.setAnswer(qa.getAnswer());
+                    String safeContent = badWordFiltering.change(qa.getAnswer(), new String[]{" ", ",", ".", "!", "?", "@", "1"});
+
+                    question.setAnswer(safeContent);
                     question.setDiaryCard(card);
                 });
 

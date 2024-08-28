@@ -16,6 +16,7 @@ import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.AnswerOptionRepository;
 import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
+import com.vane.badwordfiltering.BadWordFiltering;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final AnswerOptionRepository answerOptionRepository;
     private final AlarmRepository alarmRepository;
     private final UserRepository userRepository;
+    private final BadWordFiltering badWordFiltering;
 
     // 익명 이름 리스트
     private static final List<String> ANONYMOUS_NAMES = Arrays.asList(
@@ -73,7 +75,9 @@ public class QuestionServiceImpl implements QuestionService {
 
         QuestionType questionType = request.getQuestionType();
 
-        Question newQuestion = QuestionConverter.toQuestion(target, questionType, questioner, request.getContent());
+        String safeContent = badWordFiltering.change(request.getContent(), new String[]{" ", ",", ".", "!", "?", "@", "1"});
+
+        Question newQuestion = QuestionConverter.toQuestion(target, questionType, questioner, safeContent);
 
         questionRepository.save(newQuestion);
 
