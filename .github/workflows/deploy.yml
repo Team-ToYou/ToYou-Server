@@ -18,17 +18,21 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: resources, firebase 디렉터리 생성
+        run: |
+          mkdir -p ./src/main/resources/firebase/
+
       - name: application.yml 파일 생성
-        run: echo '${{ secrets.APPLICATION_PROPERTIES }}' > ./src/main/resources/application.yml
+        run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
 
       - name: firebase_service_key.json 파일 생성
-        run: echo '${{ secrets.FIREBASE_KEY }}' > ./src/main/resources/firebase/firebase_service_key.json
+        run: echo "${{ secrets.FIREBASE_KEY }}" > ./src/main/resources/firebase/firebase_service_key.json
 
       - name: 테스트 및 빌드하기
         run: ./gradlew clean build
 
       - name: 빌드된 파일 이름 변경하기
-        run: mv ./build/libs/*SNAPSHOT.jar   ./project.jar
+        run: mv ./build/libs/*SNAPSHOT.jar ./project.jar
 
       - name: SCP로 EC2에 빌드된 파일 전송하기
         uses: appleboy/scp-action@v0.1.7
