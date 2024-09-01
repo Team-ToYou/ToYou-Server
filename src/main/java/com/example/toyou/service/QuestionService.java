@@ -110,7 +110,7 @@ public class QuestionService {
         return QuestionConverter.toGetQuestionDTO(questions);
     }
 
-    // 미채택 질문 삭제
+    // 질문 삭제
     @Transactional
     public void deleteOldQuestions() {
         LocalDate today = LocalDate.now();
@@ -121,6 +121,11 @@ public class QuestionService {
         log.info("listSize={}", questionsToDelete.size());
 
         for (Question question : questionsToDelete) {
+
+            // 알람 삭제
+            Alarm alarm = alarmRepository.findByQuestion(question);
+            if(alarm != null) alarmRepository.delete(alarm);
+
             question.deleteMappings(); // 연관 관계 해제
             questionRepository.delete(question);
         }
@@ -139,6 +144,10 @@ public class QuestionService {
                 .toList();
 
         for (Question question : questionsToDelete) {
+            // 알람 삭제
+            Alarm alarm = alarmRepository.findByQuestion(question);
+            if(alarm != null) alarmRepository.delete(alarm);
+
             question.deleteMappings(); // 연관 관계 해제
             questionRepository.delete(question);
         }
