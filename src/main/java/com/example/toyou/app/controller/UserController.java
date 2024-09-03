@@ -66,4 +66,15 @@ public class UserController {
 
         return CustomApiResponse.onSuccess(null);
     }
+
+    @PatchMapping("/status")
+    @Operation(summary = "현재 상태 수정", description = "현재 상태를 수정합니다.")
+    public CustomApiResponse<?> updateStatus(@RequestHeader Long userId, @RequestBody UserRequest.updateStatusDTO request){
+
+        userService.updateStatus(userId, request.getStatus());
+
+        log.info("현재 상태 수정: status={}", request.getStatus());
+
+        return CustomApiResponse.onSuccess(null);
+    }
 }

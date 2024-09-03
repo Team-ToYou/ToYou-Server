@@ -37,9 +37,7 @@ public class FriendController {
 
     @GetMapping("/count")
     @Operation(summary = "친구 수 조회", description = "친구 수를 조회합니다.")
-    public CustomApiResponse<FriendResponse.GetFriendNumDTO> getFriendNum(Principal principal){
-
-        Long userId = Long.parseLong(principal.getName());
+    public CustomApiResponse<FriendResponse.GetFriendNumDTO> getFriendNum(@RequestHeader Long userId){
 
         FriendResponse.GetFriendNumDTO friendNum = friendService.getFriendNum(userId);
 

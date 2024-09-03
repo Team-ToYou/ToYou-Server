@@ -28,4 +28,11 @@ public class UserRequest {
         @Size(max = 15, message = "닉네임은 최대 15자까지 입력할 수 있습니다.")
         private String nickname;
     }
+
+    @Getter
+    public static class updateStatusDTO {
+
+        @Schema(description = "현재 상태", nullable = false, example = "SCHOOL")
+        private Status status;
+    }
 }

@@ -8,6 +8,7 @@ import com.example.toyou.converter.UserConverter;
 import com.example.toyou.domain.*;
 import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.QuestionType;
+import com.example.toyou.domain.enums.Status;
 import com.example.toyou.repository.CustomQuestionRepository;
 import com.example.toyou.repository.UserRepository;
 import com.example.toyou.service.QuestionService;
@@ -91,6 +92,15 @@ public class UserService {
         if(userRepository.existsByNickname(nickname)) throw new GeneralException(EXISTING_NICKNAME);
 
         user.setNickname(nickname);
+    }
+
+    /**
+     * 현재 상태 수정
+     */
+    @Transactional
+    public void updateStatus(Long userId, Status status) {
+        User user = findById(userId);
+        user.setStatus(status);
     }
 
     /**
