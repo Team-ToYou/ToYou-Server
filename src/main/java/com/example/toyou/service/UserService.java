@@ -107,13 +107,13 @@ public class UserService {
      * 감정우표 선택
      */
     @Transactional
-    public void updateEmotion(Long userId, HomeRequest.postEmotionDTO request){
+    public void postEmotion(Long userId, HomeRequest.postEmotionDTO request){
 
         User user = findById(userId);
         Emotion emotion = request.getEmotion();
 
-        // 이미 선택한 감정 재선택 불가능
-        if(user.getTodayEmotion() == request.getEmotion()) throw new GeneralException(ErrorStatus.EMOTION_ALREADY_CHOSEN);
+        // 금일 감정을 이미 선택한 경우
+        if(user.getTodayEmotion() != null) throw new GeneralException(ErrorStatus.EMOTION_ALREADY_CHOSEN);
 
         List<DiaryCard> diaryCards = user.getDiaryCardList();
 
@@ -129,7 +129,7 @@ public class UserService {
         user.setEmotion(emotion);
 
         // 오늘 중 이전에 생성된 맞춤형 질문 삭제
-        questionService.deleteToYouQuestions(user);
+//        questionService.deleteToYouQuestions(user);
 
         // 맞춤형 질문 생성
         List<CustomQuestion> customQuestions = customQuestionRepository.findByUserStatus(user.getStatus());

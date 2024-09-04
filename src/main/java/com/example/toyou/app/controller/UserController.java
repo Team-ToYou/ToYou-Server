@@ -35,12 +35,12 @@ public class UserController {
         return CustomApiResponse.onSuccess(getHomeDTO);
     }
 
-    @PatchMapping("/emotions")
+    @PostMapping("/emotions")
     @Operation(summary = "감정우표 선택", description = "금일 감정우표를 선택합니다.")
     public CustomApiResponse<?> postEmotion(@RequestHeader Long userId,
                                    @RequestBody @Valid HomeRequest.postEmotionDTO request){
 
-        userService.updateEmotion(userId, request);
+        userService.postEmotion(userId, request);
 
         log.info("감정우표 선택: emotion={}", request.getEmotion());
 
