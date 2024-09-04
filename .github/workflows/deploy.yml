@@ -26,7 +26,7 @@ jobs:
         run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
 
       - name: firebase_service_key.json 파일 생성
-        run: echo "${{ secrets.FIREBASE_KEY }}" > ./src/main/resources/firebase/firebase_service_key.json
+        run: echo "${{ secrets.FIREBASE_KEY }}" | openssl base64 -d -A > ./src/main/resources/firebase/firebase_service_key.json
 
       - name: 테스트 및 빌드하기
         run: ./gradlew clean build
