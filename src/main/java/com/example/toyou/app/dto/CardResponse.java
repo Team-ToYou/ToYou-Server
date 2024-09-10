@@ -33,6 +33,9 @@ public class CardResponse {
         private String receiver;
         @Schema(description = "감정", nullable = false, example = "HAPPY")
         private Emotion emotion;
+        @Schema(description = "공개 여부", nullable = false, example = "true")
+        private boolean exposure;
+
         private List<questionInfo> questionList;
     }
 

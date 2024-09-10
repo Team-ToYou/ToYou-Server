@@ -52,6 +52,7 @@ public class CardConverter {
                 .date(card.getCreatedAt().toLocalDate())
                 .receiver(card.getUser().getNickname())
                 .emotion(card.getEmotion())
+                .exposure(card.isExposure())
                 .questionList(questionInfo)
                 .build();
     }
