@@ -36,6 +36,7 @@ public class UserService {
     private final CustomQuestionRepository customQuestionRepository;
     private final UserCustomQuestionRepository userCustomQuestionRepository;
     private final QuestionService questionService;
+    private final FriendService friendService;
 
     /**
      * 홈화면 조회
@@ -104,6 +105,27 @@ public class UserService {
         User user = findById(userId);
         user.setStatus(status);
     }
+
+    /**
+     * 마이페이지 조회
+     */
+    public UserResponse.GetMyPageDTO getMyPage(Long userId) {
+
+        // 유저 검색
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        // 친구 리스트 조회
+        List<User> friends = friendService.getFriendList(user);
+        int friendNum = friends.size();
+
+        return UserResponse.GetMyPageDTO.builder()
+                .nickname(user.getNickname())
+                .friendNum(friendNum)
+                .status(user.getStatus())
+                .build();
+    }
+
 
     /**
      * 감정우표 선택

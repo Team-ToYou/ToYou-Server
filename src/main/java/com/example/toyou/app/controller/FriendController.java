@@ -35,15 +35,6 @@ public class FriendController {
         return CustomApiResponse.onSuccess(friendList);
     }
 
-    @GetMapping("/count")
-    @Operation(summary = "친구 수 조회", description = "친구 수를 조회합니다.")
-    public CustomApiResponse<FriendResponse.GetFriendNumDTO> getFriendNum(@RequestHeader Long userId){
-
-        FriendResponse.GetFriendNumDTO friendNum = friendService.getFriendNum(userId);
-
-        return CustomApiResponse.onSuccess(friendNum);
-    }
-
     @GetMapping("/search")
     @Operation(summary = "친구(유저) 검색", description = "닉네임 검색을 통해 유저를 조회합니다.")
     public CustomApiResponse<FriendResponse.searchFriendDTO> searchFriend(@RequestHeader Long userId,

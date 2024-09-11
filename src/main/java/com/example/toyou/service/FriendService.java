@@ -11,7 +11,6 @@ import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.FriendStatus;
-import com.example.toyou.service.FcmService;
 import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.FriendRepository;
 import com.example.toyou.repository.UserRepository;
@@ -33,7 +32,6 @@ public class FriendService {
     private final FriendRepository friendRepository;
     private final AlarmRepository alarmRepository;
     private final UserRepository userRepository;
-    private final FcmService fcmService;
 
     /**
      * 친구 목록 조회
@@ -64,24 +62,6 @@ public class FriendService {
                 )
                 .distinct() // 중복 제거
                 .toList();
-    }
-
-    /**
-     * 친구 수 조회
-     */
-    public FriendResponse.GetFriendNumDTO getFriendNum(Long userId) {
-
-        // 유저 검색
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
-
-        // 친구 리스트 조회
-        List<User> friends = getFriendList(user);
-        int friendNum = friends.size();
-
-        return FriendResponse.GetFriendNumDTO.builder()
-                .friendNum(friendNum)
-                .build();
     }
 
     /**

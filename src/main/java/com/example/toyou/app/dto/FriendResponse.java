@@ -38,16 +38,6 @@ public class FriendResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GetFriendNumDTO {
-
-        @Schema(description = "친구 수", nullable = false, example = "3")
-        private int friendNum;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class searchFriendDTO {
 
         @Schema(description = "닉네임", nullable = false, example = "철수")

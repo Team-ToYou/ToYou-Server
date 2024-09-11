@@ -1,10 +1,7 @@
 package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.CustomApiResponse;
-import com.example.toyou.app.dto.HomeRequest;
-import com.example.toyou.app.dto.UserRequest;
-import com.example.toyou.app.dto.UserResponse;
-import com.example.toyou.app.dto.HomeResponse;
+import com.example.toyou.app.dto.*;
 import com.example.toyou.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -76,5 +73,14 @@ public class UserController {
         log.info("현재 상태 수정: status={}", request.getStatus());
 
         return CustomApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/mypage")
+    @Operation(summary = "마이페이지 조회", description = "마이페이지에 나타나는 유저 정보를 조회합니다.")
+    public CustomApiResponse<UserResponse.GetMyPageDTO> getMyPage(@RequestHeader Long userId){
+
+        UserResponse.GetMyPageDTO myPageInfo = userService.getMyPage(userId);
+
+        return CustomApiResponse.onSuccess(myPageInfo);
     }
 }
