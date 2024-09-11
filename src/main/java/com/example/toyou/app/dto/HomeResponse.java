@@ -14,6 +14,8 @@ public class HomeResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GetHomeDTO {
+        @Schema(description = "닉네임", nullable = false, example = "짱구")
+        private String nickname;
         @Schema(description = "감정", nullable = false, example = "HAPPY")
         private Emotion emotion;
         @Schema(description = "질문 개수", nullable = false, example = "5")
