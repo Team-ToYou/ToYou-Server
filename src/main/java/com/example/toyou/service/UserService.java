@@ -9,9 +9,10 @@ import com.example.toyou.domain.*;
 import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.QuestionType;
 import com.example.toyou.domain.enums.Status;
+import com.example.toyou.domain.mappings.UserCustomQuestion;
 import com.example.toyou.repository.CustomQuestionRepository;
+import com.example.toyou.repository.UserCustomQuestionRepository;
 import com.example.toyou.repository.UserRepository;
-import com.example.toyou.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final CustomQuestionRepository customQuestionRepository;
+    private final UserCustomQuestionRepository userCustomQuestionRepository;
     private final QuestionService questionService;
 
     /**
@@ -142,8 +144,18 @@ public class UserService {
 
     // 랜덤 질문 생성 및 처리
     private void createAndProcessRandomQuestion(User user, List<CustomQuestion> customQuestions, Emotion emotion, QuestionType questionType) {
+        // 이미 사용한 UserCustomQuestion 목록을 조회
+        List<UserCustomQuestion> usedCustomQuestions = userCustomQuestionRepository.findByUserId(user.getId());
+
+        // 사용된 CustomQuestion의 ID만 추출
+        List<Long> usedQuestionIds = usedCustomQuestions.stream()
+                .map(ucq -> ucq.getCustomQuestion().getId())
+                .toList();
+
         List<CustomQuestion> filteredQuestions = customQuestions.stream()
-                .filter(question -> (emotion == null || Objects.equals(question.getEmotion(), emotion)) && question.getQuestionType() == questionType)
+                .filter(question -> (emotion == null || Objects.equals(question.getEmotion(), emotion))
+                        && question.getQuestionType() == questionType
+                        && !usedQuestionIds.contains(question.getId())) // 생성된 질문 제외
                 .collect(Collectors.toList());
 
         if (!filteredQuestions.isEmpty()) {
@@ -159,11 +171,20 @@ public class UserService {
         return questions.get(randomIndex);
     }
 
-    // 질문 처리
+    // 질문 처리 및 자체 생성 내역 저장
     private void processQuestion(User user, CustomQuestion cq) {
         if (cq != null) {
+            // 질문 생성
             QuestionRequest.createQuestionDTO request = QuestionConverter.toCreateQuestionDTO(user, cq);
             questionService.autoCreateQuestion(request);
+
+            // 자체 생성 내역 저장
+            UserCustomQuestion userCustomQuestion = UserCustomQuestion.builder()
+                    .user(user)
+                    .customQuestion(cq)
+                    .build();
+
+            userCustomQuestionRepository.save(userCustomQuestion);
         }
     }
 
