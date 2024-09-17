@@ -41,7 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable) //csrf disable
-                .formLogin(AbstractHttpConfigurer::disable) //From 로그인 방식 disable
+                .formLogin(AbstractHttpConfigurer::disable) //Form 로그인 방식 disable
                 .httpBasic(AbstractHttpConfigurer::disable) //HTTP Basic 인증 방식 disable
 
                 // 토큰 기반 인증을 사용하기 때문에 세션 기능 비활성화
