@@ -65,4 +65,8 @@ public class User extends BaseEntity {
     public void setStatus(Status status){
         this.status = status;
     }
+
+    public void setDeletedAt() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }

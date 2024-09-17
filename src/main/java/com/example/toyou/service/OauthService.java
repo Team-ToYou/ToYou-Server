@@ -184,6 +184,7 @@ public class OauthService {
         User user = userService.findById(userId);
 
         //유저 정보 soft delete
+        user.setDeletedAt();
         userRepository.delete(user);
 
         //카카오 액세스 토큰 조회
