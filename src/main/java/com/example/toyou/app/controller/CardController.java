@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/diarycards")
 @RequiredArgsConstructor
@@ -22,90 +24,63 @@ public class CardController {
 
     private final CardService cardService;
 
-    /**
-     * [POST] /diarycards
-     * 일기카드 생성
-     * @param userId 유저 식별자
-     * @return
-     */
     @PostMapping
     @Operation(summary = " 일기카드 생성", description = " 일기카드를 생성합니다.")
-    public CustomApiResponse<CardResponse.createCardDTO> createQuestion(@RequestHeader Long userId,
-                                                    @RequestBody @Valid CardRequest.createCardDTO request) {
+    public CustomApiResponse<CardResponse.createCardDTO> createQuestion(Principal principal,
+                                                                        @RequestBody @Valid CardRequest.createCardDTO request) {
+
+        Long userId = Long.parseLong(principal.getName());
 
         CardResponse.createCardDTO card = cardService.createCard(userId, request);
 
         return CustomApiResponse.onSuccess(card);
     }
 
-    /**
-     * [GET] /diarycards/{cardId}
-     * 일기카드 상세 조회
-     * @param userId 사용자 식별자
-     * @param cardId 카드 식별자
-     * @return
-     */
     @GetMapping("/{cardId}")
     @Operation(summary = "일기카드 상세 조회", description = "특정 일기카드에 대한 상세 조회를 진행합니다.")
-    public CustomApiResponse<CardResponse.getCardDTO> getCard(@RequestHeader Long userId, @PathVariable Long cardId){
+    public CustomApiResponse<CardResponse.getCardDTO> getCard(Principal principal, @PathVariable Long cardId){
+
+        Long userId = Long.parseLong(principal.getName());
 
         CardResponse.getCardDTO card = cardService.getCard(userId, cardId);
 
         return CustomApiResponse.onSuccess(card);
     }
 
-    /**
-     * [PATCH] /diarycards/{cardId}
-     * 일기카드 수정
-     * @param userId 유저 식별자
-     * @param cardId 카드 식별자
-     * @return
-     */
     @PatchMapping("/{cardId}")
     @Operation(summary = "일기카드 수정", description = "일기카드를 수정합니다.")
-    public CustomApiResponse createQuestion(@RequestHeader Long userId,
+    public CustomApiResponse createQuestion(Principal principal,
                                       @PathVariable Long cardId,
                                       @RequestBody @Valid CardRequest.updateCardDTO request) {
+
+        Long userId = Long.parseLong(principal.getName());
 
         cardService.updateCard(userId, cardId, request);
 
         return CustomApiResponse.onSuccess(null);
     }
 
-    /**
-     * [GET] /diarycards/mine
-     * 내 일기카드 목록 조회
-     * @param userId 사용자 식별자
-     * @param year 연도
-     * @param month 월
-     * @return
-     */
     @GetMapping("/mine")
     @Operation(summary = "내 일기카드 목록 조회", description = "내 일기카드 목록을 날짜 별로 조회합니다.")
-    public CustomApiResponse<CardResponse.getMyCardsDTO> getCard(@RequestHeader Long userId,
+    public CustomApiResponse<CardResponse.getMyCardsDTO> getCard(Principal principal,
                                                            @RequestParam int year,
                                                            @RequestParam int month){
+
+        Long userId = Long.parseLong(principal.getName());
 
         CardResponse.getMyCardsDTO cards = cardService.getMyCards(userId, year, month);
 
         return CustomApiResponse.onSuccess(cards);
     }
 
-    /**
-     * [GET] /diarycards/friends
-     * 친구 일기카드 조회
-     * @param userId 사용자 식별자
-     * @param year 연도
-     * @param month 월
-     * @param day 일
-     * @return
-     */
     @GetMapping("/friends")
     @Operation(summary = "친구 일기카드 목록 조회", description = "친구들의 일기카드를 날짜 별로 조회합니다.")
-    public CustomApiResponse<?> getCard(@RequestHeader Long userId,
-                                                           @RequestParam int year,
-                                                           @RequestParam int month,
-                                                           @RequestParam(required = false) Integer day){
+    public CustomApiResponse<?> getCard(Principal principal,
+                                        @RequestParam int year,
+                                        @RequestParam int month,
+                                        @RequestParam(required = false) Integer day){
+
+        Long userId = Long.parseLong(principal.getName());
 
         if(day == null) {
             CardResponse.getFriendsCardsDTO cards = cardService.getFriendsCards(userId, year, month);

@@ -28,7 +28,9 @@ public class FriendController {
 
     @GetMapping
     @Operation(summary = "친구 목록 조회", description = "친구 목록을 조회합니다.")
-    public CustomApiResponse<FriendResponse.GetFriendsDTO> getFriends(@RequestHeader Long userId){
+    public CustomApiResponse<FriendResponse.GetFriendsDTO> getFriends(Principal principal){
+
+        Long userId = Long.parseLong(principal.getName());
 
         FriendResponse.GetFriendsDTO friendList = friendService.getFriends(userId);
 
@@ -37,8 +39,10 @@ public class FriendController {
 
     @GetMapping("/search")
     @Operation(summary = "친구(유저) 검색", description = "닉네임 검색을 통해 유저를 조회합니다.")
-    public CustomApiResponse<FriendResponse.searchFriendDTO> searchFriend(@RequestHeader Long userId,
+    public CustomApiResponse<FriendResponse.searchFriendDTO> searchFriend(Principal principal,
                                                                     @RequestParam(defaultValue = "") String keyword) {
+
+        Long userId = Long.parseLong(principal.getName());
 
         FriendResponse.searchFriendDTO friend = friendService.searchFriend(userId, keyword);
 
@@ -47,8 +51,10 @@ public class FriendController {
 
     @PostMapping("/requests")
     @Operation(summary = "친구 요청", description = "다른 유저에게 친구 요청을 보냅니다.")
-    public CustomApiResponse<FcmResponse.getMyNameDto> createFriendRequest(@RequestHeader Long userId,
+    public CustomApiResponse<FcmResponse.getMyNameDto> createFriendRequest(Principal principal,
                                                               @RequestBody @Valid FriendRequestRequest.createFriendRequestDTO request) {
+
+        Long userId = Long.parseLong(principal.getName());
 
         FcmResponse.getMyNameDto myName = friendService.createFriendRequest(userId, request);
 
@@ -57,8 +63,10 @@ public class FriendController {
 
     @DeleteMapping
     @Operation(summary = "친구 삭제, 요청 취소, 요청 거절", description = "친구 삭제, 친구 요청 취소, 친구 요청 거절시 사용합니다.")
-    public CustomApiResponse deleteFriendRequest(@RequestHeader Long userId,
+    public CustomApiResponse<?> deleteFriendRequest(Principal principal,
                                            @RequestBody @Valid FriendRequestRequest.deleteFriendRequestDTO request) {
+
+        Long userId = Long.parseLong(principal.getName());
 
         friendService.deleteFriendRequest(userId, request);
 
@@ -67,8 +75,10 @@ public class FriendController {
 
     @PatchMapping("/requests/approve")
     @Operation(summary = "친구 요청 승인", description = "상대방이 보낸 친구 요청을 승인합니다.")
-    public CustomApiResponse<FcmResponse.getMyNameDto> acceptFriendRequest(@RequestHeader Long userId,
+    public CustomApiResponse<FcmResponse.getMyNameDto> acceptFriendRequest(Principal principal,
                                            @RequestBody @Valid FriendRequestRequest.acceptFriendRequestDTO request) {
+
+        Long userId = Long.parseLong(principal.getName());
 
         FcmResponse.getMyNameDto myName = friendService.acceptFriendRequest(userId, request);
 
@@ -77,7 +87,9 @@ public class FriendController {
 
     @GetMapping("/yesterday")
     @Operation(summary = "작일 친구 일기카드 목록 조회", description = "어제 날짜 기준으로 생성된 친구들의 일기카드를 조회합니다.")
-    public CustomApiResponse<FriendResponse.getFriendYesterdayDTO> searchFriend(@RequestHeader Long userId) {
+    public CustomApiResponse<FriendResponse.getFriendYesterdayDTO> searchFriend(Principal principal) {
+
+        Long userId = Long.parseLong(principal.getName());
 
         FriendResponse.getFriendYesterdayDTO friends = friendService.getFriendYesterday(userId);
 

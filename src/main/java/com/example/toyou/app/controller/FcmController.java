@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @Slf4j
 @RestController
@@ -26,7 +27,9 @@ public class FcmController {
 
     @PostMapping("/token")
     @Operation(summary = "FCM 토큰 저장", description = "사용자의 고유한 FCM 토큰을 저장합니다.")
-    public CustomApiResponse<?> saveToken(@RequestHeader Long userId, @RequestBody @Valid FcmRequest.saveTokenDto fcmRequest) {
+    public CustomApiResponse<?> saveToken(Principal principal, @RequestBody @Valid FcmRequest.saveTokenDto fcmRequest) {
+
+        Long userId = Long.parseLong(principal.getName());
 
         fcmService.saveToken(userId, fcmRequest.getToken());
 
@@ -53,7 +56,9 @@ public class FcmController {
 
     @DeleteMapping("/token")
     @Operation(summary = "FCM 토큰 삭제", description = "저장된 토큰 정보를 삭제합니다.")
-    public CustomApiResponse<?> deleteToken(@RequestHeader Long userId, @RequestBody @Valid FcmRequest.deleteTokenDto fcmRequest) {
+    public CustomApiResponse<?> deleteToken(Principal principal, @RequestBody @Valid FcmRequest.deleteTokenDto fcmRequest) {
+
+        Long userId = Long.parseLong(principal.getName());
 
         fcmService.deleteToken(userId, fcmRequest.getToken());
 

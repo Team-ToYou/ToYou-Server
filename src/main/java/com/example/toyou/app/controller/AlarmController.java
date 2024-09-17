@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/alarms")
 @RequiredArgsConstructor
@@ -20,32 +22,23 @@ public class AlarmController {
 
     private final AlarmService alarmService;
 
-    /**
-     * [GET] /alarms
-     * 알림 목록 조회
-     * @param userId 사용자 식별자
-     * @return
-     */
     @GetMapping
     @Operation(summary = "알림 목록 조회", description = "유저의 알림 목록을 조회합니다.")
-    public CustomApiResponse<AlarmResponse.getAlarmsDTO> getAlarms(@RequestHeader Long userId){
+    public CustomApiResponse<AlarmResponse.getAlarmsDTO> getAlarms(Principal principal){
+
+        Long userId = Long.parseLong(principal.getName());
 
         AlarmResponse.getAlarmsDTO alarms = alarmService.getAlarms(userId);
 
         return CustomApiResponse.onSuccess(alarms);
     }
 
-    /**
-     * [DELETE] /alarms/{alarmId}
-     * 알림 삭제
-     * @param userId 유저 식별자
-     * @param alarmId 알림 식별자
-     * @return
-     */
     @DeleteMapping("/{alarmId}")
     @Operation(summary = "알림 삭제", description = "특정 알림을 삭제합니다.")
-    public CustomApiResponse deleteFriendRequest(@RequestHeader Long userId,
-                                           @PathVariable Long alarmId) {
+    public CustomApiResponse<?> deleteFriendRequest(Principal principal,
+                                                 @PathVariable Long alarmId) {
+
+        Long userId = Long.parseLong(principal.getName());
 
         alarmService.deleteAlarm(userId, alarmId);
 

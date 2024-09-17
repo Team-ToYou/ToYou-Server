@@ -50,7 +50,10 @@ public class SecurityConfig {
 
                 // 인증, 인가 설정
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
+                        .permitAll()
+                        .requestMatchers("/users/nickname/check", "/health", "/auth/kakao", "/auth/kakao/access", "/auth/reissue", "/auth/signup")
+                        .permitAll()
                         .anyRequest().authenticated())
 
                 // 헤더를 확인할 커스텀 필터 추가

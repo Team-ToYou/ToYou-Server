@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -23,7 +25,9 @@ public class UserController {
 
     @GetMapping("/home")
     @Operation(summary = "홈 화면 조회", description = "홈 화면에 나타나는 유저의 정보를 조회합니다.")
-    public CustomApiResponse<HomeResponse.GetHomeDTO> getHome(@RequestHeader Long userId){
+    public CustomApiResponse<HomeResponse.GetHomeDTO> getHome(Principal principal){
+
+        Long userId = Long.parseLong(principal.getName());
 
         HomeResponse.GetHomeDTO getHomeDTO = userService.getHome(userId);
 
@@ -34,8 +38,10 @@ public class UserController {
 
     @PostMapping("/emotions")
     @Operation(summary = "감정우표 선택", description = "금일 감정우표를 선택합니다.")
-    public CustomApiResponse<?> postEmotion(@RequestHeader Long userId,
+    public CustomApiResponse<?> postEmotion(Principal principal,
                                    @RequestBody @Valid HomeRequest.postEmotionDTO request){
+
+        Long userId = Long.parseLong(principal.getName());
 
         userService.postEmotion(userId, request);
 
@@ -55,7 +61,9 @@ public class UserController {
 
     @PatchMapping("/nickname")
     @Operation(summary = "닉네임 수정", description = "닉네임을 수정합니다.")
-    public CustomApiResponse<?> updateNickname(@RequestHeader Long userId, @RequestBody UserRequest.updateNicknameDTO request){
+    public CustomApiResponse<?> updateNickname(Principal principal, @RequestBody UserRequest.updateNicknameDTO request){
+
+        Long userId = Long.parseLong(principal.getName());
 
         userService.updateNickname(userId, request.getNickname());
 
@@ -66,7 +74,9 @@ public class UserController {
 
     @PatchMapping("/status")
     @Operation(summary = "현재 상태 수정", description = "현재 상태를 수정합니다.")
-    public CustomApiResponse<?> updateStatus(@RequestHeader Long userId, @RequestBody UserRequest.updateStatusDTO request){
+    public CustomApiResponse<?> updateStatus(Principal principal, @RequestBody UserRequest.updateStatusDTO request){
+
+        Long userId = Long.parseLong(principal.getName());
 
         userService.updateStatus(userId, request.getStatus());
 
@@ -77,7 +87,9 @@ public class UserController {
 
     @GetMapping("/mypage")
     @Operation(summary = "마이페이지 조회", description = "마이페이지에 나타나는 유저 정보를 조회합니다.")
-    public CustomApiResponse<UserResponse.GetMyPageDTO> getMyPage(@RequestHeader Long userId){
+    public CustomApiResponse<UserResponse.GetMyPageDTO> getMyPage(Principal principal){
+
+        Long userId = Long.parseLong(principal.getName());
 
         UserResponse.GetMyPageDTO myPageInfo = userService.getMyPage(userId);
 

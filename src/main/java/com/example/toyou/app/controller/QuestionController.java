@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/questions")
 @RequiredArgsConstructor
@@ -23,31 +25,23 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
-    /**
-     * [POST] /questions
-     * 질문 생성
-     * @param userId 유저 식별자
-     * @return
-     */
     @PostMapping
     @Operation(summary = "질문 생성", description = "상대방에게 보낼 질문을 생성합니다.")
-    public CustomApiResponse<FcmResponse.getMyNameDto> createQuestion(@RequestHeader Long userId,
+    public CustomApiResponse<FcmResponse.getMyNameDto> createQuestion(Principal principal,
                                                                       @RequestBody @Valid QuestionRequest.createQuestionDTO request) {
+
+        Long userId = Long.parseLong(principal.getName());
 
         FcmResponse.getMyNameDto myName = questionService.createQuestion(userId, request);
 
         return CustomApiResponse.onSuccess(myName);
     }
 
-    /**
-     * [GET] /questions
-     * 질문 목록 조회
-     * @param userId 유저 식별자
-     * @return
-     */
     @GetMapping
     @Operation(summary = "질문 목록 조회", description = "금일 받은 질문 목록을 조회합니다.")
-    public CustomApiResponse<QuestionResponse.GetQuestionsDTO> getHome(@RequestHeader Long userId){
+    public CustomApiResponse<QuestionResponse.GetQuestionsDTO> getHome(Principal principal){
+
+        Long userId = Long.parseLong(principal.getName());
 
         QuestionResponse.GetQuestionsDTO questionList = questionService.getQuestions(userId);
 
