@@ -33,13 +33,13 @@ public class AlarmConverter {
                 .build();
     }
 
-    public static Alarm toNewQuestionAlarm(User user, User target, Question question) {
+    public static Alarm toNewQuestionAlarm(String questioner, User target, Question question) {
 
         return Alarm.builder()
                 .user(target)
                 .alarmType(AlarmType.NEW_QUESTION)
-                .content(String.format("%s님이 질문카드를 보냈습니다. 확인해보세요!", user.getNickname()))
-                .opponent(user.getNickname())
+                .content(String.format("%s님이 질문카드를 보냈습니다. 확인해보세요!", questioner))
+                .opponent(questioner)
                 .checked(false)
                 .question(question)
                 .build();

@@ -88,7 +88,7 @@ public class QuestionService {
         }
 
         // 알림 생성
-        Alarm newAlarm = AlarmConverter.toNewQuestionAlarm(user, target, newQuestion);
+        Alarm newAlarm = AlarmConverter.toNewQuestionAlarm(questioner, target, newQuestion);
 
         alarmRepository.save(newAlarm);
 
