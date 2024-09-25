@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.toyou.apiPayload.code.status.ErrorStatus.*;
@@ -52,12 +53,20 @@ public class FcmService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(USER_NOT_FOUND));
 
-        FcmToken newFcmToken = FcmToken.builder()
-                .user(user)
-                .token(token)
-                .build();
+        Optional<FcmToken> existingToken = fcmTokenRepository.findByToken(token);
 
-        fcmTokenRepository.save(newFcmToken);
+        // 이미 존재하는 토큰이면 최근 사용 시간 업데이트
+        if(existingToken.isPresent()) {
+            FcmToken tokenToUpdate = existingToken.get();
+            tokenToUpdate.setRecentlyUsed(LocalDateTime.now());
+        } else {
+            // 없으면 새로 저장
+            FcmToken newFcmToken = FcmToken.builder()
+                    .user(user)
+                    .token(token)
+                    .build();
+            fcmTokenRepository.save(newFcmToken);
+        }
     }
 
     /**
