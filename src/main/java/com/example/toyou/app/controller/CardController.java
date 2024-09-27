@@ -62,9 +62,9 @@ public class CardController {
 
     @DeleteMapping("/{cardId}")
     @Operation(summary = "일기카드 삭제", description = "일기카드를 삭제합니다.")
-    public CustomApiResponse<?> deleteCard(Long userId ,@PathVariable Long cardId) {
+    public CustomApiResponse<?> deleteCard(Principal principal, @PathVariable Long cardId) {
 
-//        Long userId = Long.parseLong(principal.getName());
+        Long userId = Long.parseLong(principal.getName());
 
         cardService.deleteCard(userId, cardId);
 
