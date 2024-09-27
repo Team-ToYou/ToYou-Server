@@ -182,4 +182,13 @@ public class FcmService {
         LocalDateTime limitDate = LocalDateTime.now().minusDays(60);
         fcmTokenRepository.deleteByRecentlyUsedBefore(limitDate);
     }
+
+    // 유저의 모든 FCM Token 삭제
+    @Transactional
+    public void deleteAllToken(User user) {
+
+        List<FcmToken> fcmTokens = fcmTokenRepository.findAllByUser(user);
+
+        fcmTokenRepository.deleteAll(fcmTokens);
+    }
 }

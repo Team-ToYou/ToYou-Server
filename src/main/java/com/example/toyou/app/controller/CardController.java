@@ -38,7 +38,7 @@ public class CardController {
 
     @GetMapping("/{cardId}")
     @Operation(summary = "일기카드 상세 조회", description = "특정 일기카드에 대한 상세 조회를 진행합니다.")
-    public CustomApiResponse<CardResponse.getCardDTO> getCard(Principal principal, @PathVariable Long cardId){
+    public CustomApiResponse<CardResponse.getCardDTO> getCard(Principal principal, @PathVariable Long cardId) {
 
         Long userId = Long.parseLong(principal.getName());
 
@@ -50,8 +50,8 @@ public class CardController {
     @PatchMapping("/{cardId}")
     @Operation(summary = "일기카드 수정", description = "일기카드를 수정합니다.")
     public CustomApiResponse createQuestion(Principal principal,
-                                      @PathVariable Long cardId,
-                                      @RequestBody @Valid CardRequest.updateCardDTO request) {
+                                            @PathVariable Long cardId,
+                                            @RequestBody @Valid CardRequest.updateCardDTO request) {
 
         Long userId = Long.parseLong(principal.getName());
 
@@ -60,11 +60,22 @@ public class CardController {
         return CustomApiResponse.onSuccess(null);
     }
 
+    @DeleteMapping("/{cardId}")
+    @Operation(summary = "일기카드 삭제", description = "일기카드를 삭제합니다.")
+    public CustomApiResponse<?> deleteCard(Long userId ,@PathVariable Long cardId) {
+
+//        Long userId = Long.parseLong(principal.getName());
+
+        cardService.deleteCard(userId, cardId);
+
+        return CustomApiResponse.onSuccess(null);
+    }
+
     @GetMapping("/mine")
     @Operation(summary = "내 일기카드 목록 조회", description = "내 일기카드 목록을 날짜 별로 조회합니다.")
     public CustomApiResponse<CardResponse.getMyCardsDTO> getCard(Principal principal,
-                                                           @RequestParam int year,
-                                                           @RequestParam int month){
+                                                                 @RequestParam int year,
+                                                                 @RequestParam int month) {
 
         Long userId = Long.parseLong(principal.getName());
 
@@ -78,11 +89,11 @@ public class CardController {
     public CustomApiResponse<?> getCard(Principal principal,
                                         @RequestParam int year,
                                         @RequestParam int month,
-                                        @RequestParam(required = false) Integer day){
+                                        @RequestParam(required = false) Integer day) {
 
         Long userId = Long.parseLong(principal.getName());
 
-        if(day == null) {
+        if (day == null) {
             CardResponse.getFriendsCardsDTO cards = cardService.getFriendsCards(userId, year, month);
             return CustomApiResponse.onSuccess(cards);
         } else {

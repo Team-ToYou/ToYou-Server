@@ -3,6 +3,7 @@ package com.example.toyou.service;
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.UserRequest;
+import com.example.toyou.domain.FcmToken;
 import com.example.toyou.domain.OauthInfo;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.OauthProvider;
@@ -24,6 +25,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.toyou.apiPayload.code.status.ErrorStatus.*;
@@ -38,6 +40,7 @@ public class OauthService {
     private final UserService userService;
     private final TokenProvider tokenProvider;
     private final RedisService redisService;
+    private final FcmService fcmService;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String CLIENT_ID;
@@ -182,6 +185,9 @@ public class OauthService {
         redisService.deleteValues(userId);
 
         User user = userService.findById(userId);
+
+        //유저 FCM Token 전체 삭제
+        fcmService.deleteAllToken(user);
 
         //유저 정보 soft delete
         user.setDeletedAt();

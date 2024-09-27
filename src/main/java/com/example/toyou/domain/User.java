@@ -54,6 +54,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Alarm> alarmList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<FcmToken> fcmTokenList = new ArrayList<>();
+
     public void setEmotion(Emotion emotion){
         this.todayEmotion = emotion;
     }

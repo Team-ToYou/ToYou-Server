@@ -36,7 +36,7 @@ public class Question extends BaseEntity {
 
     private String answer;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerOption> answerOptionList = new ArrayList<>();
 
     public void setDiaryCard(DiaryCard diaryCard){
