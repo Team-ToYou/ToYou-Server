@@ -25,6 +25,9 @@ jobs:
       - name: application.yml 파일 생성
         run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
 
+      - name: application-test.yml 파일 생성
+        run: echo "${{ secrets.APPLICATION_PROPERTIES_TEST }}" > ./src/main/resources/application-test.yml
+
       - name: firebase_service_key.json 파일 생성
         run: echo "${{ secrets.FIREBASE_KEY }}" | openssl base64 -d -A > ./src/main/resources/firebase/firebase_service_key.json
 

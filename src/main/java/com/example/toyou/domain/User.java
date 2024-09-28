@@ -71,5 +71,6 @@ public class User extends BaseEntity {
 
     public void setDeletedAt() {
         this.deletedAt = LocalDateTime.now();
+        nickname += "(deleted)";
     }
 }
