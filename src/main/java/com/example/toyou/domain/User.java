@@ -11,6 +11,7 @@ import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -71,6 +72,7 @@ public class User extends BaseEntity {
 
     public void setDeletedAt() {
         this.deletedAt = LocalDateTime.now();
-        nickname += "(deleted)";
+        String randomSuffix = UUID.randomUUID().toString();
+        nickname += randomSuffix;
     }
 }

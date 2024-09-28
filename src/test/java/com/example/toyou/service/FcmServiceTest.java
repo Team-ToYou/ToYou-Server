@@ -4,7 +4,6 @@ import com.example.toyou.domain.FcmToken;
 import com.example.toyou.domain.User;
 import com.example.toyou.repository.FcmTokenRepository;
 import com.example.toyou.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
