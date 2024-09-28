@@ -56,6 +56,8 @@ public class UserController {
 
         UserResponse.checkUserNicknameDTO exists = userService.checkUserNickname(nickname);
 
+        log.info("닉네임 중복 확인: nickname={}", nickname);
+
         return CustomApiResponse.onSuccess(exists);
     }
 
@@ -92,6 +94,8 @@ public class UserController {
         Long userId = Long.parseLong(principal.getName());
 
         UserResponse.GetMyPageDTO myPageInfo = userService.getMyPage(userId);
+
+        log.info("마이페이지 조회: userId={}", userId);
 
         return CustomApiResponse.onSuccess(myPageInfo);
     }

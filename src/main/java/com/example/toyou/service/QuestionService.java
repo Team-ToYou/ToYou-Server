@@ -105,7 +105,11 @@ public class QuestionService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
-        List<Question> questions = questionRepository.findByUser(user);
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(23, 59, 59);
+
+        List<Question> questions = questionRepository.findByUserAndCreatedAtBetween(user, startOfDay, endOfDay);
 
         return QuestionConverter.toGetQuestionDTO(questions);
     }

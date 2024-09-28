@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    List<Question> findByUser(User user);
+
+    List<Question> findByUserAndCreatedAtBetween(User user, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
     List<Question> findByCreatedAtBeforeAndDiaryCardIsNull(LocalDateTime startOfDay);
 }
