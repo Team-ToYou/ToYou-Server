@@ -2,12 +2,14 @@ package com.example.toyou;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-//@SpringBootTest
-//class ToYouApplicationTests {
-//
-//	@Test
-//	void contextLoads() {
-//	}
-//
-//}
+@SpringBootTest
+@ActiveProfiles("test")
+class ToYouApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
