@@ -26,7 +26,7 @@ class FcmServiceTest {
     @Autowired private FcmService fcmService;
 
     @Test
-    @DisplayName("유저의 토큰을 전부 삭제합니다.")
+    @DisplayName("유저의 FCM 토큰을 전부 삭제합니다.")
     void deleteAllToken() {
         // given
         User user = User.builder().nickname("test").build();
@@ -44,5 +44,22 @@ class FcmServiceTest {
         // then
         List<FcmToken> deletedTokens = fcmTokenRepository.findAllByUser(user);
         assertTrue(deletedTokens.isEmpty(), "토큰이 모두 삭제되지 않았습니다.");
+    }
+
+    @Test
+    @DisplayName("FCM 토큰 중복 저장을 방지합니다.")
+    void saveToken() {
+        // given
+        User user = User.builder().nickname("test").build();
+        userRepository.save(user);
+
+        fcmService.saveToken(user.getId(), "fcm");
+
+        // when
+        fcmService.saveToken(user.getId(), "fcm");
+
+        // then
+        List<FcmToken> tokens = fcmTokenRepository.findAllByUser(user);
+        assertEquals(1, tokens.size(), "토큰의 개수가 1개여야 합니다.");
     }
 }

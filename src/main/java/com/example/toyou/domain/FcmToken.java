@@ -20,6 +20,7 @@ public class FcmToken extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(unique = true)
     private String token;
 
     private LocalDateTime recentlyUsed;
