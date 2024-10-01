@@ -160,6 +160,23 @@ public class CardService {
     }
 
     /**
+     * 일가카드 공개여부 전환
+     */
+    @Transactional
+    public void toggleExposure(Long userId, Long cardId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        DiaryCard card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.CARD_NOT_FOUND));
+
+        if(user != card.getUser()) throw new GeneralException(ErrorStatus.NOT_OWNER);
+
+        card.toggleExposure();
+    }
+
+    /**
      * 내 일기카드 목록 조회
      */
     public CardResponse.getMyCardsDTO getMyCards(Long userId, int year, int month) {
