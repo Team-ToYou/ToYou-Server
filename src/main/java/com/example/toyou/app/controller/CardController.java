@@ -73,14 +73,14 @@ public class CardController {
 
     @PatchMapping("/{cardId}/exposure")
     @Operation(summary = "일기카드 공개여부 전환", description = "일기카드 공개여부를 전환합니다.")
-    public CustomApiResponse<?> toggleExposure(Principal principal,
+    public CustomApiResponse<CardResponse.toggleExposureDTO> toggleExposure(Principal principal,
                                                @PathVariable Long cardId) {
 
         Long userId = Long.parseLong(principal.getName());
 
-        cardService.toggleExposure(userId, cardId);
+        CardResponse.toggleExposureDTO exposure = cardService.toggleExposure(userId, cardId);
 
-        return CustomApiResponse.onSuccess(null);
+        return CustomApiResponse.onSuccess(exposure);
     }
 
     @GetMapping("/mine")
