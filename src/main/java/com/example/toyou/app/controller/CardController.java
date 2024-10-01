@@ -49,7 +49,7 @@ public class CardController {
 
     @PatchMapping("/{cardId}")
     @Operation(summary = "일기카드 수정", description = "일기카드를 수정합니다.")
-    public CustomApiResponse createQuestion(Principal principal,
+    public CustomApiResponse<?> createQuestion(Principal principal,
                                             @PathVariable Long cardId,
                                             @RequestBody @Valid CardRequest.updateCardDTO request) {
 
@@ -67,6 +67,18 @@ public class CardController {
         Long userId = Long.parseLong(principal.getName());
 
         cardService.deleteCard(userId, cardId);
+
+        return CustomApiResponse.onSuccess(null);
+    }
+
+    @PatchMapping("/{cardId}/exposure")
+    @Operation(summary = "일기카드 공개여부 전환", description = "일기카드 공개여부를 전환합니다.")
+    public CustomApiResponse<?> toggleExposure(Principal principal,
+                                               @PathVariable Long cardId) {
+
+        Long userId = Long.parseLong(principal.getName());
+
+        cardService.toggleExposure(userId, cardId);
 
         return CustomApiResponse.onSuccess(null);
     }

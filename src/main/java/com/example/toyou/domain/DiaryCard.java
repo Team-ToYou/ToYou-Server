@@ -23,6 +23,7 @@ public class DiaryCard extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "diaryCard", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Question> questionList = new ArrayList<>();
 
     private boolean exposure;
@@ -32,5 +33,9 @@ public class DiaryCard extends BaseEntity {
 
     public void setExposure(boolean bool){
         this.exposure = bool;
+    }
+
+    public void toggleExposure(){
+        this.exposure = !this.exposure;
     }
 }
