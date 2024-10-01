@@ -43,6 +43,16 @@ public class CardResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class toggleExposureDTO {
+
+        @Schema(description = "공개 여부", nullable = false, example = "true")
+        private boolean exposure;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class questionInfo {
 
         @Schema(description = "질문 식별자", nullable = false, example = "1")

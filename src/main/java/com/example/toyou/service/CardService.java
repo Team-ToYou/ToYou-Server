@@ -163,7 +163,7 @@ public class CardService {
      * 일가카드 공개여부 전환
      */
     @Transactional
-    public void toggleExposure(Long userId, Long cardId) {
+    public CardResponse.toggleExposureDTO toggleExposure(Long userId, Long cardId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -174,6 +174,10 @@ public class CardService {
         if(user != card.getUser()) throw new GeneralException(ErrorStatus.NOT_OWNER);
 
         card.toggleExposure();
+
+        return CardResponse.toggleExposureDTO.builder()
+                .exposure(card.isExposure())
+                .build();
     }
 
     /**
