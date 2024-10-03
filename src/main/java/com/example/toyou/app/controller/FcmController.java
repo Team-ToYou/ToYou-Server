@@ -64,4 +64,15 @@ public class FcmController {
 
         return CustomApiResponse.onSuccess(null);
     }
+
+    @PatchMapping("/token")
+    @Operation(summary = "FCM 토큰 타임스탬프 갱신", description = "FCM 토큰 타임스탬프를 갱신합니다.")
+    public CustomApiResponse<?> updateTokenTime(Principal principal, @RequestBody @Valid FcmRequest.saveTokenDto fcmRequest) {
+
+        Long userId = Long.parseLong(principal.getName());
+
+        fcmService.saveToken(userId, fcmRequest.getToken());
+
+        return CustomApiResponse.onSuccess(null);
+    }
 }

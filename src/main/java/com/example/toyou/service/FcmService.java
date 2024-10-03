@@ -3,6 +3,7 @@ package com.example.toyou.service;
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.FcmResponse;
+import com.example.toyou.app.dto.FcmTopicDto;
 import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.FcmToken;
 import com.example.toyou.domain.Question;
@@ -12,6 +13,7 @@ import com.example.toyou.app.dto.FcmRequest;
 import com.example.toyou.repository.FcmTokenRepository;
 import com.example.toyou.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import lombok.RequiredArgsConstructor;
@@ -57,10 +59,10 @@ public class FcmService {
 
         Optional<FcmToken> existingToken = fcmTokenRepository.findByToken(token);
 
-        // 이미 존재하는 토큰이면 최근 사용 시간 업데이트
-        if(existingToken.isPresent()) {
+        // 이미 존재하는 토큰이면 최근 접속 시간 업데이트
+        if (existingToken.isPresent()) {
             FcmToken tokenToUpdate = existingToken.get();
-            tokenToUpdate.setRecentlyUsed(LocalDateTime.now());
+            tokenToUpdate.setConnectedAt(LocalDateTime.now());
         } else {
             // 없으면 새로 저장
             FcmToken newFcmToken = FcmToken.builder()
@@ -74,7 +76,6 @@ public class FcmService {
     /**
      * FCM Token 조회
      */
-    @Transactional
     public FcmResponse.getTokenDto getToken(String nickname) {
 
         User user = userRepository.findByNickname(nickname)
@@ -103,18 +104,33 @@ public class FcmService {
         FcmToken fcmToken = fcmTokenRepository.findByToken(token)
                 .orElseThrow(() -> new GeneralException(FCM_TOKEN_INVALID));
 
-        if(fcmToken.getUser() != user) throw new GeneralException(FCM_TOKEN_NOT_MINE);
+        if (fcmToken.getUser() != user) throw new GeneralException(FCM_TOKEN_NOT_MINE);
 
         fcmTokenRepository.delete(fcmToken);
     }
 
     /**
-     * FCM 전송
+     * FCM 전송(개별 토큰)
+     * 푸시 메시지 처리를 수행하는 비즈니스 로직
      */
-    // 푸시 메시지 처리를 수행하는 비즈니스 로직
     public void sendMessageTo(FcmRequest.sendMessageDto fcmRequest) throws IOException {
 
-        String message = makeMessage(fcmRequest);
+        String token = fcmRequest.getToken();
+
+        FcmToken fcmToken = fcmTokenRepository.findByToken(token)
+                .orElseThrow(() -> new GeneralException(FCM_TOKEN_NOT_FOUND));
+
+        String message = makeMessage(token, fcmRequest.getTitle(), fcmRequest.getBody());
+        sendFcmMessage(message, fcmToken);
+    }
+
+    // FCM 전송(Topic: allUsers)
+    public void sendMessageToAll(String title, String body) throws IOException {
+        String message = makeMessageToTopic("allUsers", title, body);
+        sendFcmMessage(message, null);
+    }
+
+    private void sendFcmMessage(String message, FcmToken fcmToken) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
 
         // RestTemplate 이용중 클라이언트의 한글 깨짐 방지
@@ -123,28 +139,36 @@ public class FcmService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         headers.set("Authorization", "Bearer " + getAccessToken());
 
         HttpEntity<String> entity = new HttpEntity<>(message, headers);
-
         String API_URL = "https://fcm.googleapis.com/v1/projects/" + FIREBASE_PROJECT_ID + "/messages:send";
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(API_URL, HttpMethod.POST, entity, String.class);
             log.info("FCM 응답: {}", response.getBody());
 
-            // DB에 저장되어 있는지 검사
-            FcmToken fcmToken = fcmTokenRepository.findByToken(fcmRequest.getToken())
-                    .orElseThrow(() -> new GeneralException(FCM_TOKEN_NOT_FOUND));
+            // 200 + error:.. 토큰 삭제(ex.앱 삭제)
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonResponse = objectMapper.readTree(response.getBody());
 
-            // 성공시 최근 사용 시간 업데이트
-            fcmToken.setRecentlyUsed(LocalDateTime.now());
-            fcmTokenRepository.save(fcmToken);
+            if (jsonResponse.has("error")) {
+                log.error("FCM 메시지 전송 실패: {}", jsonResponse.get("error").toString());
+                if (fcmToken != null) {
+                    fcmTokenRepository.delete(fcmToken);
+//                    throw new GeneralException(FCM_TOKEN_INVALID);
+                }
+            } else {
+                log.info("FCM 메시지 전송 성공");
+            }
 
         } catch (Exception e) {
             log.error("FCM 요청 실패: {}", e.getMessage());
-            throw new GeneralException(FCM_TOKEN_INVALID);
+
+            if(fcmToken != null) {
+                fcmTokenRepository.delete(fcmToken);
+                throw new GeneralException(FCM_TOKEN_INVALID);
+            }
         }
     }
 
@@ -160,17 +184,17 @@ public class FcmService {
         return googleCredentials.getAccessToken().getTokenValue();
     }
 
-    // FCM 전송 정보를 기반으로 메시지를 구성합니다. (Object -> String)
-    private String makeMessage(FcmRequest.sendMessageDto fcmRequest) throws JsonProcessingException {
+    // FCM 전송 정보(개별 토큰)를 기반으로 메시지를 구성합니다. (Object -> String)
+    private String makeMessage(String token, String title, String body) throws JsonProcessingException {
 
         ObjectMapper om = new ObjectMapper();
 
         FcmMessageDto fcmMessageDto = FcmMessageDto.builder()
                 .message(FcmMessageDto.Message.builder()
-                        .token(fcmRequest.getToken())
+                        .token(token)
                         .notification(FcmMessageDto.Notification.builder()
-                                .title(fcmRequest.getTitle())
-                                .body(fcmRequest.getBody())
+                                .title(title)
+                                .body(body)
                                 .image(null)
                                 .build()
                         ).build()).validateOnly(false).build();
@@ -178,28 +202,27 @@ public class FcmService {
         return om.writeValueAsString(fcmMessageDto);
     }
 
-    // 23시 정기 알림
-    @Transactional
-    public void sendRegularAlarm() throws IOException {
-        List<FcmToken> fcmTokens = fcmTokenRepository.findAll();
+    private String makeMessageToTopic(String topic, String title, String body) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
 
-        for (FcmToken fcmToken : fcmTokens) {
+        FcmTopicDto fcmTopicDto = FcmTopicDto.builder()
+                .message(FcmTopicDto.Message.builder()
+                        .topic(topic)
+                        .notification(FcmTopicDto.Notification.builder()
+                                .title(title)
+                                .body(body)
+                                .image(null)
+                                .build()
+                        ).build()).validateOnly(false).build();
 
-            FcmRequest.sendMessageDto sendRequest = FcmRequest.sendMessageDto.builder()
-                    .token(fcmToken.getToken())
-                    .title("일기카드 마감 1시간 전")
-                    .body("오늘의 일기카드가 곧 마감됩니다. 서두르세요!")
-                    .build();
-
-            sendMessageTo(sendRequest);
-        }
+        return om.writeValueAsString(fcmTopicDto);
     }
 
-    // 60일 동안 사용하지 않은 FCM 토큰 정보 삭제
+    // 30일 동안 접속하지 않은 FCM 토큰 정보 삭제
     @Transactional
     public void cleanUpOldFcmTokens() {
-        LocalDateTime limitDate = LocalDateTime.now().minusDays(60);
-        fcmTokenRepository.deleteByRecentlyUsedBefore(limitDate);
+        LocalDateTime limitDate = LocalDateTime.now().minusDays(30);
+        fcmTokenRepository.deleteByConnectedAtBefore(limitDate);
     }
 
     // 유저의 모든 FCM Token 삭제
