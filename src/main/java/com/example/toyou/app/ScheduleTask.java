@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -41,5 +43,14 @@ public class ScheduleTask {
     public void cleanUpOldFcmTokens() {
         log.info("Starting cleanUpOldFcmTokens");
         fcmService.cleanUpOldFcmTokens();
+    }
+
+    /**
+     * 매일 23시 정기 알림
+     */
+    @Scheduled(cron = "0 0 23 * * *", zone = "Asia/Seoul")
+    public void regularAlarm() throws IOException {
+        log.info("Sending regularAlarm at 23:00");
+        fcmService.sendRegularAlarm();
     }
 }
