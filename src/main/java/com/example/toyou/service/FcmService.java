@@ -3,7 +3,9 @@ package com.example.toyou.service;
 import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.FcmResponse;
+import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.FcmToken;
+import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 import com.example.toyou.app.dto.FcmMessageDto;
 import com.example.toyou.app.dto.FcmRequest;
@@ -174,6 +176,23 @@ public class FcmService {
                         ).build()).validateOnly(false).build();
 
         return om.writeValueAsString(fcmMessageDto);
+    }
+
+    // 23시 정기 알림
+    @Transactional
+    public void sendRegularAlarm() throws IOException {
+        List<FcmToken> fcmTokens = fcmTokenRepository.findAll();
+
+        for (FcmToken fcmToken : fcmTokens) {
+
+            FcmRequest.sendMessageDto sendRequest = FcmRequest.sendMessageDto.builder()
+                    .token(fcmToken.getToken())
+                    .title("일기카드 마감 1시간 전")
+                    .body("오늘의 일기카드가 곧 마감됩니다. 서두르세요!")
+                    .build();
+
+            sendMessageTo(sendRequest);
+        }
     }
 
     // 60일 동안 사용하지 않은 FCM 토큰 정보 삭제
