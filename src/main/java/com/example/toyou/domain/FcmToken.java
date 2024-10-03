@@ -23,9 +23,9 @@ public class FcmToken extends BaseEntity {
     @Column(unique = true)
     private String token;
 
-    private LocalDateTime recentlyUsed;
+    private LocalDateTime connectedAt;
 
-    public void setRecentlyUsed(LocalDateTime time){
-        this.recentlyUsed = time;
+    public void setConnectedAt(LocalDateTime time){
+        this.connectedAt = time;
     }
 }
