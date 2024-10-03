@@ -26,7 +26,7 @@ public class FcmController {
     private final FcmService fcmService;
 
     @PostMapping("/token")
-    @Operation(summary = "FCM 토큰 저장", description = "사용자의 고유한 FCM 토큰을 저장합니다.")
+    @Operation(summary = "FCM 토큰 저장(+갱신)", description = "사용자의 고유한 FCM 토큰을 저장합니다.")
     public CustomApiResponse<?> saveToken(Principal principal, @RequestBody @Valid FcmRequest.saveTokenDto fcmRequest) {
 
         Long userId = Long.parseLong(principal.getName());
@@ -61,17 +61,6 @@ public class FcmController {
         Long userId = Long.parseLong(principal.getName());
 
         fcmService.deleteToken(userId, fcmRequest.getToken());
-
-        return CustomApiResponse.onSuccess(null);
-    }
-
-    @PatchMapping("/token")
-    @Operation(summary = "FCM 토큰 타임스탬프 갱신", description = "FCM 토큰 타임스탬프를 갱신합니다.")
-    public CustomApiResponse<?> updateTokenTime(Principal principal, @RequestBody @Valid FcmRequest.saveTokenDto fcmRequest) {
-
-        Long userId = Long.parseLong(principal.getName());
-
-        fcmService.saveToken(userId, fcmRequest.getToken());
 
         return CustomApiResponse.onSuccess(null);
     }
