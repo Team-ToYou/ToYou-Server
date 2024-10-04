@@ -57,20 +57,33 @@ public class FcmService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(USER_NOT_FOUND));
 
-        Optional<FcmToken> existingToken = fcmTokenRepository.findByToken(token);
-
-        // 이미 존재하는 토큰이면 최근 접속 시간 업데이트
-        if (existingToken.isPresent()) {
-            FcmToken tokenToUpdate = existingToken.get();
-            tokenToUpdate.setConnectedAt(LocalDateTime.now());
-        } else {
-            // 없으면 새로 저장
-            FcmToken newFcmToken = FcmToken.builder()
-                    .user(user)
-                    .token(token)
-                    .build();
-            fcmTokenRepository.save(newFcmToken);
+        if (fcmTokenRepository.existsByToken(token)) {
+            throw new GeneralException(FCM_TOKEN_ALREADY_EXISTING);
         }
+
+        FcmToken newFcmToken = FcmToken.builder()
+                .user(user)
+                .token(token)
+                .build();
+
+        fcmTokenRepository.save(newFcmToken);
+    }
+
+    /**
+     * FCM Token 갱신
+     */
+    @Transactional
+    public void updateToken(Long userId, String token) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(USER_NOT_FOUND));
+
+        FcmToken tokenToUpdate = fcmTokenRepository.findByToken(token)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.FCM_TOKEN_NOT_FOUND));
+
+        if (tokenToUpdate.getUser() != user) throw new GeneralException(FCM_TOKEN_NOT_MINE);
+
+        tokenToUpdate.setConnectedAt(LocalDateTime.now());
     }
 
     /**
@@ -165,7 +178,7 @@ public class FcmService {
         } catch (Exception e) {
             log.error("FCM 요청 실패: {}", e.getMessage());
 
-            if(fcmToken != null) {
+            if (fcmToken != null) {
                 fcmTokenRepository.delete(fcmToken);
                 throw new GeneralException(FCM_TOKEN_INVALID);
             }

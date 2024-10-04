@@ -56,7 +56,8 @@ public enum ErrorStatus implements BaseErrorCode {
     // FCM 에러
     FCM_TOKEN_INVALID(HttpStatus.BAD_REQUEST, "FCM400", "유효하지 않은 FCM 토큰입니다."),
     FCM_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "FCM401", "해당 토큰 정보가 존재하지 않습니다."),
-    FCM_TOKEN_NOT_MINE(HttpStatus.FORBIDDEN, "FCM402", "해당 유저의 토큰이 아닙니다.");
+    FCM_TOKEN_NOT_MINE(HttpStatus.FORBIDDEN, "FCM402", "해당 유저의 토큰이 아닙니다."),
+    FCM_TOKEN_ALREADY_EXISTING(HttpStatus.CONFLICT, "FCM403", "이미 존재하는 토큰 정보입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
