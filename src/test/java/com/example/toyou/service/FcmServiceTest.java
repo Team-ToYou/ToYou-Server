@@ -1,5 +1,6 @@
 package com.example.toyou.service;
 
+import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.domain.FcmToken;
 import com.example.toyou.domain.User;
 import com.example.toyou.repository.FcmTokenRepository;
@@ -11,10 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -47,19 +49,39 @@ class FcmServiceTest {
     }
 
     @Test
-    @DisplayName("FCM 토큰 중복 저장을 방지합니다.")
-    void saveToken() {
+    @DisplayName("FCM 토큰 갱신 성공")
+    void updateToken() {
         // given
         User user = User.builder().nickname("test").build();
         userRepository.save(user);
 
-        fcmService.saveToken(user.getId(), "fcm");
+        FcmToken fcmToken = FcmToken.builder()
+                .user(user)
+                .token("fcm")
+                .connectedAt(LocalDateTime.of(2024, 10, 4, 10, 0))
+                .build();
+
+        fcmTokenRepository.save(fcmToken);
 
         // when
-        fcmService.saveToken(user.getId(), "fcm");
+        fcmService.updateToken(user.getId(), "fcm");
 
         // then
-        List<FcmToken> tokens = fcmTokenRepository.findAllByUser(user);
-        assertEquals(1, tokens.size(), "토큰의 개수가 1개여야 합니다.");
+        assertNotEquals(LocalDateTime.of(2024, 10, 4, 10, 0), fcmToken.getConnectedAt());
+    }
+
+    @Test
+    @DisplayName("FCM 토큰 갱신 실패 - 존재하지 않는 토큰 정보")
+    void updateToken_notFound() {
+        // given
+        User user = User.builder().nickname("test").build();
+        userRepository.save(user);
+
+        // when
+        Exception e = assertThrows(GeneralException.class, () -> {
+            fcmService.updateToken(user.getId(), "fcm");
+        });
+
+        assertThat(e.getMessage()).isEqualTo("FCM401: 해당 토큰 정보가 존재하지 않습니다.");
     }
 }
