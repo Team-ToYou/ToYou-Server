@@ -37,7 +37,7 @@ public class ScheduleTask {
     }
 
     /**
-     * 매일 자정, 60일 동안 사용되지 않은 FCM 토큰 삭제
+     * 매일 자정, 30일 동안 사용되지 않은 FCM 토큰 삭제
      */
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void cleanUpOldFcmTokens() {
