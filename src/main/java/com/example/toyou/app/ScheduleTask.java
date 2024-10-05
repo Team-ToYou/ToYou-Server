@@ -48,7 +48,7 @@ public class ScheduleTask {
     /**
      * 매일 23시 정기 알림
      */
-    @Scheduled(cron = "0 0 23 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 20 23 * * *", zone = "Asia/Seoul")
     public void regularAlarm() throws IOException {
         log.info("Sending regularAlarm at 23:00");
         fcmService.sendMessageToAll("일기카드 마감 1시간 전", "오늘의 일기카드가 곧 마감됩니다. 서두르세요!");
