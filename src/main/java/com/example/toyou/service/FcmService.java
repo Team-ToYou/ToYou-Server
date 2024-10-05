@@ -137,9 +137,9 @@ public class FcmService {
         sendFcmMessage(message, fcmToken);
     }
 
-    // FCM 전송(Topic: allUsers)
-    public void sendMessageToAll(String title, String body) throws IOException {
-        String message = makeMessageToTopic("allUsers", title, body);
+    // FCM 전송(Topic)
+    public void sendMessageToTopic(String topic, String title, String body) throws IOException {
+        String message = makeMessageToTopic(topic, title, body);
         sendFcmMessage(message, null);
     }
 

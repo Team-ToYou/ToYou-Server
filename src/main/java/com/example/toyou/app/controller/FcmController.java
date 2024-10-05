@@ -75,4 +75,13 @@ public class FcmController {
 
         return CustomApiResponse.onSuccess(null);
     }
+
+    @PostMapping("/topic")
+    @Operation(summary = "FCM 주제 메시징(테스트용)", description = "해당 Topic을 구독한 기기들로 일기카드 마감 메시지를 보냅니다.")
+    public CustomApiResponse<?> sendToTopic(@RequestParam(defaultValue = "allUsers") String topic) throws IOException {
+
+        fcmService.sendMessageToTopic(topic, "일기카드 마감 1시간 전", "오늘의 일기카드가 곧 마감됩니다. 서두르세요!");
+
+        return CustomApiResponse.onSuccess(null);
+    }
 }
