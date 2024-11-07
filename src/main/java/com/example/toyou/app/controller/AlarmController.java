@@ -36,7 +36,7 @@ public class AlarmController {
     @DeleteMapping("/{alarmId}")
     @Operation(summary = "알림 삭제", description = "특정 알림을 삭제합니다.")
     public CustomApiResponse<?> deleteFriendRequest(Principal principal,
-                                                 @PathVariable Long alarmId) {
+                                                    @PathVariable Long alarmId) {
 
         Long userId = Long.parseLong(principal.getName());
 

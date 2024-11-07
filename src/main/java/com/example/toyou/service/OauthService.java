@@ -58,16 +58,19 @@ public class OauthService {
      */
     @Transactional
     public void kakaoLogin(String oauthAccessToken, HttpServletResponse response) {
+        log.info("카카오 로그인");
         //OAuth2 액세스 토큰으로 회원 정보 요청
         JsonNode responseJson = getKakaoUserInfo(oauthAccessToken);
 
         //oauthId 조회
         String oauthId = responseJson.get("id").asText();
+        log.info("OAuthId 조회 완료: " + oauthId);
 
         String accessToken = "";
         String refreshToken = "";
 
         Optional<User> optionalUser = userRepository.findByOauthInfo_OauthId(oauthId);
+        log.info("DB에 사용자 존재 여부: " + optionalUser.isPresent());
 
         //DB에 회원정보가 있을때 토큰 발급
         if (optionalUser.isPresent()) {
