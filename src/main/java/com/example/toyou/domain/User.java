@@ -78,6 +78,7 @@ public class User extends BaseEntity {
     public void setDeletedAt() {
         this.deletedAt = LocalDateTime.now();
         String randomSuffix = UUID.randomUUID().toString();
-        nickname += randomSuffix;
+        this.nickname += randomSuffix;
+        this.isDeleted = true;
     }
 }

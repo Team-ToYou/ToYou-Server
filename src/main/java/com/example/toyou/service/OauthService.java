@@ -199,7 +199,7 @@ public class OauthService {
         userRepository.save(user);
 
         // 실제로 delete 호출하여 @SQLDelete로 처리
-        userRepository.delete(user);
+//        userRepository.delete(user);
 
         //카카오 액세스 토큰 조회
         String oauthAccessToken = user.getOauthInfo().getOauthAccessToken();
