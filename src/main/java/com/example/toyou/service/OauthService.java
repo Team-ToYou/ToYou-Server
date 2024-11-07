@@ -194,6 +194,11 @@ public class OauthService {
 
         //유저 정보 soft delete
         user.setDeletedAt();
+
+        // 삭제된 유저 정보 업데이트
+        userRepository.save(user);
+
+        // 실제로 delete 호출하여 @SQLDelete로 처리
         userRepository.delete(user);
 
         //카카오 액세스 토큰 조회
