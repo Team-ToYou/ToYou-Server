@@ -1,6 +1,7 @@
 package com.example.toyou.service;
 
 import com.example.toyou.app.dto.CardRequest;
+import com.example.toyou.app.dto.CardResponse;
 import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
@@ -61,10 +62,67 @@ class CardServiceTest {
     }
 
     @Test
+    @DisplayName("일기카드 생성 성공")
+    void createCardTest() {
+
+        // given
+        User user = User.builder().nickname("test").build();
+        userRepository.save(user);
+
+        Question question1 = Question.builder()
+                .user(user)
+                .questioner("questioner1")
+                .content("content1")
+                .answer("answer1")
+                .questionType(QuestionType.SHORT_ANSWER)
+                .build();
+        questionRepository.save(question1);
+
+        Question question2 = Question.builder()
+                .user(user)
+                .questioner("questioner2")
+                .content("content2")
+                .answer("answer2")
+                .questionType(QuestionType.SHORT_ANSWER)
+                .build();
+        questionRepository.save(question2);
+
+        CardRequest.createCardDTO createDto = CardRequest.createCardDTO.builder()
+                .exposure(true)
+                .questionList(new ArrayList<>(List.of(
+                        CardRequest.qa.builder()
+                                .questionId(question1.getId())
+                                .answer("answer1")
+                                .build(),
+                        CardRequest.qa.builder()
+                                .questionId(question2.getId())
+                                .answer("answer2")
+                                .build()
+                )))
+                .build();
+
+        // when
+        CardResponse.createCardDTO createCardDTO = cardService.createCard(user.getId(), createDto);
+
+        // then
+        Long cardId = createCardDTO.getCardId();
+        DiaryCard createdCard = cardRepository.findById(cardId)
+                .orElseThrow(() -> new AssertionError("생성된 카드가 없습니다."));
+
+        // 카드의 질문 목록 확인
+        List<Question> createdQuestions = createdCard.getQuestionList();
+        assertEquals(2, createdQuestions.size(), "카드에 연결된 질문의 수가 잘못되었습니다.");
+
+        // 질문 내용 검증
+        assertEquals(question1.getId(), createdQuestions.get(0).getId(), "첫 번째 질문이 잘못되었습니다.");
+        assertEquals("answer1", createdQuestions.get(0).getAnswer(), "첫 번째 질문의 답변이 잘못되었습니다.");
+        assertEquals(question2.getId(), createdQuestions.get(1).getId(), "두 번째 질문이 잘못되었습니다.");
+        assertEquals("answer2", createdQuestions.get(1).getAnswer(), "두 번째 질문의 답변이 잘못되었습니다.");
+    }
+
+    @Test
     @DisplayName("일기카드 수정 성공")
     void updateCardTest() {
-        Logger logger = LoggerFactory.getLogger(getClass());
-
         // given
         User user = User.builder().nickname("test").build();
         userRepository.save(user);
@@ -116,7 +174,7 @@ class CardServiceTest {
                 .exposure(false)
                 .user(user)
                 .emotion(Emotion.NORMAL)
-                .questionList(questionList)
+                .questionList(new ArrayList<>(questionList))
                 .build();
 
         cardRepository.save(card);
@@ -136,6 +194,11 @@ class CardServiceTest {
         logger.info("수정 후, questionList: {}", updatedCard.getQuestionList().stream()
                 .map(Question::getId)
                 .collect(Collectors.toList()));
+
+        // DB에 질문이 남아 있는지 체크
+        assertNotNull(questionRepository.findById(question1.getId()).orElse(null), "question1이 DB에 없습니다.");
+        assertNotNull(questionRepository.findById(question2.getId()).orElse(null), "question2가 DB에 없습니다.");
+        assertNotNull(questionRepository.findById(question3.getId()).orElse(null), "question3이 DB에 없습니다.");
 
         assertEquals(question2.getId(), updatedCard.getQuestionList().get(0).getId(), "question2가 첫 번째 인덱스에 없습니다.");
         assertEquals("answer2.1", updatedCard.getQuestionList().get(0).getAnswer(), "question2의 답변이 변경되지 않았습니다.");

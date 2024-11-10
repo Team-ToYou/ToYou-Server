@@ -22,7 +22,7 @@ public class DiaryCard extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "diaryCard", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "diaryCard")
     @Builder.Default
     private List<Question> questionList = new ArrayList<>();
 

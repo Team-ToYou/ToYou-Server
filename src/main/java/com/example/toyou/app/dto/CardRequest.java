@@ -10,6 +10,7 @@ import java.util.List;
 public class CardRequest {
 
     @Getter
+    @Builder
     public static class createCardDTO {
 
         @Schema(description = "공개 여부", nullable = false, example = "true")
