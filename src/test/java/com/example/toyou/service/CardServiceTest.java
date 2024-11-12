@@ -204,4 +204,49 @@ class CardServiceTest {
         assertEquals("answer2.1", updatedCard.getQuestionList().get(0).getAnswer(), "question2의 답변이 변경되지 않았습니다.");
         assertEquals(question3.getId(), updatedCard.getQuestionList().get(1).getId(), "질문 목록에 question3이 없습니다.");
     }
+
+    @Test
+    @DisplayName("일기카드 삭제 성공")
+    void deleteCardTest() {
+        // given
+        User user = User.builder().nickname("test").build();
+        userRepository.save(user);
+
+        Question question1 = Question.builder()
+                .user(user)
+                .questioner("questioner1")
+                .content("content1")
+                .answer("answer1")
+                .questionType(QuestionType.SHORT_ANSWER)
+                .build();
+        questionRepository.save(question1);
+
+        Question question2 = Question.builder()
+                .user(user)
+                .questioner("questioner2")
+                .content("content2")
+                .answer("answer2")
+                .questionType(QuestionType.SHORT_ANSWER)
+                .build();
+        questionRepository.save(question2);
+
+        List<Question> questionList = Arrays.asList(question1, question2);
+
+        DiaryCard card = DiaryCard.builder()
+                .exposure(false)
+                .user(user)
+                .emotion(Emotion.NORMAL)
+                .questionList(new ArrayList<>(questionList))
+                .build();
+
+        cardRepository.save(card);
+
+        // when
+        cardService.deleteCard(user.getId(), card.getId());
+
+        // then
+        assertFalse(cardRepository.existsById(card.getId()), "DiaryCard should be deleted.");
+        assertTrue(questionRepository.existsById(question1.getId()), "Question1 should remain in the database.");
+        assertTrue(questionRepository.existsById(question2.getId()), "Question2 should remain in the database.");
+    }
 }
