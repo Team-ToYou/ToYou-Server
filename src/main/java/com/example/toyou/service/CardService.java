@@ -60,6 +60,8 @@ public class CardService {
         DiaryCard newCard = CardConverter.toCard(user, request.isExposure());
         cardRepository.save(newCard);
 
+        List<Question> questionList = newCard.getQuestionList();
+
         // 1.qaList에서 각 qa 객체의 questionId를 사용하여 Question을 검색
         // 2.answer를 수정 & 일기카드 연동
         request.getQuestionList()
@@ -78,6 +80,8 @@ public class CardService {
 
                     question.setAnswer(safeContent);
                     question.setDiaryCard(newCard);
+
+                    questionList.add(question);
                 });
 
         return CardConverter.toCreateCardDTO(newCard.getId());
@@ -116,8 +120,8 @@ public class CardService {
         if(user != card.getUser()) throw new GeneralException(ErrorStatus.NOT_OWNER);
 
         List<Question> questionList = card.getQuestionList();
-        questionList.forEach(question -> question.setDiaryCard(null)); // 질문 목록의 각 질문에 대해 카드 ID를 null로 설정
-        questionList.clear(); // 카드의 질문 목록 비우기
+        questionList.forEach(question -> question.setDiaryCard(null));
+        questionList.clear();
 
         // 1.qaList에서 각 qa 객체의 questionId를 사용하여 Question을 검색
         // 2.answer를 수정 & 일기카드 연동
@@ -137,6 +141,8 @@ public class CardService {
 
                     question.setAnswer(safeContent);
                     question.setDiaryCard(card);
+
+                    questionList.add(question);
                 });
 
         card.setExposure(request.isExposure()); // 공개 여부 설정
