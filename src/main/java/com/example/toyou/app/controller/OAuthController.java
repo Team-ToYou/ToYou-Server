@@ -61,6 +61,8 @@ public class OAuthController {
     @Operation(summary = "로그아웃", description = "access 토큰과 refresh 토큰을 통해 로그아웃을 진행합니다.")
     public CustomApiResponse<?> logout(Principal principal, @RequestHeader String refreshToken) {
 
+        log.info("logout");
+
         Long userId = Long.parseLong(principal.getName());
 
         oauthService.kakaoLogout(userId, refreshToken);

@@ -97,7 +97,6 @@ public class OauthService {
      */
     @Transactional
     public void kakaoLogout(Long userId, String refreshToken) {
-
         //refresh 토큰 검사 후 유저 id 추출
         Long userIdFromRefresh = checkRefreshToken(refreshToken);
 
