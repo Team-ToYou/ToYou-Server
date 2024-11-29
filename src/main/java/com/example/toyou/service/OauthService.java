@@ -48,7 +48,7 @@ public class OauthService {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String REDIRECT_URI;
 
-    private static final Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(1);
+    private static final Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(10);
     private static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
     private static final String REFRESH_TOKEN_CATEGORY = "refresh";
     private static final String ACCESS_TOKEN_CATEGORY = "access";
@@ -233,6 +233,10 @@ public class OauthService {
         //make new JWT
         String newAccess = issueAccessToken(user);
         String newRefresh = issueRefreshToken(user);
+
+        log.info("JWT 토큰 재발급");
+        log.info("access: " + newAccess);
+        log.info("refresh : " + newRefresh);
 
         response.setHeader("access_token", newAccess);
         response.setHeader("refresh_token", newRefresh);
