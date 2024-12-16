@@ -153,7 +153,8 @@ public class FriendService {
                 );
 
         // 알람 삭제
-        Alarm alarmToDelete = alarmRepository.findByFriendRequest(friendRequestToDelete);
+        Alarm alarmToDelete = alarmRepository.findByFriendRequest(friendRequestToDelete)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.ALARM_NOT_FOUND));
 
         if (alarmToDelete != null) alarmRepository.delete(alarmToDelete);
 
@@ -165,6 +166,8 @@ public class FriendService {
      */
     @Transactional
     public FcmResponse.getMyNameDto acceptFriendRequest(Long userId, FriendRequestRequest.acceptFriendRequestDTO request) {
+
+        log.info("친구 요청 승인: {}", userId);
 
         // 친구 신청 대상(본인)
         User receiver = userRepository.findById(userId)
@@ -183,7 +186,8 @@ public class FriendService {
         friendRequestToAccept.setAccepted();
 
         // 알림 수정
-        Alarm alarmToUpdate = alarmRepository.findByFriendRequest(friendRequestToAccept);
+        Alarm alarmToUpdate = alarmRepository.findByFriendRequest(friendRequestToAccept)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.ALARM_NOT_FOUND));
 
         alarmToUpdate.updateForRequestAccepted(receiver, requester);
 

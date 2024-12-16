@@ -2,6 +2,8 @@ package com.example.toyou.app.controller;
 
 import com.example.toyou.apiPayload.CustomApiResponse;
 import com.example.toyou.app.dto.*;
+import com.example.toyou.domain.User;
+import com.example.toyou.jwt.TokenProvider;
 import com.example.toyou.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/users")
@@ -22,6 +25,7 @@ import java.security.Principal;
 public class UserController {
 
     private final UserService userService;
+    private final TokenProvider tokenProvider;
 
     @GetMapping("/home")
     @Operation(summary = "홈 화면 조회", description = "홈 화면에 나타나는 유저의 정보를 조회합니다.")
@@ -98,5 +102,17 @@ public class UserController {
         log.info("마이페이지 조회: userId={}", userId);
 
         return CustomApiResponse.onSuccess(myPageInfo);
+    }
+
+    @GetMapping("/{userId}")
+    @Operation(summary = "액세스 토큰 발급(테스트용)", description = "해당 userId의 액세스 토큰 발급(테스트용)")
+    public String getToken(@PathVariable Long userId){
+
+        User user = userService.findById(userId);
+        String token = tokenProvider.generateToken(user, Duration.ofDays(14), "access");
+
+        log.info("액세스 토큰 발급: userId={}", userId);
+
+        return token;
     }
 }

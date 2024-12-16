@@ -13,7 +13,7 @@ public interface AlarmRepository extends JpaRepository<Alarm, Long> {
 
     List<Alarm> findByUser(User user);
 
-    Alarm findByFriendRequest(FriendRequest friendRequest);
+    Optional<Alarm> findByFriendRequest(FriendRequest friendRequest);
 
     Alarm findByQuestion(Question question);
 }
