@@ -104,7 +104,7 @@ public class UserController {
         return CustomApiResponse.onSuccess(myPageInfo);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/test/{userId}")
     @Operation(summary = "액세스 토큰 발급(테스트용)", description = "해당 userId의 액세스 토큰 발급(테스트용)")
     public String getToken(@PathVariable Long userId){
 
