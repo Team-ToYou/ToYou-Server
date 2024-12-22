@@ -64,13 +64,13 @@ public class OauthService {
 
         //oauthId 조회
         String oauthId = responseJson.get("id").asText();
-        log.info("OAuthId 조회 완료: " + oauthId);
+        log.info("조회된 oauthId: {}", oauthId);
 
         String accessToken = "";
         String refreshToken = "";
 
         Optional<User> optionalUser = userRepository.findByOauthInfo_OauthId(oauthId);
-        log.info("DB에 사용자 존재 여부: " + optionalUser.isPresent());
+        log.info("DB에 사용자 존재 여부: {}", optionalUser.isPresent());
 
         //DB에 회원정보가 있을때 토큰 발급
         if (optionalUser.isPresent()) {
@@ -296,7 +296,7 @@ public class OauthService {
                 throw new RuntimeException(e);
             }
 
-            System.out.println("kakao_access_token : " + jsonNode.get("access_token").asText());
+            log.info("kakao_access_token : {}", jsonNode.get("access_token").asText());
             return jsonNode.get("access_token").asText();
         } catch (HttpClientErrorException e) {
             throw new GeneralException(INVALID_CODE);

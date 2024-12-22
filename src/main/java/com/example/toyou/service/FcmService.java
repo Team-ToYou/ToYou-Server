@@ -54,6 +54,8 @@ public class FcmService {
     @Transactional
     public void saveToken(Long userId, String token) {
 
+        log.info("FCM Token 저장: userId={}, token={}", userId, token);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(USER_NOT_FOUND));
 
@@ -74,6 +76,7 @@ public class FcmService {
      */
     @Transactional
     public void updateToken(Long userId, String token) {
+        log.info("FCM Token 갱신: userId={}, token={}", userId, token);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(USER_NOT_FOUND));
@@ -84,12 +87,14 @@ public class FcmService {
         if (tokenToUpdate.getUser() != user) throw new GeneralException(FCM_TOKEN_NOT_MINE);
 
         tokenToUpdate.setConnectedAt(LocalDateTime.now());
+        log.info("갱신 시각 : {}", tokenToUpdate.getConnectedAt());
     }
 
     /**
      * FCM Token 조회
      */
     public FcmResponse.getTokenDto getToken(String nickname) {
+        log.info("FCM Token 조회: keyword={}", nickname);
 
         User user = userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -99,6 +104,8 @@ public class FcmService {
         List<String> tokenList = fcmTokens.stream()
                 .map(FcmToken::getToken)
                 .toList();
+
+        log.info("조회된 토큰 개수 : {}", tokenList.size());
 
         return FcmResponse.getTokenDto.builder()
                 .token(tokenList)
@@ -110,6 +117,7 @@ public class FcmService {
      */
     @Transactional
     public void deleteToken(Long userId, String token) {
+        log.info("FCM Token 삭제: userId={}, token={}", userId, token);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(USER_NOT_FOUND));
@@ -129,6 +137,8 @@ public class FcmService {
     public void sendMessageTo(FcmRequest.sendMessageDto fcmRequest) throws IOException {
 
         String token = fcmRequest.getToken();
+
+        log.info("FCM 전송(개별 토큰): token={}, title={}, body={}", token, fcmRequest.getTitle(), fcmRequest.getBody());
 
         FcmToken fcmToken = fcmTokenRepository.findByToken(token)
                 .orElseThrow(() -> new GeneralException(FCM_TOKEN_NOT_FOUND));

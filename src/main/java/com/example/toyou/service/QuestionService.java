@@ -46,6 +46,9 @@ public class QuestionService {
      */
     @Transactional
     public FcmResponse.getMyNameDto createQuestion(Long userId, QuestionRequest.createQuestionDTO request) {
+
+        log.info("질문 생성: userId={}, target={}", userId, request.getTarget());
+
         // 본인 검색
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -67,10 +70,12 @@ public class QuestionService {
 
 
         String safeContent = badWordFiltering.change(request.getContent(), new String[]{" ", ",", ".", "!", "?", "@", "1"});
-        log.info(safeContent);
+        log.info("생성된 질문 내용: {}", safeContent);
         Question newQuestion = QuestionConverter.toQuestion(target, questionType, questioner, safeContent);
 
         questionRepository.save(newQuestion);
+
+        log.info("생성된 질문 ID: {}", newQuestion.getId());
 
         // 선택형 일때만 답변 선택란 입력 가능
         if (questionType != QuestionType.OPTIONAL && request.getAnswerOptionList() != null)
@@ -102,6 +107,8 @@ public class QuestionService {
      */
     public QuestionResponse.GetQuestionsDTO getQuestions(Long userId) {
 
+        log.info("질문 목록 조회: userId={}", userId);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
@@ -110,6 +117,8 @@ public class QuestionService {
         LocalDateTime endOfDay = today.atTime(23, 59, 59);
 
         List<Question> questions = questionRepository.findByUserAndCreatedAtBetween(user, startOfDay, endOfDay);
+
+        log.info("조회된 질문 개수: {}", questions.size());
 
         return QuestionConverter.toGetQuestionDTO(questions);
     }
@@ -122,7 +131,7 @@ public class QuestionService {
 
         List<Question> questionsToDelete = questionRepository.findByCreatedAtBeforeAndDiaryCardIsNull(startOfDay);
 
-        log.info("listSize={}", questionsToDelete.size());
+        log.info("삭제될 질문 개수: {}", questionsToDelete.size());
 
         for (Question question : questionsToDelete) {
 

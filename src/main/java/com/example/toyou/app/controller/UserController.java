@@ -35,8 +35,6 @@ public class UserController {
 
         HomeResponse.GetHomeDTO getHomeDTO = userService.getHome(userId);
 
-        log.info("홈화면 조회: userId={}", userId);
-
         return CustomApiResponse.onSuccess(getHomeDTO);
     }
 
@@ -49,8 +47,6 @@ public class UserController {
 
         userService.postEmotion(userId, request);
 
-        log.info("감정우표 선택: emotion={}", request.getEmotion());
-
         return CustomApiResponse.onSuccess(null);
     }
 
@@ -59,8 +55,6 @@ public class UserController {
     public CustomApiResponse<UserResponse.checkUserNicknameDTO> checkUserNickname(@RequestParam String nickname){
 
         UserResponse.checkUserNicknameDTO exists = userService.checkUserNickname(nickname);
-
-        log.info("닉네임 중복 확인: nickname={}", nickname);
 
         return CustomApiResponse.onSuccess(exists);
     }
@@ -73,8 +67,6 @@ public class UserController {
 
         userService.updateNickname(userId, request.getNickname());
 
-        log.info("닉네임 수정: nickname={}", request.getNickname());
-
         return CustomApiResponse.onSuccess(null);
     }
 
@@ -86,8 +78,6 @@ public class UserController {
 
         userService.updateStatus(userId, request.getStatus());
 
-        log.info("현재 상태 수정: status={}", request.getStatus());
-
         return CustomApiResponse.onSuccess(null);
     }
 
@@ -98,8 +88,6 @@ public class UserController {
         Long userId = Long.parseLong(principal.getName());
 
         UserResponse.GetMyPageDTO myPageInfo = userService.getMyPage(userId);
-
-        log.info("마이페이지 조회: userId={}", userId);
 
         return CustomApiResponse.onSuccess(myPageInfo);
     }
