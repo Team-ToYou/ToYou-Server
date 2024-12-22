@@ -26,12 +26,17 @@ public class AlarmService {
 
     @Transactional
     public AlarmResponse.getAlarmsDTO getAlarms(Long userId) {
+
+        log.info("알림 목록 조회: userId={}", userId);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         List<Alarm> alarms = alarmRepository.findByUser(user);
 
         alarms.forEach(Alarm::setChecked);
+
+        log.info("조회된 알림 개수 : {}", alarms.size());
 
         return AlarmConverter.toGetAlarmsDTO(alarms);
     }
@@ -41,6 +46,8 @@ public class AlarmService {
      */
     @Transactional
     public void deleteAlarm(Long userId, Long alarmId){
+
+        log.info("알림 삭제: userId={}, alarmId={}", userId, alarmId);
 
         // 유저 검색
         User user = userRepository.findById(userId)

@@ -40,6 +40,8 @@ public class CardService {
     @Transactional
     public CardResponse.createCardDTO createCard(Long userId, CardRequest.createCardDTO request) {
 
+        log.info("일기카드 생성: userId={}", userId);
+
         // 본인 검색
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -84,6 +86,8 @@ public class CardService {
                     questionList.add(question);
                 });
 
+        log.info("생성된 일키카드 ID : {}", newCard.getId());
+
         return CardConverter.toCreateCardDTO(newCard.getId());
     }
 
@@ -91,6 +95,8 @@ public class CardService {
      * 일기카드 상세 조회
      */
     public CardResponse.getCardDTO getCard(Long userId, Long cardId) {
+
+        log.info("일기카드 상세 조회: userId={}, cardId={}", userId, cardId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -110,6 +116,8 @@ public class CardService {
      */
     @Transactional
     public void updateCard(Long userId, Long cardId, CardRequest.updateCardDTO request) {
+
+        log.info("일기카드 수정: userId={}, cardId={}", userId, cardId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -154,6 +162,8 @@ public class CardService {
     @Transactional
     public void deleteCard(Long userId, Long cardId) {
 
+        log.info("일기카드 삭제: userId={}, cardId={}", userId, cardId);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
@@ -171,6 +181,8 @@ public class CardService {
     @Transactional
     public CardResponse.toggleExposureDTO toggleExposure(Long userId, Long cardId) {
 
+        log.info("일기카드 공개여부 전환: userId={}, cardId={}", userId, cardId);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
@@ -181,6 +193,8 @@ public class CardService {
 
         card.toggleExposure();
 
+        log.info("일기카드 공개여부 : {}", card.isExposure());
+
         return CardResponse.toggleExposureDTO.builder()
                 .exposure(card.isExposure())
                 .build();
@@ -190,6 +204,8 @@ public class CardService {
      * 내 일기카드 목록 조회
      */
     public CardResponse.getMyCardsDTO getMyCards(Long userId, int year, int month) {
+
+        log.info("내 일기카드 목록 조회 : userId={}, year={}, month={}", userId, year, month);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -205,6 +221,8 @@ public class CardService {
                 })
                 .toList();
 
+        log.info("조회된 일기카드 개수 : {}", filteredCards.size());
+
         return CardConverter.toGetMyCardsDTO(filteredCards);
     }
 
@@ -212,6 +230,8 @@ public class CardService {
      * 친구 일기카드 조회(월별)
      */
     public CardResponse.getFriendsCardsDTO getFriendsCards(Long userId, int year, int month) {
+
+        log.info("친구 일기카드 조회(월별) : userId={}, year={}, month={}", userId, year, month);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -232,6 +252,8 @@ public class CardService {
                 .filter(DiaryCard::isExposure)
                 .toList();
 
+        log.info("조회된 일기카드 개수 : {}", filteredCards.size());
+
         return CardConverter.toGetFriendsCardsDTO(filteredCards);
     }
 
@@ -239,6 +261,8 @@ public class CardService {
      * 친구 일기카드 조회(일별)
      */
     public CardResponse.getDailyFriendsCardsDTO getDailyFriendsCards(Long userId, int year, int month, int day) {
+
+        log.info("친구 일기카드 조회(일별) : userId={}, year={}, month={}, day={}", userId, year, month, day);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -259,6 +283,8 @@ public class CardService {
                 })
                 .filter(DiaryCard::isExposure)
                 .toList();
+
+        log.info("조회된 일기카드 개수 : {}", filteredCards.size());
 
         return CardConverter.toGetDailyFriendsCardsDTO(filteredCards);
     }

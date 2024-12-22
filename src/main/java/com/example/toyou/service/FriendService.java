@@ -38,12 +38,16 @@ public class FriendService {
      */
     public FriendResponse.GetFriendsDTO getFriends(Long userId) {
 
+        log.info("친구 목록 조회: userId={}", userId);
+
         // 유저 검색
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 리스트 조회
         List<User> friends = getFriendList(user);
+
+        log.info("조회된 친구 수 : {}", friends.size());
 
         return FriendConverter.toGetFriendsDTO(friends);
     }
@@ -69,6 +73,8 @@ public class FriendService {
      */
     public FriendResponse.searchFriendDTO searchFriend(Long userId, String keyword) {
 
+        log.info("친구(유저) 검색: userId={}, keyword={}", userId, keyword);
+
         // 본인 검색
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -93,6 +99,8 @@ public class FriendService {
             friendStatus = FriendStatus.NOT_FRIEND;
         }
 
+        log.info("친구 상태 : {}", friendStatus);
+
         return FriendConverter.toSearchFriendDTO(friend, friendStatus);
     }
 
@@ -101,6 +109,8 @@ public class FriendService {
      */
     @Transactional
     public FcmResponse.getMyNameDto createFriendRequest(Long userId, FriendRequestRequest.createFriendRequestDTO request) {
+
+        log.info("친구 요청: userId={}, friendName={}", userId, request.getNickname());
 
         // 본인 검색
         User user = userRepository.findById(userId)
@@ -126,6 +136,8 @@ public class FriendService {
 
         alarmRepository.save(newAlarm);
 
+        log.info("생성된 친구 요청 & 알림 : friendRequestId={}, alarmId={}", newFriendRequest.getId(), newAlarm.getId());
+
         return FcmResponse.getMyNameDto.builder()
                 .myName(user.getNickname())
                 .build();
@@ -136,6 +148,8 @@ public class FriendService {
      */
     @Transactional
     public void deleteFriendRequest(Long userId, FriendRequestRequest.deleteFriendRequestDTO request) {
+
+        log.info("친구 삭제 & 친구 요청 취소: userId={}, friendName={}", userId, request.getNickname());
 
         // 유저 검색
         User user = userRepository.findById(userId)
@@ -167,18 +181,18 @@ public class FriendService {
     @Transactional
     public FcmResponse.getMyNameDto acceptFriendRequest(Long userId, FriendRequestRequest.acceptFriendRequestDTO request) {
 
-        log.info("친구 요청 승인: {}", userId);
+        log.info("친구 요청 승인: userId={}, friendName={}", userId, request.getNickname());
 
         // 친구 신청 대상(본인)
         User receiver = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 신청 주체(상대)
-        User requester = userRepository.findByNickname(request.getNickname())
+        User sender = userRepository.findByNickname(request.getNickname())
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 요청 정보 확인
-        FriendRequest friendRequestToAccept = friendRepository.findByUserAndFriend(requester, receiver)
+        FriendRequest friendRequestToAccept = friendRepository.findByUserAndFriend(sender, receiver)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND));
 
         if (friendRequestToAccept.getAccepted()) throw new GeneralException(ErrorStatus.ALREADY_FRIENDS);
@@ -189,7 +203,9 @@ public class FriendService {
         Alarm alarmToUpdate = alarmRepository.findByFriendRequest(friendRequestToAccept)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.ALARM_NOT_FOUND));
 
-        alarmToUpdate.updateForRequestAccepted(receiver, requester);
+        alarmToUpdate.updateForRequestAccepted(receiver, sender);
+
+        log.info("수정된 알림 ID : {}", alarmToUpdate.getId());
 
         return FcmResponse.getMyNameDto.builder()
                 .myName(receiver.getNickname())
@@ -200,6 +216,8 @@ public class FriendService {
      * 작일 친구 일기카드 목록 조회
      */
     public FriendResponse.getFriendYesterdayDTO getFriendYesterday(Long userId) {
+
+        log.info("작일 친구 일기카드 목록 조회: userId={}", userId);
 
         // 유저 검색
         User user = userRepository.findById(userId)
@@ -226,6 +244,8 @@ public class FriendService {
                 )
                 .distinct() // 중복 제거
                 .toList();
+
+        log.info("작일 친구 일기카드 개수 : {}", friendsWithDiaryCardYesterday.size());
 
         return FriendConverter.toYesterdayDTO(friendsWithDiaryCardYesterday);
     }
