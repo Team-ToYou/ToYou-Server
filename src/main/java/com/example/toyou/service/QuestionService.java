@@ -144,28 +144,6 @@ public class QuestionService {
         }
     }
 
-    // 투유 자체 생성 질문 삭제
-//    @Transactional
-//    public void deleteToYouQuestions(User user) {
-//        LocalDate today = LocalDate.now();
-//        LocalDateTime startOfDay = today.atStartOfDay();
-//        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
-//
-//        List<Question> questionsToDelete = user.getQuestionList().stream()
-//                .filter(question -> question.getCreatedAt().isAfter(startOfDay) && question.getCreatedAt().isBefore(endOfDay))
-//                .filter(question -> "투유".equals(question.getQuestioner()))
-//                .toList();
-//
-//        for (Question question : questionsToDelete) {
-//            // 알람 삭제
-//            Alarm alarm = alarmRepository.findByQuestion(question);
-//            if(alarm != null) alarmRepository.delete(alarm);
-//
-//            question.deleteMappings(); // 연관 관계 해제
-//            questionRepository.delete(question);
-//        }
-//    }
-
     // 투유 질문 자체 생성
     @Transactional
     public void autoCreateQuestion(QuestionRequest.createQuestionDTO request) {
