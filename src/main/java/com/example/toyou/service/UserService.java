@@ -9,9 +9,7 @@ import com.example.toyou.domain.*;
 import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.QuestionType;
 import com.example.toyou.domain.enums.Status;
-import com.example.toyou.domain.mappings.UserCustomQuestion;
 import com.example.toyou.repository.CustomQuestionRepository;
-import com.example.toyou.repository.UserCustomQuestionRepository;
 import com.example.toyou.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import static com.example.toyou.apiPayload.code.status.ErrorStatus.EXISTING_NICKNAME;
 
@@ -34,7 +30,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final CustomQuestionRepository customQuestionRepository;
-    private final UserCustomQuestionRepository userCustomQuestionRepository;
     private final QuestionService questionService;
     private final FriendService friendService;
 
@@ -166,62 +161,49 @@ public class UserService {
 
         user.setEmotion(emotion);
 
-        // 오늘 중 이전에 생성된 맞춤형 질문 삭제
-//        questionService.deleteToYouQuestions(user);
-
         // 맞춤형 질문 생성
-        List<CustomQuestion> customQuestions = customQuestionRepository.findByUserStatus(user.getStatus());
+        List<CustomQuestion> shorts = customQuestionRepository.findByUserStatusAndQuestionType(user.getStatus(), QuestionType.SHORT_ANSWER);
+        List<CustomQuestion> optionals = customQuestionRepository.findByUserStatusAndQuestionType(user.getStatus(), QuestionType.OPTIONAL);
 
         // 필터링 조건에 따라 질문 생성
-        createAndProcessRandomQuestion(user, customQuestions, user.getTodayEmotion(), QuestionType.LONG_ANSWER);
-        createAndProcessRandomQuestion(user, customQuestions, null, QuestionType.SHORT_ANSWER);
-        createAndProcessRandomQuestion(user, customQuestions, null, QuestionType.OPTIONAL);
+        createLongQuestion(user);
+        createAndProcessRandomQuestion(user, shorts);
+        createAndProcessRandomQuestion(user, optionals);
     }
 
-    // 랜덤 질문 생성 및 처리
-    private void createAndProcessRandomQuestion(User user, List<CustomQuestion> customQuestions, Emotion emotion, QuestionType questionType) {
-        // 이미 사용한 UserCustomQuestion 목록을 조회
-        List<UserCustomQuestion> usedCustomQuestions = userCustomQuestionRepository.findByUserId(user.getId());
+    // 랜덤 질문 생성 및 처리(단문형 & 선택형)
+    private void createAndProcessRandomQuestion(User user, List<CustomQuestion> questions) {
 
-        // 사용된 CustomQuestion의 ID만 추출
-        List<Long> usedQuestionIds = usedCustomQuestions.stream()
-                .map(ucq -> ucq.getCustomQuestion().getId())
-                .toList();
-
-        List<CustomQuestion> filteredQuestions = customQuestions.stream()
-                .filter(question -> (emotion == null || Objects.equals(question.getEmotion(), emotion))
-                        && question.getQuestionType() == questionType
-                        && !usedQuestionIds.contains(question.getId())) // 생성된 질문 제외
-                .collect(Collectors.toList());
-
-        if (!filteredQuestions.isEmpty()) {
-            CustomQuestion randomQuestion = getRandomQuestion(filteredQuestions);
-            processQuestion(user, randomQuestion);
-        }
-    }
-
-    // 랜덤 질문 추출
-    private CustomQuestion getRandomQuestion(List<CustomQuestion> questions) {
+        // 랜덤 질문 추출
         Random random = new Random();
         int randomIndex = random.nextInt(questions.size());
-        return questions.get(randomIndex);
+        CustomQuestion randomQuestion = questions.get(randomIndex);
+
+        // 질문 생성
+        if (randomQuestion != null) {
+            QuestionRequest.createQuestionDTO request = QuestionConverter.toCreateQuestionDTO(user, randomQuestion);
+            questionService.autoCreateQuestion(request);
+        }
     }
 
-    // 질문 처리 및 자체 생성 내역 저장
-    private void processQuestion(User user, CustomQuestion cq) {
-        if (cq != null) {
-            // 질문 생성
-            QuestionRequest.createQuestionDTO request = QuestionConverter.toCreateQuestionDTO(user, cq);
-            questionService.autoCreateQuestion(request);
+    // 장문형 생성
+    private void createLongQuestion(User user) {
 
-            // 자체 생성 내역 저장
-            UserCustomQuestion userCustomQuestion = UserCustomQuestion.builder()
-                    .user(user)
-                    .customQuestion(cq)
-                    .build();
+        String content = switch (user.getTodayEmotion()) {
+            case ANGRY -> "오늘 하루는 어떤 일이 있었길래 기분이 상했을까? 무슨 일이 있었는지 얘기해줄래?";
+            case EXCITED -> "오늘 하루는 정말 흥미진진했겠네! 어떤 일이 너를 들뜨게 만들었을까?";
+            case HAPPY -> "오늘 하루, 기분이 무척 좋았겠네! 어떤 일이 너를 행복하게 만들었어?";
+            case NERVOUS -> "오늘 하루는 뭔가 불안했을 것 같은데, 무슨 일이 너를 초조하게 만들었어?";
+            default -> "오늘 하루는 특별한 일은 없었지만, 그래도 평온한 기분이었을 것 같아. 뭐 하면서 보냈어?"; // NORMAL
+        };
 
-            userCustomQuestionRepository.save(userCustomQuestion);
-        }
+        CustomQuestion customQuestion = CustomQuestion.builder()
+                .questionType(QuestionType.LONG_ANSWER)
+                .content(content)
+                .build();
+
+        QuestionRequest.createQuestionDTO request = QuestionConverter.toCreateQuestionDTO(user, customQuestion);
+        questionService.autoCreateQuestion(request);
     }
 
     // 감정 초기화(매일 자정 실행)

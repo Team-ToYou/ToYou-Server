@@ -20,9 +20,6 @@ public class CustomQuestion {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private Emotion emotion;
-
-    @Enumerated(EnumType.STRING)
     private QuestionType questionType;
 
     @Enumerated(EnumType.STRING)
