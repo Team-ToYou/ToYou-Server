@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -167,10 +168,9 @@ public class FriendService {
                 );
 
         // 알람 삭제
-        Alarm alarmToDelete = alarmRepository.findByFriendRequest(friendRequestToDelete)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.ALARM_NOT_FOUND));
+        Optional<Alarm> alarmToDelete = alarmRepository.findByFriendRequest(friendRequestToDelete);
 
-        if (alarmToDelete != null) alarmRepository.delete(alarmToDelete);
+        alarmToDelete.ifPresent(alarmRepository::delete);
 
         friendRepository.delete(friendRequestToDelete);
     }

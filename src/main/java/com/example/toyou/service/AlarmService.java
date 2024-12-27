@@ -6,6 +6,7 @@ import com.example.toyou.app.dto.AlarmResponse;
 import com.example.toyou.converter.AlarmConverter;
 import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.User;
+import com.example.toyou.domain.enums.AlarmType;
 import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,9 @@ public class AlarmService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.ALARM_NOT_FOUND));
 
         if(alarm.getUser() != user) throw new GeneralException(ErrorStatus.ALARM_NOT_MINE);
+
+        if(alarm.getAlarmType() == AlarmType.FRIEND_REQUEST)
+            throw new GeneralException(ErrorStatus.FRIEND_REQUEST_ALARM_CANT_BE_DELETED);
 
         alarmRepository.delete(alarm);
     }
