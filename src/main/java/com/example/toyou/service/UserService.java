@@ -84,7 +84,7 @@ public class UserService {
         User user = findById(userId);
 
         return UserResponse.checkUserNicknameDTO.builder()
-                .exists(user.getNickname().equals(nickname) && userRepository.existsByNickname(nickname))
+                .exists(!user.getNickname().equals(nickname) && userRepository.existsByNickname(nickname))
                 .build();
     }
 
