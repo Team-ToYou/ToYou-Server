@@ -48,7 +48,7 @@ public class OauthService {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String REDIRECT_URI;
 
-    private static final Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(30);
+    private static final Duration ACCESS_TOKEN_DURATION = Duration.ofSeconds(10);
     private static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
     private static final String REFRESH_TOKEN_CATEGORY = "refresh";
     private static final String ACCESS_TOKEN_CATEGORY = "access";
