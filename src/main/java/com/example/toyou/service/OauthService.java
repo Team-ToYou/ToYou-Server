@@ -58,7 +58,7 @@ public class OauthService {
      */
     @Transactional
     public void kakaoLogin(String oauthAccessToken, HttpServletResponse response) {
-        log.info("카카오 로그인");
+        log.info("[카카오 로그인]");
         //OAuth2 액세스 토큰으로 회원 정보 요청
         JsonNode responseJson = getKakaoUserInfo(oauthAccessToken);
 
@@ -97,6 +97,9 @@ public class OauthService {
      */
     @Transactional
     public void kakaoLogout(Long userId, String refreshToken) {
+
+        log.info("[로그아웃]");
+
         //refresh 토큰 검사 후 유저 id 추출
         Long userIdFromRefresh = checkRefreshToken(refreshToken);
 
@@ -133,6 +136,7 @@ public class OauthService {
      */
     @Transactional
     public void registerOauthUser(String oauthAccessToken, UserRequest.registerUserDTO request, HttpServletResponse response) {
+        log.info("[회원가입]");
 
         //OAuth2 액세스 토큰으로 회원 정보 요청
         JsonNode responseJson = getKakaoUserInfo(oauthAccessToken);
@@ -176,6 +180,8 @@ public class OauthService {
      */
     @Transactional
     public void kakaoUnlink(Long userId, String refreshToken) {
+
+        log.info("[회원 탈퇴]");
 
         //refresh 토큰 검사 후 유저 id 추출
         Long userIdFromRefresh = checkRefreshToken(refreshToken);
@@ -234,7 +240,7 @@ public class OauthService {
         String newAccess = issueAccessToken(user);
         String newRefresh = issueRefreshToken(user);
 
-        log.info("JWT 토큰 재발급");
+        log.info("[JWT 토큰 재발급]");
         log.info("access: " + newAccess);
         log.info("refresh : " + newRefresh);
 

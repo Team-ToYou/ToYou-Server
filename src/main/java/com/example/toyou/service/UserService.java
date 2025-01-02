@@ -38,7 +38,7 @@ public class UserService {
      */
     public HomeResponse.GetHomeDTO getHome(Long userId){
 
-        log.info("홈화면 조회: userId={}", userId);
+        log.info("[홈화면 조회] userId={}", userId);
 
         // 유저 검색
         User user = findById(userId);
@@ -79,7 +79,7 @@ public class UserService {
      * 닉네임 중복 확인
      */
     public UserResponse.checkUserNicknameDTO checkUserNickname(String nickname) {
-        log.info("닉네임 중복 확인: nickname={}", nickname);
+        log.info("[닉네임 중복 확인] nickname={}", nickname);
 
         return UserResponse.checkUserNicknameDTO.builder()
                 .exists(userRepository.existsByNickname(nickname))
@@ -91,7 +91,7 @@ public class UserService {
      */
     @Transactional
     public void updateNickname(Long userId, String nickname) {
-        log.info("닉네임 수정: userId={}, nickname={}", userId, nickname);
+        log.info("[닉네임 수정] userId={}, nickname={}", userId, nickname);
 
         User user = findById(userId);
 
@@ -105,7 +105,7 @@ public class UserService {
      */
     @Transactional
     public void updateStatus(Long userId, Status status) {
-        log.info("현재 상태 수정: userId={}, status={}", userId, status);
+        log.info("[현재 상태 수정] userId={}, status={}", userId, status);
 
         User user = findById(userId);
         user.setStatus(status);
@@ -115,7 +115,7 @@ public class UserService {
      * 마이페이지 조회
      */
     public UserResponse.GetMyPageDTO getMyPage(Long userId) {
-        log.info("마이페이지 조회: userId={}", userId);
+        log.info("[마이페이지 조회] userId={}", userId);
 
         // 유저 검색
         User user = userRepository.findById(userId)
@@ -140,7 +140,7 @@ public class UserService {
     @Transactional
     public void postEmotion(Long userId, HomeRequest.postEmotionDTO request){
 
-        log.info("감정우표 선택: userId={}, emotion={}", userId, request.getEmotion());
+        log.info("[감정우표 선택] userId={}, emotion={}", userId, request.getEmotion());
 
         User user = findById(userId);
         Emotion emotion = request.getEmotion();

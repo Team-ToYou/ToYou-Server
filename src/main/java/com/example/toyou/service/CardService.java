@@ -40,7 +40,7 @@ public class CardService {
     @Transactional
     public CardResponse.createCardDTO createCard(Long userId, CardRequest.createCardDTO request) {
 
-        log.info("일기카드 생성: userId={}", userId);
+        log.info("[일기카드 생성] userId={}", userId);
 
         // 본인 검색
         User user = userRepository.findById(userId)
@@ -96,7 +96,7 @@ public class CardService {
      */
     public CardResponse.getCardDTO getCard(Long userId, Long cardId) {
 
-        log.info("일기카드 상세 조회: userId={}, cardId={}", userId, cardId);
+        log.info("[일기카드 상세 조회] userId={}, cardId={}", userId, cardId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -117,7 +117,7 @@ public class CardService {
     @Transactional
     public void updateCard(Long userId, Long cardId, CardRequest.updateCardDTO request) {
 
-        log.info("일기카드 수정: userId={}, cardId={}", userId, cardId);
+        log.info("[일기카드 수정] userId={}, cardId={}", userId, cardId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -162,7 +162,7 @@ public class CardService {
     @Transactional
     public void deleteCard(Long userId, Long cardId) {
 
-        log.info("일기카드 삭제: userId={}, cardId={}", userId, cardId);
+        log.info("[일기카드 삭제] userId={}, cardId={}", userId, cardId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -181,7 +181,7 @@ public class CardService {
     @Transactional
     public CardResponse.toggleExposureDTO toggleExposure(Long userId, Long cardId) {
 
-        log.info("일기카드 공개여부 전환: userId={}, cardId={}", userId, cardId);
+        log.info("[일기카드 공개여부 전환] userId={}, cardId={}", userId, cardId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -205,7 +205,7 @@ public class CardService {
      */
     public CardResponse.getMyCardsDTO getMyCards(Long userId, int year, int month) {
 
-        log.info("내 일기카드 목록 조회 : userId={}, year={}, month={}", userId, year, month);
+        log.info("[내 일기카드 목록 조회] userId={}, year={}, month={}", userId, year, month);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -231,7 +231,7 @@ public class CardService {
      */
     public CardResponse.getFriendsCardsDTO getFriendsCards(Long userId, int year, int month) {
 
-        log.info("친구 일기카드 조회(월별) : userId={}, year={}, month={}", userId, year, month);
+        log.info("[친구 일기카드 조회(월별)] userId={}, year={}, month={}", userId, year, month);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -262,7 +262,7 @@ public class CardService {
      */
     public CardResponse.getDailyFriendsCardsDTO getDailyFriendsCards(Long userId, int year, int month, int day) {
 
-        log.info("친구 일기카드 조회(일별) : userId={}, year={}, month={}, day={}", userId, year, month, day);
+        log.info("[친구 일기카드 조회(일별)] userId={}, year={}, month={}, day={}", userId, year, month, day);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));

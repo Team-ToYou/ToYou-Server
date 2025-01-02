@@ -39,7 +39,7 @@ public class FriendService {
      */
     public FriendResponse.GetFriendsDTO getFriends(Long userId) {
 
-        log.info("친구 목록 조회: userId={}", userId);
+        log.info("[친구 목록 조회] userId={}", userId);
 
         // 유저 검색
         User user = userRepository.findById(userId)
@@ -74,7 +74,7 @@ public class FriendService {
      */
     public FriendResponse.searchFriendDTO searchFriend(Long userId, String keyword) {
 
-        log.info("친구(유저) 검색: userId={}, keyword={}", userId, keyword);
+        log.info("[친구(유저) 검색] userId={}, keyword={}", userId, keyword);
 
         // 본인 검색
         User user = userRepository.findById(userId)
@@ -111,7 +111,7 @@ public class FriendService {
     @Transactional
     public FcmResponse.getMyNameDto createFriendRequest(Long userId, FriendRequestRequest.createFriendRequestDTO request) {
 
-        log.info("친구 요청: userId={}, friendName={}", userId, request.getNickname());
+        log.info("[친구 요청] userId={}, friendName={}", userId, request.getNickname());
 
         // 본인 검색
         User user = userRepository.findById(userId)
@@ -150,7 +150,7 @@ public class FriendService {
     @Transactional
     public void deleteFriendRequest(Long userId, FriendRequestRequest.deleteFriendRequestDTO request) {
 
-        log.info("친구 삭제 & 친구 요청 취소: userId={}, friendName={}", userId, request.getNickname());
+        log.info("[친구 삭제 & 친구 요청 취소] userId={}, friendName={}", userId, request.getNickname());
 
         // 유저 검색
         User user = userRepository.findById(userId)
@@ -181,7 +181,7 @@ public class FriendService {
     @Transactional
     public FcmResponse.getMyNameDto acceptFriendRequest(Long userId, FriendRequestRequest.acceptFriendRequestDTO request) {
 
-        log.info("친구 요청 승인: userId={}, friendName={}", userId, request.getNickname());
+        log.info("[친구 요청 승인] userId={}, friendName={}", userId, request.getNickname());
 
         // 친구 신청 대상(본인)
         User receiver = userRepository.findById(userId)
@@ -217,7 +217,7 @@ public class FriendService {
      */
     public FriendResponse.getFriendYesterdayDTO getFriendYesterday(Long userId) {
 
-        log.info("작일 친구 일기카드 목록 조회: userId={}", userId);
+        log.info("[작일 친구 일기카드 목록 조회] userId={}", userId);
 
         // 유저 검색
         User user = userRepository.findById(userId)

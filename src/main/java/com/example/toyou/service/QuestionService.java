@@ -47,7 +47,7 @@ public class QuestionService {
     @Transactional
     public FcmResponse.getMyNameDto createQuestion(Long userId, QuestionRequest.createQuestionDTO request) {
 
-        log.info("질문 생성: userId={}, target={}", userId, request.getTarget());
+        log.info("[질문 생성] userId={}, target={}", userId, request.getTarget());
 
         // 본인 검색
         User user = userRepository.findById(userId)
@@ -107,7 +107,7 @@ public class QuestionService {
      */
     public QuestionResponse.GetQuestionsDTO getQuestions(Long userId) {
 
-        log.info("질문 목록 조회: userId={}", userId);
+        log.info("[질문 목록 조회] userId={}", userId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
