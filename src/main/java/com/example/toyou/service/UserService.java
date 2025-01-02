@@ -95,7 +95,9 @@ public class UserService {
 
         User user = findById(userId);
 
-        if(userRepository.existsByNickname(nickname)) throw new GeneralException(EXISTING_NICKNAME);
+        if(!user.getNickname().equals(nickname) && userRepository.existsByNickname(nickname)) {
+            throw new GeneralException(EXISTING_NICKNAME);
+        }
 
         user.setNickname(nickname);
     }
