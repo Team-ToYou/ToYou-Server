@@ -78,13 +78,11 @@ public class UserService {
     /**
      * 닉네임 중복 확인
      */
-    public UserResponse.checkUserNicknameDTO checkUserNickname(Long userId, String nickname) {
-        log.info("[닉네임 중복 확인] userId={}, nickname={}", userId, nickname);
-
-        User user = findById(userId);
+    public UserResponse.checkUserNicknameDTO checkUserNickname(String nickname) {
+        log.info("[닉네임 중복 확인] nickname={}", nickname);
 
         return UserResponse.checkUserNicknameDTO.builder()
-                .exists(!user.getNickname().equals(nickname) && userRepository.existsByNickname(nickname))
+                .exists(userRepository.existsByNickname(nickname))
                 .build();
     }
 
