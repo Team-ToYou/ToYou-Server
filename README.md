@@ -1,5 +1,23 @@
 ![투유 배경](https://github.com/user-attachments/assets/28777ee7-dfa6-4a9c-9325-6045e36735a9)
 
+## Tech Stack
+| 항목                 | 내용                                              |
+| ------------------- | ------------------------------------------------ |
+| `IDE`               | IntelliJ                                         |
+| `Language`          | Java 17                                          |
+| `Framework`         | Spring Boot 3.3, Gradle                          |
+| `Authentication`    | Spring Security, JSON Web Tokens, Oauth 2.0      |
+| `ORM`               | Spring Data JPA                                  |
+| `Database`          | MySQL, Redis, H2                                 |
+| `Testing`           | Junit5                                           |
+| `Scheduling`        | Spring Scheduler                                 |
+| `Infra`             | AWS EC2, AWS RDS, Nginx, Certbot                 |
+| `CI/CD`             | Github Actions                                   |
+| `Messaging`         | Firebase Cloud Messaging                         |
+| `Content Filtering` | BadWordFiltering                                 |
+
+<br>
+
 ## Commit Conventions
 | 태그이름   | 내용                                                                      |
 | ---------- | ------------------------------------------------------------------------- |
