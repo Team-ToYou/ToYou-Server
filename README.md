@@ -1,9 +1,49 @@
-![투유 배경](https://github.com/user-attachments/assets/28777ee7-dfa6-4a9c-9325-6045e36735a9)
+<img src="https://github.com/user-attachments/assets/80afd469-575a-406e-abad-9feb51a54c1f" width=120 />
 
-## Tech Stack
+# 📮 투유 (To.You)
+<p align="center"><img src="https://github.com/user-attachments/assets/d51d6718-a294-4117-b958-844d4ba39020"></p>
+
+> 당신을 만나는 매일의 질문, 투유 `repo:server`
+
+<br>
+
+## 투유를 소개합니다 🙂
+
+투유는 바쁜 하루 속에서 자신을 돌아볼 여유가 부족한 당신에게 감정과 마주할 특별한 순간을 선물합니다.
+
+오늘의 기분을 감정우표로 표현하고, 답변으로 나만의 일기카드를 만들어보세요!
+
+<br>
+
+## 투유 기능 알아보기! 😎
+### STEP 1️⃣ 감정우표 선택하기
+
+- 오늘 당신은 어떤 기분인가요?
+- 감정우표를 선택하면 홈화면과 일기카드가 오늘의 기분에 맞게 변화합니다.
+
+### STEP 2️⃣ 일기카드 만들기
+
+- 맞춤형 질문에 답하며 나만의 이야기를 남겨보세요!
+- 친구들의 질문에도 답하며 특별한 일기 카드를 만들어보세요.
+
+### STEP 3️⃣ 나의 기록 확인하기
+
+- 지나간 날들을 일기카드에서 다시 떠올려보세요.
+- 어제와 오늘, 내일을 연결해주는 투유와 함께해요!
+
+<br>
+
+## CONTRIBUTORS
+| <div align="center"><a href="https://github.com/yueunfive">오유은</a></div> |
+| :---------------------------: |
+| [<img src="https://github.com/yueunfive.png" width="200" height="200">](https://github.com/yueunfive) |
+|     `백엔드 개발`     |
+
+<br>
+
+## 🛠️ TECH STACK
 | 항목                 | 내용                                              |
 | ------------------- | ------------------------------------------------ |
-| `IDE`               | IntelliJ                                         |
 | `Language`          | Java 17                                          |
 | `Framework`         | Spring Boot 3.3, Gradle                          |
 | `Authentication`    | Spring Security, JSON Web Tokens, Oauth 2.0      |
@@ -18,7 +58,7 @@
 
 <br>
 
-## Commit Conventions
+## 📃 COMMIT CONVENTIONS
 | 태그이름   | 내용                                                                      |
 | ---------- | ------------------------------------------------------------------------- |
 | `feat`     | 새로운 기능 (파일 추가도 포함)을 추가할 경우                              |
