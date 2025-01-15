@@ -32,7 +32,7 @@ public class Alarm extends BaseEntity {
     @JoinColumn(name = "friend_request_id")
     private FriendRequest friendRequest;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
 
