@@ -76,13 +76,46 @@ public class UserService {
     }
 
     /**
-     * 닉네임 중복 확인
+     * 닉네임 중복 확인(비회원용)
      */
-    public UserResponse.checkUserNicknameDTO checkUserNickname(String nickname) {
-        log.info("[닉네임 중복 확인] nickname={}", nickname);
+    public UserResponse.checkUserNicknameDTO checkUserNickname(Long userId, String nickname) {
+        log.info("[닉네임 중복 확인(비회원용)] nickname={}, userId={}", nickname, userId);
+
+        boolean isExist = false;
+
+        if (userId != null) {
+            User user = findById(userId);
+            if(!user.getNickname().equals(nickname) && userRepository.existsByNickname(nickname)) {
+                isExist = true;
+            }
+        } else {
+            isExist = userRepository.existsByNickname(nickname);
+        }
 
         return UserResponse.checkUserNicknameDTO.builder()
-                .exists(userRepository.existsByNickname(nickname))
+                .exists(isExist)
+                .build();
+    }
+
+    /**
+     * 닉네임 중복 확인(회원용)
+     */
+    public UserResponse.checkUserNicknameDTO checkUserNickname2(Long userId, String nickname) {
+        log.info("[닉네임 중복 확인(회원용)] nickname={}, userId={}", nickname, userId);
+
+        boolean isExist = false;
+
+        if (userId != null) {
+            User user = findById(userId);
+            if(!user.getNickname().equals(nickname) && userRepository.existsByNickname(nickname)) {
+                isExist = true;
+            }
+        } else {
+            isExist = userRepository.existsByNickname(nickname);
+        }
+
+        return UserResponse.checkUserNicknameDTO.builder()
+                .exists(isExist)
                 .build();
     }
 
