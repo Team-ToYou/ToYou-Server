@@ -76,24 +76,13 @@ public class UserService {
     }
 
     /**
-     * 닉네임 중복 확인(비회원용)
+     * 닉네임 중복 확인
      */
-    public UserResponse.checkUserNicknameDTO checkUserNickname(Long userId, String nickname) {
-        log.info("[닉네임 중복 확인(비회원용)] nickname={}, userId={}", nickname, userId);
-
-        boolean isExist = false;
-
-        if (userId != null) {
-            User user = findById(userId);
-            if(!user.getNickname().equals(nickname) && userRepository.existsByNickname(nickname)) {
-                isExist = true;
-            }
-        } else {
-            isExist = userRepository.existsByNickname(nickname);
-        }
+    public UserResponse.checkUserNicknameDTO checkUserNickname(String nickname) {
+        log.info("[닉네임 중복 확인] nickname={}", nickname);
 
         return UserResponse.checkUserNicknameDTO.builder()
-                .exists(isExist)
+                .exists(userRepository.existsByNickname(nickname))
                 .build();
     }
 

@@ -51,25 +51,10 @@ public class UserController {
     }
 
     @GetMapping("/nickname/check")
-    @Operation(summary = "닉네임 중복 확인(비회원용)", description = "닉네임 중복 여부를 체크합니다.")
-    public CustomApiResponse<UserResponse.checkUserNicknameDTO> checkUserNickname(Principal principal,
-                                                                                  @RequestParam String nickname){
+    @Operation(summary = "닉네임 중복 확인", description = "닉네임 중복 여부를 체크합니다.")
+    public CustomApiResponse<UserResponse.checkUserNicknameDTO> checkUserNickname(@RequestParam String nickname){
 
-        Long userId = Long.parseLong(principal.getName());
-
-        UserResponse.checkUserNicknameDTO exists = userService.checkUserNickname(userId, nickname);
-
-        return CustomApiResponse.onSuccess(exists);
-    }
-
-    @GetMapping("/nickname/check/v2")
-    @Operation(summary = "닉네임 중복 확인(회원용)", description = "닉네임 중복 여부를 체크합니다.")
-    public CustomApiResponse<UserResponse.checkUserNicknameDTO> checkUserNickname2(Principal principal,
-                                                                                   @RequestParam String nickname){
-
-        Long userId = Long.parseLong(principal.getName());
-
-        UserResponse.checkUserNicknameDTO exists = userService.checkUserNickname(userId, nickname);
+        UserResponse.checkUserNicknameDTO exists = userService.checkUserNickname(nickname);
 
         return CustomApiResponse.onSuccess(exists);
     }
