@@ -25,6 +25,8 @@ public class FriendRequest extends BaseEntity {
 
     private Boolean accepted;
 
+    private boolean checked;
+
     public void setAccepted(){
         this.accepted = true;
     }

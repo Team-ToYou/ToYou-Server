@@ -17,6 +17,7 @@ public class FriendConverter {
                 .user(user)
                 .friend(friend)
                 .accepted(false)
+                .checked(false)
                 .build();
     }
 

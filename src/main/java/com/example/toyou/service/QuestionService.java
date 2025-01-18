@@ -93,7 +93,7 @@ public class QuestionService {
         }
 
         // 알림 생성
-        Alarm newAlarm = AlarmConverter.toNewQuestionAlarm(questioner, target, newQuestion);
+        Alarm newAlarm = AlarmConverter.toNewQuestionAlarm(questioner, target);
 
         alarmRepository.save(newAlarm);
 
@@ -134,11 +134,6 @@ public class QuestionService {
         log.info("삭제될 질문 개수: {}", questionsToDelete.size());
 
         for (Question question : questionsToDelete) {
-
-            // 알람 삭제
-            Alarm alarm = alarmRepository.findByQuestion(question);
-            if(alarm != null) alarmRepository.delete(alarm);
-
             question.deleteMappings(); // 연관 관계 해제
             questionRepository.delete(question);
         }

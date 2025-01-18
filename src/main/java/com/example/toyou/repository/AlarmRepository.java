@@ -12,8 +12,4 @@ import java.util.Optional;
 public interface AlarmRepository extends JpaRepository<Alarm, Long> {
 
     List<Alarm> findByUser(User user);
-
-    Optional<Alarm> findByFriendRequest(FriendRequest friendRequest);
-
-    Alarm findByQuestion(Question question);
 }
