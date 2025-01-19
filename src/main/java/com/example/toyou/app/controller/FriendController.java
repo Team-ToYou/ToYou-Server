@@ -49,6 +49,17 @@ public class FriendController {
         return CustomApiResponse.onSuccess(friend);
     }
 
+    @GetMapping("/requests")
+    @Operation(summary = "친구 요청 목록 조회", description = "나에게 친구 요청을 보낸 발신자 목록을 조회합니다.")
+    public CustomApiResponse<FriendResponse.getFriendRequestsDto> getFriendRequests(Principal principal) {
+
+        Long userId = Long.parseLong(principal.getName());
+
+        FriendResponse.getFriendRequestsDto response = friendService.getFriendRequests(userId);
+
+        return CustomApiResponse.onSuccess(response);
+    }
+
     @PostMapping("/requests")
     @Operation(summary = "친구 요청", description = "다른 유저에게 친구 요청을 보냅니다.")
     public CustomApiResponse<FcmResponse.getMyNameDto> createFriendRequest(Principal principal,

@@ -106,6 +106,39 @@ public class FriendService {
     }
 
     /**
+     * 친구 요청 목록 조회
+     */
+    public FriendResponse.getFriendRequestsDto getFriendRequests(Long userId) {
+
+        log.info("[친구 요청 목록 조회] userId={}", userId);
+
+        // 유저 검색
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        // 친구 요청 목록 조회
+        List<FriendRequest> friendRequests = friendRepository.findByFriend(user);
+
+        // 발신자 정보 조회
+        List<FriendResponse.senderInfo> senderInfos = friendRequests.stream()
+                .map(friendRequest -> {
+                    User sender = friendRequest.getUser();
+
+                    return FriendResponse.senderInfo.builder()
+                            .userId(sender.getId())
+                            .nickname(sender.getNickname())
+                            .build();
+                }).toList();
+
+
+        log.info("조회된 친구 요청 목록 수 : {}", senderInfos.size());
+
+        return FriendResponse.getFriendRequestsDto.builder()
+                .senderInfos(senderInfos)
+                .build();
+    }
+
+    /**
      * 친구 요청
      */
     @Transactional

@@ -50,6 +50,28 @@ public class FriendResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class getFriendRequestsDto {
+
+        private List<senderInfo> senderInfos;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class senderInfo {
+
+        @Schema(description = "유저 id", nullable = false, example = "1")
+        private Long userId;
+
+        @Schema(description = "닉네임", nullable = false, example = "훈이")
+        private String nickname;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class getFriendYesterdayDTO {
 
         private List<yesterdayInfo> yesterday;
