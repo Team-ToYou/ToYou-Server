@@ -117,7 +117,7 @@ public class FriendService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 요청 목록 조회
-        List<FriendRequest> friendRequests = friendRepository.findByFriend(user);
+        List<FriendRequest> friendRequests = friendRepository.findByFriendAndAcceptedFalse(user);
 
         // 발신자 정보 조회
         List<FriendResponse.senderInfo> senderInfos = friendRequests.stream()
