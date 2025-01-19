@@ -40,10 +40,12 @@ public class FriendServiceTest {
         FriendRequest friendRequest1 = FriendRequest.builder()
                 .user(sender1)
                 .friend(receiver)
+                .accepted(false)
                 .build();
         FriendRequest friendRequest2 = FriendRequest.builder()
                 .user(sender2)
                 .friend(receiver)
+                .accepted(false)
                 .build();
 
         friendRepository.save(friendRequest1);
@@ -53,7 +55,6 @@ public class FriendServiceTest {
         FriendResponse.getFriendRequestsDto friendRequests = friendService.getFriendRequests(receiver.getId());
 
         // then
-        assertNotNull(friendRequests, "친구 요청 목록이 null입니다.");
         assertEquals(2, friendRequests.getSenderInfos().size(), "친구 요청 목록의 크기가 일치하지 않습니다.");
 
         List<FriendResponse.senderInfo> senderInfos = friendRequests.getSenderInfos();
