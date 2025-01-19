@@ -9,31 +9,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AlarmConverter {
-    public static Alarm toFriendReqeustAlarm(User user, User friend, FriendRequest friendRequest) {
+
+    public static Alarm toFriendReqeustAcceptedAlarm(User opponent, User alarmTarget) {
 
         return Alarm.builder()
-                .user(friend)
-                .alarmType(AlarmType.FRIEND_REQUEST)
-                .content(String.format("%s님이 친구 요청을 보냈습니다.", user.getNickname()))
-                .opponent(user.getNickname())
+                .user(alarmTarget)
+                .alarmType(AlarmType.FRIEND_REQUEST_ACCEPTED)
+                .content(String.format("%s님이 친구 요청을 수락했습니다.", opponent.getNickname()))
+                .opponent(opponent.getNickname())
                 .checked(false)
-                .friendRequest(friendRequest)
                 .build();
     }
 
-    public static Alarm toReqeustAcceptedAlarm(User user, User friend, FriendRequest friendRequest) {
-
-        return Alarm.builder()
-                .user(friend)
-                .alarmType(AlarmType.REQUEST_ACCEPTED)
-                .content(String.format("%s님이 친구 요청을 수락했습니다.", user.getNickname()))
-                .opponent(user.getNickname())
-                .checked(false)
-                .friendRequest(friendRequest)
-                .build();
-    }
-
-    public static Alarm toNewQuestionAlarm(String questioner, User target, Question question) {
+    public static Alarm toNewQuestionAlarm(String questioner, User target) {
 
         return Alarm.builder()
                 .user(target)
@@ -41,7 +29,6 @@ public class AlarmConverter {
                 .content(String.format("%s님이 질문카드를 보냈습니다. 확인해보세요!", questioner))
                 .opponent(questioner)
                 .checked(false)
-                .question(question)
                 .build();
     }
 

@@ -21,6 +21,10 @@ public interface FriendRepository extends JpaRepository<FriendRequest, Long> {
             "WHERE fr.friend = :user AND fr.accepted = true AND fr.user.isDeleted = false")
     List<FriendRequest> findByFriendAndAcceptedTrue(@Param("user") User user);
 
+    @Query("SELECT fr FROM FriendRequest fr " +
+            "WHERE fr.friend = :user AND fr.accepted = false AND fr.user.isDeleted = false")
+    List<FriendRequest> findByFriendAndAcceptedFalse(@Param("user") User user);
+
     Optional<FriendRequest> findByUserAndFriend(User user, User friend);
 
     Boolean existsByUserAndFriend(User user, User friend);

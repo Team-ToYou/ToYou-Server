@@ -43,7 +43,6 @@ public enum ErrorStatus implements BaseErrorCode {
     // 알림 에러
     ALARM_NOT_FOUND(HttpStatus.NOT_FOUND, "ALARM400", "해당하는 알림이 존재하지 않습니다."),
     ALARM_NOT_MINE(HttpStatus.FORBIDDEN, "ALARM401", "해당 유저의 알림이 아닙니다."),
-    FRIEND_REQUEST_ALARM_CANT_BE_DELETED(HttpStatus.FORBIDDEN, "ALARM402", "친구 요청 알림은 직접 삭제할 수 없습니다."),
 
     // Oauth 에러
     OAUTH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "OAUTH400", "유효하지 않은 OAUTH 토큰입니다."),

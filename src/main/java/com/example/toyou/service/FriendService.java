@@ -106,6 +106,39 @@ public class FriendService {
     }
 
     /**
+     * 친구 요청 목록 조회
+     */
+    public FriendResponse.getFriendRequestsDto getFriendRequests(Long userId) {
+
+        log.info("[친구 요청 목록 조회] userId={}", userId);
+
+        // 유저 검색
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        // 친구 요청 목록 조회
+        List<FriendRequest> friendRequests = friendRepository.findByFriendAndAcceptedFalse(user);
+
+        // 발신자 정보 조회
+        List<FriendResponse.senderInfo> senderInfos = friendRequests.stream()
+                .map(friendRequest -> {
+                    User sender = friendRequest.getUser();
+
+                    return FriendResponse.senderInfo.builder()
+                            .userId(sender.getId())
+                            .nickname(sender.getNickname())
+                            .build();
+                }).toList();
+
+
+        log.info("조회된 친구 요청 목록 수 : {}", senderInfos.size());
+
+        return FriendResponse.getFriendRequestsDto.builder()
+                .senderInfos(senderInfos)
+                .build();
+    }
+
+    /**
      * 친구 요청
      */
     @Transactional
@@ -132,12 +165,7 @@ public class FriendService {
 
         friendRepository.save(newFriendRequest);
 
-        // 알림 생성
-        Alarm newAlarm = AlarmConverter.toFriendReqeustAlarm(user, friend, newFriendRequest);
-
-        alarmRepository.save(newAlarm);
-
-        log.info("생성된 친구 요청 & 알림 : friendRequestId={}, alarmId={}", newFriendRequest.getId(), newAlarm.getId());
+        log.info("생성된 친구 요청 : friendRequestId={}", newFriendRequest.getId());
 
         return FcmResponse.getMyNameDto.builder()
                 .myName(user.getNickname())
@@ -167,11 +195,6 @@ public class FriendService {
                                 .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND))
                 );
 
-        // 알람 삭제
-        Optional<Alarm> alarmToDelete = alarmRepository.findByFriendRequest(friendRequestToDelete);
-
-        alarmToDelete.ifPresent(alarmRepository::delete);
-
         friendRepository.delete(friendRequestToDelete);
     }
 
@@ -183,11 +206,11 @@ public class FriendService {
 
         log.info("[친구 요청 승인] userId={}, friendName={}", userId, request.getNickname());
 
-        // 친구 신청 대상(본인)
+        // 친구 신청 수신자(승인한 본인)
         User receiver = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
-        // 친구 신청 주체(상대)
+        // 친구 신청 발신자
         User sender = userRepository.findByNickname(request.getNickname())
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
@@ -199,13 +222,12 @@ public class FriendService {
 
         friendRequestToAccept.setAccepted();
 
-        // 알림 수정
-        Alarm alarmToUpdate = alarmRepository.findByFriendRequest(friendRequestToAccept)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.ALARM_NOT_FOUND));
+        // 알림 생성(친구 신청 발신자 대상)
+        Alarm newAlarm = AlarmConverter.toFriendReqeustAcceptedAlarm(receiver, sender);
 
-        alarmToUpdate.updateForRequestAccepted(receiver, sender);
+        alarmRepository.save(newAlarm);
 
-        log.info("수정된 알림 ID : {}", alarmToUpdate.getId());
+        log.info("생성된 알림 ID : {}", newAlarm.getId());
 
         return FcmResponse.getMyNameDto.builder()
                 .myName(receiver.getNickname())

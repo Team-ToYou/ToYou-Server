@@ -60,9 +60,6 @@ public class AlarmService {
 
         if(alarm.getUser() != user) throw new GeneralException(ErrorStatus.ALARM_NOT_MINE);
 
-        if(alarm.getAlarmType() == AlarmType.FRIEND_REQUEST)
-            throw new GeneralException(ErrorStatus.FRIEND_REQUEST_ALARM_CANT_BE_DELETED);
-
         alarmRepository.delete(alarm);
     }
 }
