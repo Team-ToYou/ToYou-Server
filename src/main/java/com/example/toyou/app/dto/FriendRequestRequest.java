@@ -9,21 +9,21 @@ public class FriendRequestRequest {
     @Getter
     public static class createFriendRequestDTO{
         @NotEmpty
-        @Schema(description = "닉네임", nullable = false, example = "철수")
-        private String nickname;
+        @Schema(description = "유저 ID", nullable = false, example = "1")
+        private Long userId;
     }
 
     @Getter
     public static class deleteFriendRequestDTO{
         @NotEmpty
-        @Schema(description = "닉네임", nullable = false, example = "철수")
-        private String nickname;
+        @Schema(description = "유저 ID", nullable = false, example = "1")
+        private Long userId;
     }
 
     @Getter
     public static class acceptFriendRequestDTO{
         @NotEmpty
-        @Schema(description = "닉네임", nullable = false, example = "철수")
-        private String nickname;
+        @Schema(description = "유저 ID", nullable = false, example = "1")
+        private Long userId;
     }
 }

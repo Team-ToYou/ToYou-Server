@@ -48,10 +48,10 @@ public class FcmController {
     }
 
     @GetMapping("/token")
-    @Operation(summary = "FCM 토큰 조회", description = "닉네임을 통해 해당 사용자의 FCM 토큰을 조회합니다.")
-    public CustomApiResponse<FcmResponse.getTokenDto> getToken(@RequestParam String keyword) {
+    @Operation(summary = "FCM 토큰 조회", description = "유저 식별자를 통해 해당 사용자의 FCM 토큰을 조회합니다.")
+    public CustomApiResponse<FcmResponse.getTokenDto> getToken(@RequestParam Long userId) {
 
-        FcmResponse.getTokenDto token = fcmService.getToken(keyword);
+        FcmResponse.getTokenDto token = fcmService.getToken(userId);
 
         return CustomApiResponse.onSuccess(token);
     }

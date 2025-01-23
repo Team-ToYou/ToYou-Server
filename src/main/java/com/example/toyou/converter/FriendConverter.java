@@ -41,6 +41,7 @@ public class FriendConverter {
                     String ment = (todayEmotion != null) ? getMessageForEmotion(todayEmotion) : null;
 
                     return FriendResponse.friendInfo.builder()
+                            .userId(friend.getId())
                             .nickname(friend.getNickname())
                             .emotion(todayEmotion)
                             .ment(ment)
@@ -53,6 +54,7 @@ public class FriendConverter {
 
     public static FriendResponse.searchFriendDTO toSearchFriendDTO(User friend, FriendStatus friendStatus) {
         return FriendResponse.searchFriendDTO.builder()
+                .userId(friend.getId())
                 .nickname(friend.getNickname())
                 .friendStatus(friendStatus)
                 .build();

@@ -93,10 +93,10 @@ public class FcmService {
     /**
      * FCM Token 조회
      */
-    public FcmResponse.getTokenDto getToken(String nickname) {
-        log.info("[FCM Token 조회] keyword={}", nickname);
+    public FcmResponse.getTokenDto getToken(Long userId) {
+        log.info("[FCM Token 조회] userId={}", userId);
 
-        User user = userRepository.findByNickname(nickname)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         List<FcmToken> fcmTokens = fcmTokenRepository.findAllByUser(user);
