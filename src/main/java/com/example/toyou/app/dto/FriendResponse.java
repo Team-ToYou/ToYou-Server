@@ -25,7 +25,8 @@ public class FriendResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class friendInfo {
-
+        @Schema(description = "유저 ID", nullable = false, example = "1")
+        private Long userId;
         @Schema(description = "닉네임", nullable = false, example = "철수")
         private String nickname;
         @Schema(description = "감정", nullable = false, example = "HAPPY")
@@ -39,7 +40,8 @@ public class FriendResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class searchFriendDTO {
-
+        @Schema(description = "유저 ID", nullable = false, example = "1")
+        private Long userId;
         @Schema(description = "닉네임", nullable = false, example = "철수")
         private String nickname;
         @Schema(description = "친구 관계 유형", nullable = false, example = "REQUEST_SENT")

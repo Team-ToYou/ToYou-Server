@@ -144,14 +144,14 @@ public class FriendService {
     @Transactional
     public FcmResponse.getMyNameDto createFriendRequest(Long userId, FriendRequestRequest.createFriendRequestDTO request) {
 
-        log.info("[친구 요청] userId={}, friendName={}", userId, request.getNickname());
+        log.info("[친구 요청] userId={}, friendId={}", userId, request.getUserId());
 
         // 본인 검색
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 검색
-        User friend = userRepository.findByNickname(request.getNickname())
+        User friend = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 본인 스스로에게 친구 요청 불가능
@@ -178,14 +178,14 @@ public class FriendService {
     @Transactional
     public void deleteFriendRequest(Long userId, FriendRequestRequest.deleteFriendRequestDTO request) {
 
-        log.info("[친구 삭제 & 친구 요청 취소] userId={}, friendName={}", userId, request.getNickname());
+        log.info("[친구 삭제 & 친구 요청 취소] userId={}, friendId={}", userId, request.getUserId());
 
         // 유저 검색
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 검색
-        User friend = userRepository.findByNickname(request.getNickname())
+        User friend = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 요청 정보 확인
@@ -204,14 +204,14 @@ public class FriendService {
     @Transactional
     public FcmResponse.getMyNameDto acceptFriendRequest(Long userId, FriendRequestRequest.acceptFriendRequestDTO request) {
 
-        log.info("[친구 요청 승인] userId={}, friendName={}", userId, request.getNickname());
+        log.info("[친구 요청 승인] userId={}, friendId={}", userId, request.getUserId());
 
         // 친구 신청 수신자(승인한 본인)
         User receiver = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 신청 발신자
-        User sender = userRepository.findByNickname(request.getNickname())
+        User sender = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 요청 정보 확인

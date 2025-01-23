@@ -67,9 +67,9 @@ public class FriendController {
 
         Long userId = Long.parseLong(principal.getName());
 
-        FcmResponse.getMyNameDto myName = friendService.createFriendRequest(userId, request);
+        FcmResponse.getMyNameDto response = friendService.createFriendRequest(userId, request);
 
-        return CustomApiResponse.onSuccess(myName);
+        return CustomApiResponse.onSuccess(response);
     }
 
     @DeleteMapping
@@ -91,9 +91,9 @@ public class FriendController {
 
         Long userId = Long.parseLong(principal.getName());
 
-        FcmResponse.getMyNameDto myName = friendService.acceptFriendRequest(userId, request);
+        FcmResponse.getMyNameDto response = friendService.acceptFriendRequest(userId, request);
 
-        return CustomApiResponse.onSuccess(myName);
+        return CustomApiResponse.onSuccess(response);
     }
 
     @GetMapping("/yesterday")

@@ -13,8 +13,8 @@ public class QuestionRequest {
     @Getter
     @Builder
     public static class createQuestionDTO{
-        @Schema(description = "질문 대상", nullable = false, example = "훈이")
-        private String target;
+        @Schema(description = "유저(질문 대상) ID", nullable = false, example = "1")
+        private Long targetId;
 
         @Schema(description = "질문 내용", nullable = false, example = "어제 뭐했어?")
         private String content;

@@ -60,7 +60,7 @@ public class QuestionConverter {
 
     public static QuestionRequest.createQuestionDTO toCreateQuestionDTO(User user, CustomQuestion cq) {
         return QuestionRequest.createQuestionDTO.builder()
-                .target(user.getNickname())
+                .targetId(user.getId())
                 .content(cq.getContent())
                 .questionType(cq.getQuestionType())
                 .anonymous(false)
