@@ -25,6 +25,9 @@ public class UserResponse {
     @AllArgsConstructor
     public static class GetMyPageDTO {
 
+        @Schema(description = "유저 ID", nullable = false, example = "1")
+        private Long userId;
+
         @Schema(description = "닉네임", nullable = false, example = "짱구")
         private String nickname;
 
