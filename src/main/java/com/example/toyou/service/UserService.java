@@ -78,29 +78,17 @@ public class UserService {
     /**
      * 닉네임 중복 확인
      */
-    public UserResponse.checkUserNicknameDTO checkUserNickname(String nickname) {
-        log.info("[닉네임 중복 확인] nickname={}", nickname);
+    public UserResponse.checkUserNicknameDTO checkUserNickname(String nickname, Long userId) {
+        log.info("[닉네임 중복 확인] nickname={}, userId={}", nickname, userId);
 
-        return UserResponse.checkUserNicknameDTO.builder()
-                .exists(userRepository.existsByNickname(nickname))
-                .build();
-    }
+        boolean isExist = userRepository.existsByNickname(nickname);
 
-    /**
-     * 닉네임 중복 확인(회원용)
-     */
-    public UserResponse.checkUserNicknameDTO checkUserNickname2(Long userId, String nickname) {
-        log.info("[닉네임 중복 확인(회원용)] nickname={}, userId={}", nickname, userId);
-
-        boolean isExist = false;
-
+        // 유저일 경우, 사용자의 현재 닉네임하고 동일하면 false 반환(사용 가능)
         if (userId != null) {
             User user = findById(userId);
-            if(!user.getNickname().equals(nickname) && userRepository.existsByNickname(nickname)) {
-                isExist = true;
+            if(user.getNickname().equals(nickname)) {
+                isExist = false;
             }
-        } else {
-            isExist = userRepository.existsByNickname(nickname);
         }
 
         return UserResponse.checkUserNicknameDTO.builder()
