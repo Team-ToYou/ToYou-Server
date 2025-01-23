@@ -151,6 +151,7 @@ public class UserService {
         log.info("친구 수: {}", friendNum);
 
         return UserResponse.GetMyPageDTO.builder()
+                .userId(userId)
                 .nickname(user.getNickname())
                 .friendNum(friendNum)
                 .status(user.getStatus())
