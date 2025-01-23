@@ -95,15 +95,4 @@ public class FriendController {
 
         return CustomApiResponse.onSuccess(response);
     }
-
-    @GetMapping("/yesterday")
-    @Operation(summary = "작일 친구 일기카드 목록 조회", description = "어제 날짜 기준으로 생성된 친구들의 일기카드를 조회합니다.")
-    public CustomApiResponse<FriendResponse.getFriendYesterdayDTO> searchFriend(Principal principal) {
-
-        Long userId = Long.parseLong(principal.getName());
-
-        FriendResponse.getFriendYesterdayDTO friends = friendService.getFriendYesterday(userId);
-
-        return CustomApiResponse.onSuccess(friends);
-    }
 }

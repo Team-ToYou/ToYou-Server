@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -234,13 +233,8 @@ public class FriendService {
                 .build();
     }
 
-    /**
-     * 작일 친구 일기카드 목록 조회
-     */
-    public FriendResponse.getFriendYesterdayDTO getFriendYesterday(Long userId) {
-
-        log.info("[작일 친구 일기카드 목록 조회] userId={}", userId);
-
+    // 어제 일기카드를 생성한 친구들을 조회(작일 친구 일기카드 목록 조회시 사용)
+    public List<User> getFriendsWithDiaryCardYesterday(Long userId) {
         // 유저 검색
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -249,7 +243,7 @@ public class FriendService {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
         // accepted가 true이고, 어제 생성된 DiaryCard가 있는 친구들의 친구 객체 리스트
-        List<User> friendsWithDiaryCardYesterday = Stream.concat(
+        return Stream.concat(
                         // User가 요청자인 경우
                         friendRepository.findByUserAndAcceptedTrue(user).stream()
                                 .map(FriendRequest::getFriend)
@@ -266,9 +260,5 @@ public class FriendService {
                 )
                 .distinct() // 중복 제거
                 .toList();
-
-        log.info("작일 친구 일기카드 개수 : {}", friendsWithDiaryCardYesterday.size());
-
-        return FriendConverter.toYesterdayDTO(friendsWithDiaryCardYesterday);
     }
 }

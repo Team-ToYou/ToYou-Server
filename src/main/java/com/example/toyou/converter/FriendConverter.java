@@ -59,21 +59,4 @@ public class FriendConverter {
                 .friendStatus(friendStatus)
                 .build();
     }
-    public static FriendResponse.getFriendYesterdayDTO toYesterdayDTO(List<User> friends) {
-
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-
-        List<FriendResponse.yesterdayInfo> yesterdayList =  friends.stream()
-                .flatMap(friend -> friend.getDiaryCardList().stream()
-                        .filter(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday))
-                        .filter(DiaryCard::isExposure)
-                        .map(diaryCard -> FriendResponse.yesterdayInfo.builder()
-                                .cardId(diaryCard.getId())
-                                .nickname(friend.getNickname())
-                                .build()
-                        ))
-                .toList();
-
-        return FriendResponse.getFriendYesterdayDTO.builder().yesterday(yesterdayList).build();
-    }
 }

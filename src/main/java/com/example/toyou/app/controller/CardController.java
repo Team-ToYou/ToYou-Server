@@ -3,6 +3,7 @@ package com.example.toyou.app.controller;
 import com.example.toyou.apiPayload.CustomApiResponse;
 import com.example.toyou.app.dto.CardRequest;
 import com.example.toyou.app.dto.CardResponse;
+import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.service.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -112,5 +113,16 @@ public class CardController {
             CardResponse.getDailyFriendsCardsDTO dailyCards = cardService.getDailyFriendsCards(userId, year, month, day);
             return CustomApiResponse.onSuccess(dailyCards);
         }
+    }
+
+    @GetMapping("/yesterday")
+    @Operation(summary = "어제 일기카드 목록 조회", description = "어제 날짜 기준으로 생성된 친구들의 일기카드를 조회합니다.")
+    public CustomApiResponse<CardResponse.getYesterdayCardsDto> getYesterdayCards(Principal principal) {
+
+        Long userId = Long.parseLong(principal.getName());
+
+        CardResponse.getYesterdayCardsDto cards = cardService.getYesterdayCards(userId);
+
+        return CustomApiResponse.onSuccess(cards);
     }
 }

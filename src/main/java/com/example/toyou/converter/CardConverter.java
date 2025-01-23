@@ -1,6 +1,7 @@
 package com.example.toyou.converter;
 
 import com.example.toyou.app.dto.CardResponse;
+import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.domain.AnswerOption;
 import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.Question;
@@ -107,5 +108,23 @@ public class CardConverter {
         return CardResponse.getDailyFriendsCardsDTO.builder()
                 .cardList(dailyFriendsCardInfos)
                 .build();
+    }
+
+    public static CardResponse.getYesterdayCardsDto toYesterdayCardsDTO(List<User> friends) {
+
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+
+        List<CardResponse.yesterdayCardInfo> cardList =  friends.stream()
+                .flatMap(friend -> friend.getDiaryCardList().stream()
+                        .filter(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday))
+                        .filter(DiaryCard::isExposure)
+                        .map(diaryCard -> CardResponse.yesterdayCardInfo.builder()
+                                .cardId(diaryCard.getId())
+                                .cardContent(toGetCardDTO(diaryCard)) //카드 내용
+                                .build()
+                        ))
+                .toList();
+
+        return CardResponse.getYesterdayCardsDto.builder().cards(cardList).build();
     }
 }

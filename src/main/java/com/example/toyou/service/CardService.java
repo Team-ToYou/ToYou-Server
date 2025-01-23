@@ -4,7 +4,9 @@ import com.example.toyou.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.apiPayload.exception.GeneralException;
 import com.example.toyou.app.dto.CardRequest;
 import com.example.toyou.app.dto.CardResponse;
+import com.example.toyou.app.dto.FriendResponse;
 import com.example.toyou.converter.CardConverter;
+import com.example.toyou.converter.FriendConverter;
 import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
@@ -288,4 +290,20 @@ public class CardService {
 
         return CardConverter.toGetDailyFriendsCardsDTO(filteredCards);
     }
+
+    /**
+     * 작일 친구 일기카드 목록 조회
+     */
+    public CardResponse.getYesterdayCardsDto getYesterdayCards(Long userId) {
+
+        log.info("[작일 친구 일기카드 목록 조회] userId={}", userId);
+
+        // 어제 일기카드를 생성한 친구들을 조회
+        List<User> friendsWithDiaryCardYesterday = friendService.getFriendsWithDiaryCardYesterday(userId);
+
+        log.info("작일 친구 일기카드 개수 : {}", friendsWithDiaryCardYesterday.size());
+
+        return CardConverter.toYesterdayCardsDTO(friendsWithDiaryCardYesterday);
+    }
+
 }

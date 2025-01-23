@@ -131,4 +131,25 @@ public class CardResponse {
         @Schema(description = "감정", nullable = false, example = "HAPPY")
         private Emotion emotion;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getYesterdayCardsDto {
+
+        private List<yesterdayCardInfo> cards;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class yesterdayCardInfo {
+
+        @Schema(description = "카드 식별자", nullable = false, example = "1")
+        private Long cardId;
+
+        private getCardDTO cardContent;
+    }
 }
