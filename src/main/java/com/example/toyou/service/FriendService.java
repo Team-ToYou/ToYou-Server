@@ -56,13 +56,13 @@ public class FriendService {
     public List<User> getFriendList(User user) {
 
         // accepted가 true인 친구 요청 리스트 검색
-        List<FriendRequest> friendRequests1 = friendRepository.findByUserAndAcceptedTrue(user);
-        List<FriendRequest> friendRequests2 = friendRepository.findByFriendAndAcceptedTrue(user);
+        List<FriendRequest> friendRequests1 = friendRepository.findBySenderAndAcceptedTrue(user);
+        List<FriendRequest> friendRequests2 = friendRepository.findByReceiverAndAcceptedTrue(user);
 
         // 두 리스트 합치기
         return Stream.concat(
-                        friendRequests1.stream().map(FriendRequest::getFriend),
-                        friendRequests2.stream().map(FriendRequest::getUser)
+                        friendRequests1.stream().map(FriendRequest::getReceiver),
+                        friendRequests2.stream().map(FriendRequest::getSender)
                 )
                 .distinct() // 중복 제거
                 .toList();
@@ -88,12 +88,12 @@ public class FriendService {
         // 친구 상태 확인
         FriendStatus friendStatus;
 
-        if (friendRepository.existsByUserAndFriendAndAccepted(user, friend, true)
-                || friendRepository.existsByUserAndFriendAndAccepted(friend, user, true)) {
+        if (friendRepository.existsBySenderAndReceiverAndAccepted(user, friend, true)
+                || friendRepository.existsBySenderAndReceiverAndAccepted(friend, user, true)) {
             friendStatus = FriendStatus.FRIEND;
-        } else if (friendRepository.existsByUserAndFriendAndAccepted(user, friend, false)) {
+        } else if (friendRepository.existsBySenderAndReceiverAndAccepted(user, friend, false)) {
             friendStatus = FriendStatus.REQUEST_SENT;
-        } else if (friendRepository.existsByUserAndFriendAndAccepted(friend, user, false)) {
+        } else if (friendRepository.existsBySenderAndReceiverAndAccepted(friend, user, false)) {
             friendStatus = FriendStatus.REQUEST_RECEIVED;
         } else {
             friendStatus = FriendStatus.NOT_FRIEND;
@@ -116,12 +116,12 @@ public class FriendService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 요청 목록 조회
-        List<FriendRequest> friendRequests = friendRepository.findByFriendAndAcceptedFalse(user);
+        List<FriendRequest> friendRequests = friendRepository.findByReceiverAndAcceptedFalse(user);
 
         // 발신자 정보 조회
         List<FriendResponse.senderInfo> senderInfos = friendRequests.stream()
                 .map(friendRequest -> {
-                    User sender = friendRequest.getUser();
+                    User sender = friendRequest.getSender();
 
                     return FriendResponse.senderInfo.builder()
                             .userId(sender.getId())
@@ -146,28 +146,28 @@ public class FriendService {
         log.info("[친구 요청] userId={}, friendId={}", userId, request.getUserId());
 
         // 본인 검색
-        User user = userRepository.findById(userId)
+        User sender = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
-        // 친구 검색
-        User friend = userRepository.findById(request.getUserId())
+        // 상대방 검색
+        User receiver = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 본인 스스로에게 친구 요청 불가능
-        if (user == friend) throw new GeneralException(ErrorStatus.CANNOT_REQUEST_MYSELF);
+        if (sender == receiver) throw new GeneralException(ErrorStatus.CANNOT_REQUEST_MYSELF);
 
         // 친구 요청 정보가 이미 존재하는지 확인
-        if (friendRepository.existsByUserAndFriend(user, friend) || friendRepository.existsByUserAndFriend(friend, user))
+        if (friendRepository.existsBySenderAndReceiver(sender, receiver) || friendRepository.existsBySenderAndReceiver(receiver, sender))
             throw new GeneralException(ErrorStatus.FRIEND_REQUEST_ALREADY_EXISTING);
 
-        FriendRequest newFriendRequest = FriendConverter.toFriendRequest(user, friend);
+        FriendRequest newFriendRequest = FriendConverter.toFriendRequest(sender, receiver);
 
         friendRepository.save(newFriendRequest);
 
         log.info("생성된 친구 요청 : friendRequestId={}", newFriendRequest.getId());
 
         return FcmResponse.getMyNameDto.builder()
-                .myName(user.getNickname())
+                .myName(sender.getNickname())
                 .build();
     }
 
@@ -188,9 +188,9 @@ public class FriendService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 요청 정보 확인
-        FriendRequest friendRequestToDelete = friendRepository.findByUserAndFriend(user, friend)
+        FriendRequest friendRequestToDelete = friendRepository.findBySenderAndReceiver(user, friend)
                 .orElseGet(() ->
-                        friendRepository.findByUserAndFriend(friend, user)
+                        friendRepository.findBySenderAndReceiver(friend, user)
                                 .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND))
                 );
 
@@ -214,7 +214,7 @@ public class FriendService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         // 친구 요청 정보 확인
-        FriendRequest friendRequestToAccept = friendRepository.findByUserAndFriend(sender, receiver)
+        FriendRequest friendRequestToAccept = friendRepository.findBySenderAndReceiver(sender, receiver)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.REQUEST_INFO_NOT_FOUND));
 
         if (friendRequestToAccept.getAccepted()) throw new GeneralException(ErrorStatus.ALREADY_FRIENDS);
@@ -244,16 +244,16 @@ public class FriendService {
 
         // accepted가 true이고, 어제 생성된 DiaryCard가 있는 친구들의 친구 객체 리스트
         return Stream.concat(
-                        // User가 요청자인 경우
-                        friendRepository.findByUserAndAcceptedTrue(user).stream()
-                                .map(FriendRequest::getFriend)
+                        // 본인이 sender인 경우
+                        friendRepository.findBySenderAndAcceptedTrue(user).stream()
+                                .map(FriendRequest::getReceiver)
                                 .filter(friend -> !friend.isDeleted()) // isDeleted가 false인 경우만 포함
                                 .filter(friend -> friend.getDiaryCardList().stream()
                                         .anyMatch(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday))),
 
-                        // Friend가 요청자인 경우
-                        friendRepository.findByFriendAndAcceptedTrue(user).stream()
-                                .map(FriendRequest::getUser)
+                        // 본인이 receiver인 경우
+                        friendRepository.findByReceiverAndAcceptedTrue(user).stream()
+                                .map(FriendRequest::getSender)
                                 .filter(friendRequestUser -> !friendRequestUser.isDeleted()) // isDeleted가 false인 경우만 포함
                                 .filter(friendRequestUser -> friendRequestUser.getDiaryCardList().stream()
                                         .anyMatch(diaryCard -> diaryCard.getCreatedAt().toLocalDate().isEqual(yesterday)))

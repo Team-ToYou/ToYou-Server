@@ -12,10 +12,10 @@ import java.util.List;
 
 public class FriendConverter {
 
-    public static FriendRequest toFriendRequest(User user, User friend) {
+    public static FriendRequest toFriendRequest(User sender, User receiver) {
         return FriendRequest.builder()
-                .user(user)
-                .friend(friend)
+                .sender(sender)
+                .receiver(receiver)
                 .accepted(false)
                 .checked(false)
                 .build();

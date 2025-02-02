@@ -6,7 +6,6 @@ import com.example.toyou.app.dto.AlarmResponse;
 import com.example.toyou.converter.AlarmConverter;
 import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.User;
-import com.example.toyou.domain.enums.AlarmType;
 import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
