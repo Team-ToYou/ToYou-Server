@@ -1,10 +1,10 @@
 package com.example.toyou.service;
 
-import com.example.toyou.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.apiPayload.exception.GeneralException;
-import com.example.toyou.app.dto.FcmResponse;
-import com.example.toyou.app.dto.QuestionRequest;
-import com.example.toyou.app.dto.QuestionResponse;
+import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
+import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.dto.response.FcmResponse;
+import com.example.toyou.dto.request.QuestionRequest;
+import com.example.toyou.dto.response.QuestionResponse;
 import com.example.toyou.converter.AlarmConverter;
 import com.example.toyou.converter.QuestionConverter;
 import com.example.toyou.domain.Alarm;

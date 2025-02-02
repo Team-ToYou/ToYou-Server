@@ -1,13 +1,13 @@
 package com.example.toyou.service;
 
-import com.example.toyou.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.apiPayload.exception.GeneralException;
-import com.example.toyou.app.dto.FcmResponse;
-import com.example.toyou.app.dto.FcmTopicDto;
+import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
+import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.dto.response.FcmResponse;
+import com.example.toyou.dto.fcm.FcmTopicDto;
 import com.example.toyou.domain.FcmToken;
 import com.example.toyou.domain.User;
-import com.example.toyou.app.dto.FcmMessageDto;
-import com.example.toyou.app.dto.FcmRequest;
+import com.example.toyou.dto.fcm.FcmMessageDto;
+import com.example.toyou.dto.request.FcmRequest;
 import com.example.toyou.repository.FcmTokenRepository;
 import com.example.toyou.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,10 +28,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static com.example.toyou.apiPayload.code.status.ErrorStatus.*;
+import static com.example.toyou.common.apiPayload.code.status.ErrorStatus.*;
 
 @Service
 @Slf4j
@@ -94,7 +92,7 @@ public class FcmService {
         log.info("[FCM Token 조회] userId={}", userId);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(USER_NOT_FOUND));
 
         List<FcmToken> fcmTokens = fcmTokenRepository.findAllByUser(user);
 

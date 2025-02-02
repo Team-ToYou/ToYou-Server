@@ -1,8 +1,8 @@
 package com.example.toyou.service;
 
-import com.example.toyou.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.apiPayload.exception.GeneralException;
-import com.example.toyou.app.dto.AlarmResponse;
+import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
+import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.dto.response.AlarmResponse;
 import com.example.toyou.converter.AlarmConverter;
 import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.User;

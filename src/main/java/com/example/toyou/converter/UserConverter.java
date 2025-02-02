@@ -1,10 +1,7 @@
 package com.example.toyou.converter;
 
-import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.User;
-import com.example.toyou.app.dto.HomeResponse;
-
-import java.time.LocalDate;
+import com.example.toyou.dto.response.HomeResponse;
 
 public class UserConverter {
 

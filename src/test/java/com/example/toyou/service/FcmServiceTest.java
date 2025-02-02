@@ -1,6 +1,6 @@
 package com.example.toyou.service;
 
-import com.example.toyou.apiPayload.exception.GeneralException;
+import com.example.toyou.common.apiPayload.exception.GeneralException;
 import com.example.toyou.domain.FcmToken;
 import com.example.toyou.domain.User;
 import com.example.toyou.repository.FcmTokenRepository;

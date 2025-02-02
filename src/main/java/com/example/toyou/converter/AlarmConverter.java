@@ -1,12 +1,10 @@
 package com.example.toyou.converter;
 
-import com.example.toyou.app.dto.AlarmResponse;
-import com.example.toyou.app.dto.QuestionResponse;
+import com.example.toyou.dto.response.AlarmResponse;
 import com.example.toyou.domain.*;
 import com.example.toyou.domain.enums.AlarmType;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AlarmConverter {
 

@@ -1,7 +1,7 @@
 package com.example.toyou.service;
 
-import com.example.toyou.app.dto.CardRequest;
-import com.example.toyou.app.dto.CardResponse;
+import com.example.toyou.dto.request.CardRequest;
+import com.example.toyou.dto.response.CardResponse;
 import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
