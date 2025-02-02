@@ -1,12 +1,10 @@
 package com.example.toyou.service;
 
-import com.example.toyou.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.apiPayload.exception.GeneralException;
-import com.example.toyou.app.dto.CardRequest;
-import com.example.toyou.app.dto.CardResponse;
-import com.example.toyou.app.dto.FriendResponse;
+import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
+import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.dto.request.CardRequest;
+import com.example.toyou.dto.response.CardResponse;
 import com.example.toyou.converter.CardConverter;
-import com.example.toyou.converter.FriendConverter;
 import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
@@ -14,7 +12,6 @@ import com.example.toyou.domain.enums.QuestionType;
 import com.example.toyou.repository.CardRepository;
 import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
-import com.example.toyou.service.FriendService;
 import com.vane.badwordfiltering.BadWordFiltering;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

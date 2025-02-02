@@ -1,8 +1,11 @@
 package com.example.toyou.service;
 
-import com.example.toyou.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.apiPayload.exception.GeneralException;
-import com.example.toyou.app.dto.*;
+import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
+import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.dto.request.HomeRequest;
+import com.example.toyou.dto.request.QuestionRequest;
+import com.example.toyou.dto.response.HomeResponse;
+import com.example.toyou.dto.response.UserResponse;
 import com.example.toyou.converter.QuestionConverter;
 import com.example.toyou.converter.UserConverter;
 import com.example.toyou.domain.*;
@@ -20,7 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 
-import static com.example.toyou.apiPayload.code.status.ErrorStatus.EXISTING_NICKNAME;
+import static com.example.toyou.common.apiPayload.code.status.ErrorStatus.EXISTING_NICKNAME;
 
 @Slf4j
 @Service

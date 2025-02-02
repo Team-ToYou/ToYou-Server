@@ -1,14 +1,12 @@
 package com.example.toyou.converter;
 
-import com.example.toyou.app.dto.CardResponse;
-import com.example.toyou.app.dto.FriendResponse;
+import com.example.toyou.dto.response.CardResponse;
 import com.example.toyou.domain.AnswerOption;
 import com.example.toyou.domain.DiaryCard;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

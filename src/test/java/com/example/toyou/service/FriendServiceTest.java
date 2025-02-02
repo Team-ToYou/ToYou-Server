@@ -1,6 +1,6 @@
 package com.example.toyou.service;
 
-import com.example.toyou.app.dto.FriendResponse;
+import com.example.toyou.dto.response.FriendResponse;
 import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.User;
 import com.example.toyou.repository.FriendRepository;

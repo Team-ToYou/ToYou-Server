@@ -11,23 +11,24 @@ import java.util.Optional;
 
 public interface FriendRepository extends JpaRepository<FriendRequest, Long> {
 
-    // 친구가 탈퇴되지 않았으며, 친구 요청이 수락된 경우에 대해 조회
+    // receiver가 탈퇴되지 않았으며, 친구 요청이 수락된 경우에 대해 조회
     @Query("SELECT fr FROM FriendRequest fr " +
-            "WHERE fr.user = :user AND fr.accepted = true AND fr.friend.isDeleted = false")
-    List<FriendRequest> findByUserAndAcceptedTrue(@Param("user") User user);
+            "WHERE fr.sender = :sender AND fr.accepted = true AND fr.receiver.isDeleted = false")
+    List<FriendRequest> findBySenderAndAcceptedTrue(@Param("sender") User sender);
 
-    // 친구가 탈퇴되지 않았으며, 수락된 친구 요청이 있는 경우에 대해 조회
+    // receiver가 탈퇴되지 않았으며, 수락된 친구 요청이 있는 경우에 대해 조회
     @Query("SELECT fr FROM FriendRequest fr " +
-            "WHERE fr.friend = :user AND fr.accepted = true AND fr.user.isDeleted = false")
-    List<FriendRequest> findByFriendAndAcceptedTrue(@Param("user") User user);
+            "WHERE fr.receiver = :sender AND fr.accepted = true AND fr.sender.isDeleted = false")
+    List<FriendRequest> findByReceiverAndAcceptedTrue(@Param("sender") User sender);
 
     @Query("SELECT fr FROM FriendRequest fr " +
-            "WHERE fr.friend = :user AND fr.accepted = false AND fr.user.isDeleted = false")
-    List<FriendRequest> findByFriendAndAcceptedFalse(@Param("user") User user);
+            "WHERE fr.receiver = :sender AND fr.accepted = false AND fr.sender.isDeleted = false")
+    List<FriendRequest> findByReceiverAndAcceptedFalse(@Param("sender") User sender);
 
-    Optional<FriendRequest> findByUserAndFriend(User user, User friend);
 
-    Boolean existsByUserAndFriend(User user, User friend);
+    Optional<FriendRequest> findBySenderAndReceiver(User sender, User receiver);
 
-    Boolean existsByUserAndFriendAndAccepted(User user, User friend, Boolean accepted);
+    Boolean existsBySenderAndReceiver(User sender, User receiver);
+
+    Boolean existsBySenderAndReceiverAndAccepted(User sender, User receiver, Boolean accepted);
 }

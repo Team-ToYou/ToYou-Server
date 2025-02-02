@@ -1,13 +1,11 @@
 package com.example.toyou.converter;
 
-import com.example.toyou.app.dto.FriendResponse;
-import com.example.toyou.app.dto.QuestionRequest;
-import com.example.toyou.app.dto.QuestionResponse;
+import com.example.toyou.dto.request.QuestionRequest;
+import com.example.toyou.dto.response.QuestionResponse;
 import com.example.toyou.domain.AnswerOption;
 import com.example.toyou.domain.CustomQuestion;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
-import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.QuestionType;
 
 import java.util.List;

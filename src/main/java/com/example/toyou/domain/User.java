@@ -43,7 +43,7 @@ public class User extends BaseEntity {
 
     private LocalDateTime deletedAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     @Builder.Default
     private List<FriendRequest> friendRequestList = new ArrayList<>();
 
