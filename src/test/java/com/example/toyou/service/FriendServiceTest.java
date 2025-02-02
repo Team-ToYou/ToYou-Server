@@ -38,13 +38,13 @@ public class FriendServiceTest {
         userRepository.save(receiver);
 
         FriendRequest friendRequest1 = FriendRequest.builder()
-                .user(sender1)
-                .friend(receiver)
+                .sender(sender1)
+                .receiver(receiver)
                 .accepted(false)
                 .build();
         FriendRequest friendRequest2 = FriendRequest.builder()
-                .user(sender2)
-                .friend(receiver)
+                .sender(sender2)
+                .receiver(receiver)
                 .accepted(false)
                 .build();
 
