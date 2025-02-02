@@ -20,7 +20,7 @@ public class FriendRequest extends BaseEntity {
     private User sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "friend_id")
+    @JoinColumn(name = "receiver_id")
     private User receiver;
 
     private Boolean accepted;
