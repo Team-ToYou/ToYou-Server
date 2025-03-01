@@ -48,6 +48,16 @@ public class AppleService {
     @Value("${apple.key-id}")
     private String APPLE_KEY_ID;
 
+    @Value("${spring.security.oauth2.client.registration.apple.redirect-uri}")
+    private String APPLE_REDIRECT_URL;
+
+    public String getAppleLogin() {
+        return APPLE_URL + "/auth/authorize"
+                + "?client_id=" + APPLE_CLIENT_ID
+                + "&redirect_uri=" + APPLE_REDIRECT_URL
+                + "&response_type=code%20id_token&scope=name%20email&response_mode=form_post";
+    }
+
     /**
      * Apple 토큰 인증 API 호출 -> 응답받은 ID 토큰을 JWT Decoding 처리 -> AppleUserInfoResponseDto로 반환
      * @param authorizationCode 사용자로부터 받은 인증 코드
