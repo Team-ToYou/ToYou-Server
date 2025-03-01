@@ -2,6 +2,7 @@ package com.example.toyou.service;
 
 import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.dto.apple.AppleUserInfoResponse;
 import com.example.toyou.dto.request.UserRequest;
 import com.example.toyou.domain.OauthInfo;
 import com.example.toyou.domain.User;
@@ -23,6 +24,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -39,6 +41,7 @@ public class OauthService {
     private final TokenProvider tokenProvider;
     private final RedisService redisService;
     private final FcmService fcmService;
+    private final AppleService appleService;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String CLIENT_ID;
@@ -50,6 +53,40 @@ public class OauthService {
     private static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
     private static final String REFRESH_TOKEN_CATEGORY = "refresh";
     private static final String ACCESS_TOKEN_CATEGORY = "access";
+
+    /**
+     * 애플 로그인
+     */
+    @Transactional
+    public void appleLogin(String authorizationCode, HttpServletResponse response) throws IOException {
+        log.info("[애플 로그인]");
+        String accessToken = "";
+        String refreshToken = "";
+
+        // 애플 사용자 정보 요청
+        AppleUserInfoResponse userInfo = appleService.getAppleUserProfile(authorizationCode);
+        String oauthId = userInfo.getSub();
+
+        // DB에서 사용자 확인
+        Optional<User> optionalUser = userRepository.findByOauthInfo_OauthId(oauthId);
+        log.info("DB에 사용자 존재 여부: {}", optionalUser.isPresent());
+
+        //DB에 회원 정보가 있을때 토큰 발급
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            //토큰 생성
+            accessToken = issueAccessToken(user);
+            refreshToken = issueRefreshToken(user);
+            log.info("access: " + accessToken);
+            log.info("refresh : " + refreshToken);
+        }
+
+        //응답 설정
+        response.setHeader("access_token", accessToken);
+        response.setHeader("refresh_token", refreshToken);
+        response.setStatus(HttpStatus.OK.value());
+    }
 
     /**
      * 카카오 로그인

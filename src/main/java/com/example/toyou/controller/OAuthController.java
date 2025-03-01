@@ -1,7 +1,9 @@
 package com.example.toyou.controller;
 
 import com.example.toyou.common.apiPayload.CustomApiResponse;
+import com.example.toyou.dto.apple.AppleUserInfoResponse;
 import com.example.toyou.dto.request.UserRequest;
+import com.example.toyou.service.AppleService;
 import com.example.toyou.service.OauthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -24,11 +27,18 @@ public class OAuthController {
 
     private final OauthService oauthService;
 
+    @PostMapping("/apple")
+    @Operation(summary = "애플 로그인", description = "authorization code을 통해 사용자 인증 후, access 토큰과 refresh 토큰을 발급 받습니다.")
+    public CustomApiResponse<?> appleLogin(@RequestHeader String authorizationCode, HttpServletResponse response) throws IOException {
+        oauthService.appleLogin(authorizationCode, response);
+        return CustomApiResponse.onSuccess(null);
+    }
+
     @PostMapping("/kakao")
     @Operation(summary = "카카오 로그인", description = "카카오 액세스 토큰을 통해 access 토큰과 refresh 토큰을 발급 받습니다.")
-        public CustomApiResponse<?> kakaoLogin(@RequestHeader String oauthAccessToken, HttpServletResponse response) {
-            oauthService.kakaoLogin(oauthAccessToken, response);
-            return CustomApiResponse.onSuccess(null);
+    public CustomApiResponse<?> kakaoLogin(@RequestHeader String oauthAccessToken, HttpServletResponse response) {
+        oauthService.kakaoLogin(oauthAccessToken, response);
+        return CustomApiResponse.onSuccess(null);
     }
 
     @PostMapping("/kakao/access")
