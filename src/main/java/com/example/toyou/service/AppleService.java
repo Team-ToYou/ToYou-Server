@@ -10,14 +10,17 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
+import java.io.*;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.time.LocalDateTime;
@@ -42,6 +45,9 @@ public class AppleService {
     @Value("${spring.security.oauth2.client.registration.apple.client-id}")
     private String APPLE_CLIENT_ID;
 
+    @Value("${apple.service-id}")
+    private String APPLE_SERVICE_ID;
+
     @Value("${apple.team-id}")
     private String APPLE_TEAM_ID;
 
@@ -53,7 +59,7 @@ public class AppleService {
 
     public String getAppleLogin() {
         return APPLE_URL + "/auth/authorize"
-                + "?client_id=" + APPLE_CLIENT_ID
+                + "?client_id=" + APPLE_SERVICE_ID
                 + "&redirect_uri=" + APPLE_REDIRECT_URL
                 + "&response_type=code%20id_token&scope=name%20email&response_mode=form_post";
     }
@@ -116,12 +122,27 @@ public class AppleService {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
 
-        try {
-            byte[] privateKeyBytes = Base64.getDecoder().decode(APPLE_KEY_PATH);
-            PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
-            return converter.getPrivateKey(privateKeyInfo);
-        } catch (Exception e) {
-            throw new RuntimeException("Error converting private key from String", e);
+//        try {
+//            byte[] privateKeyBytes = Base64.getDecoder().decode(APPLE_KEY_PATH);
+//            PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
+//            return converter.getPrivateKey(privateKeyInfo);
+//        } catch (Exception e) {
+//            throw new RuntimeException("Error converting private key from String", e);
+//        }
+
+        try (InputStream inputStream = new ClassPathResource(APPLE_KEY_PATH).getInputStream();
+             PEMParser pemParser = new PEMParser(new InputStreamReader(inputStream))) { // p8 파일을 읽음
+
+            Object object = pemParser.readObject();
+
+            if (object instanceof PrivateKeyInfo) {
+                return converter.getPrivateKey((PrivateKeyInfo) object);
+            } else {
+                throw new IllegalArgumentException("Invalid private key format");
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading private key file", e);
         }
     }
 }
