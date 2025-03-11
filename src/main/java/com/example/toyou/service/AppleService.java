@@ -73,7 +73,8 @@ public class AppleService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(APPLICATION_FORM_URLENCODED_VALUE));
 
-        String requestBody = "client_id=" + APPLE_CLIENT_ID +
+//        String requestBody = "client_id=" + APPLE_CLIENT_ID +
+        String requestBody = "client_id=" + APPLE_SERVICE_ID +
                 "&client_secret=" + generateClientSecret() +
                 "&grant_type=authorization_code" +
                 "&code=" + authorizationCode;
