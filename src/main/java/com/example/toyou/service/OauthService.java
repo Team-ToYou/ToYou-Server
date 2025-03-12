@@ -326,6 +326,42 @@ public class OauthService {
     }
 
     /**
+     * 애플 회원탈퇴
+     */
+    @Transactional
+    public void appleUnlink(Long userId, String refreshToken) {
+
+        log.info("[애플 회원탈퇴]");
+
+        //refresh 토큰 검사 후 유저 id 추출
+        Long userIdFromRefresh = checkRefreshToken(refreshToken);
+
+        // access 토큰과 refresh 토큰에 해당하는 유저 유저 비교
+        if (!userId.equals(userIdFromRefresh)) throw new GeneralException(TOKEN_INVALID);
+
+        //리프레시 토큰 삭제 from Redis
+        redisService.deleteValues(userId);
+
+        User user = userService.findById(userId);
+
+        //유저 FCM Token 전체 삭제
+        fcmService.deleteAllToken(user);
+
+        //유저 정보 soft delete
+        user.setDeletedAt();
+
+        // 삭제된 유저 정보 업데이트
+        userRepository.save(user);
+
+        // 실제로 delete 호출하여 @SQLDelete로 처리
+//        userRepository.delete(user);
+
+        //애플 리프레시 토큰 조회 및 해지
+        String appleRefreshToken = user.getOauthInfo().getOauthAccessToken();
+        appleService.revokeToken(appleRefreshToken);
+    }
+
+    /**
      * JWT 토큰 재발급
      */
     @Transactional

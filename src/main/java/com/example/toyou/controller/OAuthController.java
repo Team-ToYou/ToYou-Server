@@ -109,4 +109,15 @@ public class OAuthController {
 
         return CustomApiResponse.onSuccess(null);
     }
+
+    @DeleteMapping("/unlink/apple")
+    @Operation(summary = "애플 회원탈퇴", description = "access 토큰과 refresh 토큰을 통해 회원탈퇴를 진행합니다.")
+    public CustomApiResponse<?> appleUnlink(Principal principal, @RequestHeader String refreshToken) {
+
+        Long userId = Long.parseLong(principal.getName());
+
+        oauthService.appleUnlink(userId, refreshToken);
+
+        return CustomApiResponse.onSuccess(null);
+    }
 }

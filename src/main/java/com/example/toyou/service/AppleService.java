@@ -20,6 +20,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -166,4 +168,40 @@ public class AppleService {
             throw new RuntimeException("Error reading private key file", e);
         }
     }
+
+    // 사용자 토큰 해지
+    public void revokeToken(String refreshToken) {
+        // HTTP Header 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // HTTP 요청 바디 생성
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+//        body.add("client_id", APPLE_CLIENT_ID);
+        body.add("client_id", APPLE_SERVICE_ID);
+        body.add("token", refreshToken);
+        body.add("client_secret", generateClientSecret());
+        body.add("token_type_hint", "refresh_token");
+
+        // HTTP 요청 보내기
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    "https://appleid.apple.com/auth/revoke",
+                    HttpMethod.POST,
+                    request,
+                    String.class
+            );
+
+            log.info("Apple token revoke response: {}", response.getStatusCode());
+        } catch (HttpClientErrorException e) { // HTTP 오류 응답 처리
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) { // 유효한 토큰 X
+                throw new GeneralException(ErrorStatus.REFRESH_TOKEN_INVALID);
+            }
+            throw new RuntimeException("HTTP error occurred: " + e.getStatusCode(), e);
+        }
+    }
+
 }
