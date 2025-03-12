@@ -92,7 +92,7 @@ public class AppleService {
                 request,
                 AppleSocialTokenInfoResponse.class);
 
-        log.info("response : {}", response);
+        log.info("response : {}", response.getBody());
 
         DecodedJWT decodedJWT = JWT.decode(Objects.requireNonNull(response.getBody()).getIdToken());
 
