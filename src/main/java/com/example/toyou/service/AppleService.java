@@ -2,6 +2,8 @@ package com.example.toyou.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
+import com.example.toyou.common.apiPayload.exception.GeneralException;
 import com.example.toyou.dto.apple.AppleSocialTokenInfoResponse;
 import com.example.toyou.dto.apple.AppleUserInfoResponse;
 import io.jsonwebtoken.JwsHeader;
@@ -18,6 +20,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
@@ -86,20 +90,28 @@ public class AppleService {
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<AppleSocialTokenInfoResponse> response = restTemplate.exchange(
-                APPLE_URL + "/auth/token",
-                HttpMethod.POST,
-                request,
-                AppleSocialTokenInfoResponse.class);
 
-        log.info("response : {}", response.getBody());
+        try {
+            ResponseEntity<AppleSocialTokenInfoResponse> response = restTemplate.exchange(
+                    APPLE_URL + "/auth/token",
+                    HttpMethod.POST,
+                    request,
+                    AppleSocialTokenInfoResponse.class);
 
-        DecodedJWT decodedJWT = JWT.decode(Objects.requireNonNull(response.getBody()).getIdToken());
+            log.info("response : {}", response.getBody());
 
-        return AppleUserInfoResponse.builder()
-                .sub(decodedJWT.getClaim("sub").asString())
-                .email(decodedJWT.getClaim("email").asString())
-                .build();
+            DecodedJWT decodedJWT = JWT.decode(Objects.requireNonNull(response.getBody()).getIdToken());
+
+            return AppleUserInfoResponse.builder()
+                    .sub(decodedJWT.getClaim("sub").asString())
+                    .email(decodedJWT.getClaim("email").asString())
+                    .build();
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) { // 유효한 토큰 X
+                throw new GeneralException(ErrorStatus.INVALID_CODE);
+            }
+            throw new RuntimeException("HTTP error occurred: " + e.getStatusCode(), e);
+        }
     }
 
     /**
