@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
                         .permitAll()
-                        .requestMatchers("/users/nickname/check", "/health", "/auth/kakao", "/auth/kakao/access", "/auth/reissue", "/auth/signup", "/fcm/topic", "/users/test/**", "/login/**")
+                        .requestMatchers("/users/nickname/check", "/health", "/auth/**", "/fcm/topic", "/users/test/**", "/login/**")
                         .permitAll()
                         .anyRequest().authenticated())
 
