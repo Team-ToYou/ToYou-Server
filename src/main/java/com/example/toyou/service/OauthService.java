@@ -167,6 +167,26 @@ public class OauthService {
     }
 
     /**
+     * 로그아웃 - 리프레시 토큰 제거
+     */
+    @Transactional
+    public void deleteRefresh(Long userId, String refreshToken) {
+
+        log.info("[로그아웃 - 리프레시 토큰 제거]");
+
+        //refresh 토큰 검사 후 유저 id 추출
+        Long userIdFromRefresh = checkRefreshToken(refreshToken);
+
+        // access 토큰과 refresh 토큰에 해당하는 유저 비교
+        if (!userId.equals(userIdFromRefresh)) throw new GeneralException(TOKEN_INVALID);
+
+        User user = userService.findById(userId);
+
+        //리프레시 토큰 삭제 from Redis
+        redisService.deleteValues(userId);
+    }
+
+    /**
      * 카카오 회원 가입
      */
     @Transactional

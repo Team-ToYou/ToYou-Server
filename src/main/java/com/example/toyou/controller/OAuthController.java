@@ -88,6 +88,17 @@ public class OAuthController {
         return CustomApiResponse.onSuccess(null);
     }
 
+    @PostMapping("/logout/apple")
+    @Operation(summary = "애플 로그아웃", description = "access 토큰과 refresh 토큰을 통해 로그아웃을 진행합니다.")
+    public CustomApiResponse<?> appleLogout(Principal principal, @RequestHeader String refreshToken) {
+
+        Long userId = Long.parseLong(principal.getName());
+
+        oauthService.deleteRefresh(userId, refreshToken);
+
+        return CustomApiResponse.onSuccess(null);
+    }
+
     @DeleteMapping("/unlink")
     @Operation(summary = "카카오 회원탈퇴", description = "access 토큰과 refresh 토큰을 통해 회원탈퇴를 진행합니다.")
     public CustomApiResponse<?> unlink(Principal principal, @RequestHeader String refreshToken) {
