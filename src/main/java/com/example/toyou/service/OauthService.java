@@ -133,7 +133,7 @@ public class OauthService {
     @Transactional
     public void kakaoLogout(Long userId, String refreshToken) {
 
-        log.info("[로그아웃]");
+        log.info("[카카오 로그아웃]");
 
         //refresh 토큰 검사 후 유저 id 추출
         Long userIdFromRefresh = checkRefreshToken(refreshToken);
@@ -171,7 +171,7 @@ public class OauthService {
      */
     @Transactional
     public void registerOauthUser(String oauthAccessToken, UserRequest.registerUserDTO request, HttpServletResponse response) {
-        log.info("[회원가입]");
+        log.info("[카카오 회원가입]");
 
         //OAuth2 액세스 토큰으로 회원 정보 요청
         JsonNode responseJson = getKakaoUserInfo(oauthAccessToken);
@@ -211,12 +211,54 @@ public class OauthService {
     }
 
     /**
-     * 카카오 회원 탈퇴
+     * 애플 회원가입
+     */
+    @Transactional
+    public void registerAppleUser(String authorizationCode, UserRequest.registerUserDTO request, HttpServletResponse response) throws IOException {
+        log.info("[애플 회원가입]");
+
+        // 애플 사용자 정보 요청
+        AppleUserInfoResponse userInfo = appleService.getAppleUserProfile(authorizationCode);
+        String oauthId = userInfo.getSub();
+
+        OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.APPLE, null);
+
+        // 이미 존재하는 회원 정보인지 검사
+        if (userRepository.existsByOauthInfo_OauthId(oauthId)) throw new GeneralException(ErrorStatus.ALREADY_JOINED);
+
+        // 이미 존재하는 닉네임인지 검사
+        if (userRepository.existsByNickname(request.getNickname()))
+            throw new GeneralException(ErrorStatus.EXISTING_NICKNAME);
+
+        // 유저 정보 저장
+        User user = userRepository.findByOauthInfo(oauthInfo)
+                .orElse(User.builder()
+                        .nickname(request.getNickname())
+                        .oauthInfo(oauthInfo)
+                        .adConsent(request.isAdConsent())
+                        .status(request.getStatus())
+                        .build());
+        userRepository.save(user);
+
+        //토큰 발급
+        String accessToken = issueAccessToken(user);
+        String refreshToken = issueRefreshToken(user);
+        log.info("access: " + accessToken);
+        log.info("refresh : " + refreshToken);
+
+        //응답 설정
+        response.setHeader("access_token", accessToken);
+        response.setHeader("refresh_token", refreshToken);
+        response.setStatus(HttpStatus.OK.value());
+    }
+
+    /**
+     * 카카오 회원탈퇴
      */
     @Transactional
     public void kakaoUnlink(Long userId, String refreshToken) {
 
-        log.info("[회원 탈퇴]");
+        log.info("[카카오 회원탈퇴]");
 
         //refresh 토큰 검사 후 유저 id 추출
         Long userIdFromRefresh = checkRefreshToken(refreshToken);
