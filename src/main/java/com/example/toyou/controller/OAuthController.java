@@ -58,7 +58,7 @@ public class OAuthController {
     }
 
     @PostMapping("/signup")
-    @Operation(summary = "회원가입", description = "카카오 액세스 토큰을 통해 회원가입합니다.")
+    @Operation(summary = "카카오 회원가입", description = "카카오 액세스 토큰을 통해 회원가입합니다.")
     public CustomApiResponse<?> registerOauthUser(@RequestHeader String oauthAccessToken,
                                                   @RequestBody @Valid UserRequest.registerUserDTO request, HttpServletResponse response) {
 
@@ -67,8 +67,18 @@ public class OAuthController {
         return CustomApiResponse.onSuccess(null);
     }
 
+    @PostMapping("/signup/apple")
+    @Operation(summary = "애플 회원가입", description = "authorization code을 통해 회원가입합니다.")
+    public CustomApiResponse<?> registerAppleUser(@RequestHeader String authorizationCode,
+                                                  @RequestBody @Valid UserRequest.registerUserDTO request, HttpServletResponse response) throws IOException {
+
+        oauthService.registerAppleUser(authorizationCode, request, response);
+
+        return CustomApiResponse.onSuccess(null);
+    }
+
     @PostMapping("/logout")
-    @Operation(summary = "로그아웃", description = "access 토큰과 refresh 토큰을 통해 로그아웃을 진행합니다.")
+    @Operation(summary = "카카오 로그아웃", description = "access 토큰과 refresh 토큰을 통해 로그아웃을 진행합니다.")
     public CustomApiResponse<?> logout(Principal principal, @RequestHeader String refreshToken) {
 
         Long userId = Long.parseLong(principal.getName());
@@ -79,7 +89,7 @@ public class OAuthController {
     }
 
     @DeleteMapping("/unlink")
-    @Operation(summary = "회원탈퇴", description = "access 토큰과 refresh 토큰을 통해 회원탈퇴를 진행합니다.")
+    @Operation(summary = "카카오 회원탈퇴", description = "access 토큰과 refresh 토큰을 통해 회원탈퇴를 진행합니다.")
     public CustomApiResponse<?> unlink(Principal principal, @RequestHeader String refreshToken) {
 
         Long userId = Long.parseLong(principal.getName());
