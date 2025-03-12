@@ -81,8 +81,8 @@ public class AppleService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(APPLICATION_FORM_URLENCODED_VALUE));
 
-//        String requestBody = "client_id=" + APPLE_CLIENT_ID +
-        String requestBody = "client_id=" + APPLE_SERVICE_ID +
+//        String requestBody = "client_id=" + APPLE_SERVICE_ID +
+        String requestBody = "client_id=" + APPLE_CLIENT_ID +
                 "&client_secret=" + generateClientSecret() +
                 "&grant_type=authorization_code" +
                 "&code=" + authorizationCode;
@@ -129,8 +129,8 @@ public class AppleService {
                 .setHeaderParam(JwsHeader.KEY_ID, APPLE_KEY_ID)
                 .setIssuer(APPLE_TEAM_ID)
                 .setAudience(APPLE_URL)
-//                .setSubject(APPLE_CLIENT_ID)
-                .setSubject(APPLE_SERVICE_ID)
+                .setSubject(APPLE_CLIENT_ID)
+//                .setSubject(APPLE_SERVICE_ID)
                 .setExpiration(Date.from(expiration.atZone(ZoneId.systemDefault()).toInstant()))
                 .setIssuedAt(new Date())
                 .signWith(getPrivateKey(), SignatureAlgorithm.ES256)
@@ -177,8 +177,8 @@ public class AppleService {
 
         // HTTP 요청 바디 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-//        body.add("client_id", APPLE_CLIENT_ID);
-        body.add("client_id", APPLE_SERVICE_ID);
+        body.add("client_id", APPLE_CLIENT_ID);
+//        body.add("client_id", APPLE_SERVICE_ID);
         body.add("token", refreshToken);
         body.add("client_secret", generateClientSecret());
         body.add("token_type_hint", "refresh_token");
