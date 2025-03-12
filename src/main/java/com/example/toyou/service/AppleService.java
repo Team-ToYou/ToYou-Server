@@ -70,6 +70,8 @@ public class AppleService {
      * @return 디코딩된 사용자 정보를 담고 있는 AppleUserInfoResponseDto 객체
      */
     public AppleUserInfoResponse getAppleUserProfile(String authorizationCode) throws IOException {
+        log.info("authorizationCode : {}", authorizationCode);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(APPLICATION_FORM_URLENCODED_VALUE));
 
@@ -79,6 +81,8 @@ public class AppleService {
                 "&grant_type=authorization_code" +
                 "&code=" + authorizationCode;
 
+        log.info("requestBody : {}", requestBody);
+
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -87,6 +91,8 @@ public class AppleService {
                 HttpMethod.POST,
                 request,
                 AppleSocialTokenInfoResponse.class);
+
+        log.info("response : {}", response);
 
         DecodedJWT decodedJWT = JWT.decode(Objects.requireNonNull(response.getBody()).getIdToken());
 
@@ -108,7 +114,8 @@ public class AppleService {
                 .setHeaderParam(JwsHeader.KEY_ID, APPLE_KEY_ID)
                 .setIssuer(APPLE_TEAM_ID)
                 .setAudience(APPLE_URL)
-                .setSubject(APPLE_CLIENT_ID)
+//                .setSubject(APPLE_CLIENT_ID)
+                .setSubject(APPLE_SERVICE_ID)
                 .setExpiration(Date.from(expiration.atZone(ZoneId.systemDefault()).toInstant()))
                 .setIssuedAt(new Date())
                 .signWith(getPrivateKey(), SignatureAlgorithm.ES256)
