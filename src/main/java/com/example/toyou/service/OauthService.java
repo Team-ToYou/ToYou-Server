@@ -240,8 +240,10 @@ public class OauthService {
         // 애플 사용자 정보 요청
         AppleUserInfoResponse userInfo = appleService.getAppleUserProfile(authorizationCode);
         String oauthId = userInfo.getSub();
+        String appleRefreshToken = userInfo.getRefreshToken();
 
-        OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.APPLE, null);
+        // 애플리프레시 토큰을 oauthAccessToken 필드(카카오용)에 저장(추후 분리 필요)
+        OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.APPLE, appleRefreshToken);
 
         // 이미 존재하는 회원 정보인지 검사
         if (userRepository.existsByOauthInfo_OauthId(oauthId)) throw new GeneralException(ErrorStatus.ALREADY_JOINED);

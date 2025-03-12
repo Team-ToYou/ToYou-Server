@@ -14,4 +14,5 @@ public class AppleUserInfoResponse {
 
     private String sub; // 고유 ID(==oauthId)
     private String email;
+    private String refreshToken; // 애플 리프레시 토큰(회원탈퇴시 사용)
 }

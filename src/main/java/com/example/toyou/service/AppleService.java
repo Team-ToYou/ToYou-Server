@@ -105,6 +105,7 @@ public class AppleService {
             return AppleUserInfoResponse.builder()
                     .sub(decodedJWT.getClaim("sub").asString())
                     .email(decodedJWT.getClaim("email").asString())
+                    .refreshToken(response.getBody().getRefreshToken())
                     .build();
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) { // 유효한 토큰 X
