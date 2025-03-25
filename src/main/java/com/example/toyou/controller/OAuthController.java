@@ -69,7 +69,7 @@ public class OAuthController {
     }
 
     @PostMapping("/signup/apple")
-    @Operation(summary = "애플 회원가입", description = "애플 회원가입을 진행하빈다.")
+    @Operation(summary = "애플 회원가입", description = "애플 회원가입을 진행합니다.")
     public CustomApiResponse<?> registerAppleUser(Principal principal,
                                                   @RequestBody @Valid UserRequest.registerUserDTO request) {
 
