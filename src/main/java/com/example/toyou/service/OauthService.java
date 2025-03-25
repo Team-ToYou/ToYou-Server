@@ -99,10 +99,10 @@ public class OauthService {
      * 애플 회원가입
      */
     @Transactional
-    public void registerAppleUser(Long userID, UserRequest.registerUserDTO request) {
+    public void registerAppleUser(Long userId, UserRequest.registerUserDTO request) {
         log.info("[애플 회원가입]");
 
-        User user = userService.findById(userID);
+        User user = userService.findById(userId);
 
         // 이미 존재하는 닉네임인지 검사
         if (userRepository.existsByNickname(request.getNickname()))
