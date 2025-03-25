@@ -8,6 +8,7 @@ import com.example.toyou.domain.OauthInfo;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.OauthProvider;
 import com.example.toyou.common.jwt.TokenProvider;
+import com.example.toyou.dto.response.AuthResponse;
 import com.example.toyou.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -58,34 +59,57 @@ public class OauthService {
      * 애플 로그인
      */
     @Transactional
-    public void appleLogin(String authorizationCode, HttpServletResponse response) throws IOException {
+    public AuthResponse.appleLoginDTO appleLogin(String authorizationCode) throws IOException {
         log.info("[애플 로그인]");
-        String accessToken = "";
-        String refreshToken = "";
 
         // 애플 사용자 정보 요청
         AppleUserInfoResponse userInfo = appleService.getAppleUserProfile(authorizationCode);
         String oauthId = userInfo.getSub();
 
-        // DB에서 사용자 확인
+        // 사용자 조회
         Optional<User> optionalUser = userRepository.findByOauthInfo_OauthId(oauthId);
-        log.info("DB에 사용자 존재 여부: {}", optionalUser.isPresent());
+        boolean isUser = optionalUser.isPresent();
+        User user;
 
-        //DB에 회원 정보가 있을때 토큰 발급
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
+        if (isUser) {
+            user = optionalUser.get();
+        } else {
+            log.info("DB에 존재하지 않는 사용자, 새로 등록 진행");
+            OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.APPLE, userInfo.getRefreshToken());
 
-            //토큰 생성
-            accessToken = issueAccessToken(user);
-            refreshToken = issueRefreshToken(user);
-            log.info("access: " + accessToken);
-            log.info("refresh : " + refreshToken);
+            user = userRepository.save(User.builder()
+                    .oauthInfo(oauthInfo)
+                    .build());
         }
 
-        //응답 설정
-        response.setHeader("access_token", accessToken);
-        response.setHeader("refresh_token", refreshToken);
-        response.setStatus(HttpStatus.OK.value());
+        //토큰 생성
+        String accessToken = issueAccessToken(user);
+        String refreshToken = issueRefreshToken(user);
+        log.info("access: " + accessToken);
+        log.info("refresh : " + refreshToken);
+
+        return AuthResponse.appleLoginDTO.builder()
+                .isUser(isUser)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    /**
+     * 애플 회원가입
+     */
+    @Transactional
+    public void registerAppleUser(Long userId, UserRequest.registerUserDTO request) {
+        log.info("[애플 회원가입]");
+
+        User user = userService.findById(userId);
+
+        // 이미 존재하는 닉네임인지 검사
+        if (userRepository.existsByNickname(request.getNickname()))
+            throw new GeneralException(ErrorStatus.EXISTING_NICKNAME);
+
+        // 유저 정보 저장
+        user.signup(request.getNickname(), request.getStatus(), request.isAdConsent());
     }
 
     /**
@@ -200,50 +224,6 @@ public class OauthService {
         String oauthId = responseJson.get("id").asText();
 
         OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.KAKAO, oauthAccessToken);
-
-        // 이미 존재하는 회원 정보인지 검사
-        if (userRepository.existsByOauthInfo_OauthId(oauthId)) throw new GeneralException(ErrorStatus.ALREADY_JOINED);
-
-        // 이미 존재하는 닉네임인지 검사
-        if (userRepository.existsByNickname(request.getNickname()))
-            throw new GeneralException(ErrorStatus.EXISTING_NICKNAME);
-
-        // 유저 정보 저장
-        User user = userRepository.findByOauthInfo(oauthInfo)
-                .orElse(User.builder()
-                        .nickname(request.getNickname())
-                        .oauthInfo(oauthInfo)
-                        .adConsent(request.isAdConsent())
-                        .status(request.getStatus())
-                        .build());
-        userRepository.save(user);
-
-        //토큰 발급
-        String accessToken = issueAccessToken(user);
-        String refreshToken = issueRefreshToken(user);
-        log.info("access: " + accessToken);
-        log.info("refresh : " + refreshToken);
-
-        //응답 설정
-        response.setHeader("access_token", accessToken);
-        response.setHeader("refresh_token", refreshToken);
-        response.setStatus(HttpStatus.OK.value());
-    }
-
-    /**
-     * 애플 회원가입
-     */
-    @Transactional
-    public void registerAppleUser(String authorizationCode, UserRequest.registerUserDTO request, HttpServletResponse response) throws IOException {
-        log.info("[애플 회원가입]");
-
-        // 애플 사용자 정보 요청
-        AppleUserInfoResponse userInfo = appleService.getAppleUserProfile(authorizationCode);
-        String oauthId = userInfo.getSub();
-        String appleRefreshToken = userInfo.getRefreshToken();
-
-        // 애플리프레시 토큰을 oauthAccessToken 필드(카카오용)에 저장(추후 분리 필요)
-        OauthInfo oauthInfo = new OauthInfo(oauthId, OauthProvider.APPLE, appleRefreshToken);
 
         // 이미 존재하는 회원 정보인지 검사
         if (userRepository.existsByOauthInfo_OauthId(oauthId)) throw new GeneralException(ErrorStatus.ALREADY_JOINED);
