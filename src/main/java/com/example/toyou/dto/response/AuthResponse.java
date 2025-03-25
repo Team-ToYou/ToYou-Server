@@ -14,7 +14,7 @@ public class AuthResponse {
     @AllArgsConstructor
     public static class appleLoginDTO {
         @Schema(description = "회원 여부", nullable = false, example = "true")
-        private boolean isUser;
+        private Boolean isUser;
         @Schema(description = "access 토큰", nullable = false, example = "...")
         private String accessToken;
         @Schema(description = "refresh 토큰", nullable = false, example = "...")
