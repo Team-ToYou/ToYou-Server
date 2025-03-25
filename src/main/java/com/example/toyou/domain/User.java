@@ -75,6 +75,12 @@ public class User extends BaseEntity {
         this.status = status;
     }
 
+    public void signup(String nickname, Status status, boolean adConsent){
+        this.nickname = nickname;
+        this.status = status;
+        this.adConsent = adConsent;
+    }
+
     public void setDeletedAt() {
         this.deletedAt = LocalDateTime.now();
         String randomSuffix = UUID.randomUUID().toString();

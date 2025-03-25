@@ -3,6 +3,7 @@ package com.example.toyou.controller;
 import com.example.toyou.common.apiPayload.CustomApiResponse;
 import com.example.toyou.dto.apple.AppleUserInfoResponse;
 import com.example.toyou.dto.request.UserRequest;
+import com.example.toyou.dto.response.AuthResponse;
 import com.example.toyou.service.AppleService;
 import com.example.toyou.service.OauthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,9 +30,9 @@ public class OAuthController {
 
     @PostMapping("/apple")
     @Operation(summary = "애플 로그인", description = "authorization code을 통해 사용자 인증 후, access 토큰과 refresh 토큰을 발급 받습니다.")
-    public CustomApiResponse<?> appleLogin(@RequestHeader String authorizationCode, HttpServletResponse response) throws IOException {
-        oauthService.appleLogin(authorizationCode, response);
-        return CustomApiResponse.onSuccess(null);
+    public CustomApiResponse<AuthResponse.appleLoginDTO> appleLogin(@RequestHeader String authorizationCode) throws IOException {
+        AuthResponse.appleLoginDTO response = oauthService.appleLogin(authorizationCode);
+        return CustomApiResponse.onSuccess(response);
     }
 
     @PostMapping("/kakao")
@@ -68,11 +69,13 @@ public class OAuthController {
     }
 
     @PostMapping("/signup/apple")
-    @Operation(summary = "애플 회원가입", description = "authorization code을 통해 회원가입합니다.")
-    public CustomApiResponse<?> registerAppleUser(@RequestHeader String authorizationCode,
-                                                  @RequestBody @Valid UserRequest.registerUserDTO request, HttpServletResponse response) throws IOException {
+    @Operation(summary = "애플 회원가입", description = "애플 회원가입을 진행하빈다.")
+    public CustomApiResponse<?> registerAppleUser(Principal principal,
+                                                  @RequestBody @Valid UserRequest.registerUserDTO request) {
 
-        oauthService.registerAppleUser(authorizationCode, request, response);
+        Long userId = Long.parseLong(principal.getName());
+
+        oauthService.registerAppleUser(userId, request);
 
         return CustomApiResponse.onSuccess(null);
     }
