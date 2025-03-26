@@ -43,6 +43,7 @@ public class OauthService {
     private final RedisService redisService;
     private final FcmService fcmService;
     private final AppleService appleService;
+    private final WebhookService webhookService;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String CLIENT_ID;
@@ -110,6 +111,9 @@ public class OauthService {
 
         // 유저 정보 저장
         user.signup(request.getNickname(), request.getStatus(), request.isAdConsent());
+
+        // 디스코드 알림
+        webhookService.sendDiscordNotification(user.getNickname(), userRepository.count());
     }
 
     /**
@@ -241,6 +245,9 @@ public class OauthService {
                         .status(request.getStatus())
                         .build());
         userRepository.save(user);
+
+        // 디스코드 알림
+        webhookService.sendDiscordNotification(user.getNickname(), userRepository.count());
 
         //토큰 발급
         String accessToken = issueAccessToken(user);
