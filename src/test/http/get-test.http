@@ -1,0 +1,39 @@
+### 홈 진입
+GET {{baseUrl}}/users/home
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 마이페이지
+GET {{baseUrl}}/users/mypage
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 친구 목록 조회
+GET {{baseUrl}}/friends
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 친구 요청 목록 조회
+GET {{baseUrl}}/friends/requests
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 금일 받은 질문 목록 조회
+GET {{baseUrl}}/questions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 본인 일기카드 목록 조회 (월별)
+GET {{baseUrl}}/diarycards/mine?year=2025&month=7
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 친구 일기카드 목록 조회 (월별)
+GET {{baseUrl}}/diarycards/friends?year=2025&month=7
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 친구 일기카드 목록 조회 (일별)
+GET {{baseUrl}}/diarycards/friends?year=2025&month=7&day=2
+Authorization: Bearer {{token}}
+Content-Type: application/json
