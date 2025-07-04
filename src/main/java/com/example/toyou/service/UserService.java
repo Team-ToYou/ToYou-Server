@@ -12,7 +12,10 @@ import com.example.toyou.domain.*;
 import com.example.toyou.domain.enums.Emotion;
 import com.example.toyou.domain.enums.QuestionType;
 import com.example.toyou.domain.enums.Status;
+import com.example.toyou.repository.AlarmRepository;
+import com.example.toyou.repository.CardRepository;
 import com.example.toyou.repository.CustomQuestionRepository;
+import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,49 +34,29 @@ import static com.example.toyou.common.apiPayload.code.status.ErrorStatus.EXISTI
 @RequiredArgsConstructor
 public class UserService {
 
+    private final QuestionService questionService; // 수정 필요
+    private final FriendService friendService;
     private final UserRepository userRepository;
     private final CustomQuestionRepository customQuestionRepository;
-    private final QuestionService questionService;
-    private final FriendService friendService;
+    private final QuestionRepository questionRepository;
+    private final CardRepository cardRepository;
+    private final AlarmRepository alarmRepository;
 
     /**
      * 홈화면 조회
      */
     public HomeResponse.GetHomeDTO getHome(Long userId){
-
         log.info("[홈화면 조회] userId={}", userId);
-
-        // 유저 검색
         User user = findById(userId);
 
         // 금일 생성한 일기카드 조회
-        LocalDate today = LocalDate.now();
-
-        Long cardId = null;
-        for (DiaryCard card : user.getDiaryCardList()) {
-            if (today.equals(card.getCreatedAt().toLocalDate())) {
-                cardId = card.getId();
-                break;
-            }
-        }
-        log.info("금일 생성한 일기카드 ID: {}", cardId);
+        Long cardId = cardRepository.findTodayCardId(user).orElse(null);
 
         // 금일 받은 질문 갯수 조회
-        int questionNum = 0;
-        for (Question question : user.getQuestionList()) {
-            if (today.equals(question.getCreatedAt().toLocalDate())) {
-                questionNum++;
-            }
-        }
-        log.info("금일 받은 질문 개수: {}", questionNum);
+        int questionNum = questionRepository.countTodayQuestions(user);
 
-        // 체크하지 않은 알림 조회
-        boolean uncheckedAlarm = false;
-        for (Alarm alarm : user.getAlarmList()) {
-            if (!alarm.isChecked()) {
-                uncheckedAlarm = true;
-            }
-        }
+        // 체크하지 않은 알림 유무 확인
+        boolean uncheckedAlarm = alarmRepository.existsUncheckedAlarmByUser(user);
 
         return UserConverter.toGetHomeDTO(user, cardId, questionNum, uncheckedAlarm);
     }
