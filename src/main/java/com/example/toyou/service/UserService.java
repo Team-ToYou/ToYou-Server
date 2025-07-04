@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
@@ -49,11 +50,14 @@ public class UserService {
         log.info("[홈화면 조회] userId={}", userId);
         User user = findById(userId);
 
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+
         // 금일 생성한 일기카드 조회
-        Long cardId = cardRepository.findTodayCardId(user).orElse(null);
+        Long cardId = cardRepository.findTodayCardId(user, start, end).orElse(null);
 
         // 금일 받은 질문 갯수 조회
-        int questionNum = questionRepository.countTodayQuestions(user);
+        int questionNum = questionRepository.countTodayQuestions(user, start, end);
 
         // 체크하지 않은 알림 유무 확인
         boolean uncheckedAlarm = alarmRepository.existsUncheckedAlarmByUser(user);

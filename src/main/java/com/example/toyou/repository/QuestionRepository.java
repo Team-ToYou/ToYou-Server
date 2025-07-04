@@ -15,6 +15,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findByCreatedAtBeforeAndDiaryCardIsNull(LocalDateTime startOfDay);
 
-    @Query("SELECT COUNT(q) FROM Question q WHERE q.user = :user AND DATE(q.createdAt) = CURRENT_DATE")
-    int countTodayQuestions(@Param("user") User user);
+    @Query("""
+        SELECT COUNT(q) FROM Question q
+        WHERE q.user = :user
+        AND q.createdAt BETWEEN :start AND :end
+    """)
+    int countTodayQuestions(@Param("user") User user, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
