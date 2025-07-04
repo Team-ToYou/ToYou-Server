@@ -9,6 +9,7 @@ build/
 **/application-test.yml
 **/resources/firebase/
 **/resources/key/
+http-client.private.env.json
 
 ### STS ###
 .apt_generated
