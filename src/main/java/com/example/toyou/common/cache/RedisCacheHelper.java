@@ -45,4 +45,12 @@ public class RedisCacheHelper {
 
         return result;
     }
+
+    public void delete(String key) {
+        redisTemplate.delete(key);
+    }
+
+    public void deleteFriendCache(Long userId) {
+        delete("friends:" + userId);
+    }
 }
