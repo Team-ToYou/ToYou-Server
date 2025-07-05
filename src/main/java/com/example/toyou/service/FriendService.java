@@ -2,6 +2,7 @@ package com.example.toyou.service;
 
 import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
 import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.common.cache.RedisCacheHelper;
 import com.example.toyou.dto.response.FcmResponse;
 import com.example.toyou.dto.request.FriendRequestRequest;
 import com.example.toyou.dto.response.FriendResponse;
@@ -14,6 +15,7 @@ import com.example.toyou.domain.enums.FriendStatus;
 import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.FriendRepository;
 import com.example.toyou.repository.UserRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class FriendService {
     private final FriendRepository friendRepository;
     private final AlarmRepository alarmRepository;
     private final UserRepository userRepository;
+    private final RedisCacheHelper redisCacheHelper;
 
     /**
      * 친구 목록 조회
@@ -39,17 +42,21 @@ public class FriendService {
     public FriendResponse.GetFriendsDTO getFriends(Long userId) {
 
         log.info("[친구 목록 조회] userId={}", userId);
+        String cacheKey = "friends:" + userId;
 
-        // 유저 검색
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+        return redisCacheHelper.findWithCache(
+                cacheKey,
+                new TypeReference<FriendResponse.GetFriendsDTO>() {},
+                () -> {
+                    User user = userRepository.findById(userId)
+                            .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
-        // 친구 리스트 조회
-        List<User> friends = getFriendList(user);
+                    List<User> friends = getFriendList(user);
+                    log.info("조회된 친구 수 : {}", friends.size());
 
-        log.info("조회된 친구 수 : {}", friends.size());
-
-        return FriendConverter.toGetFriendsDTO(friends);
+                    return FriendConverter.toGetFriendsDTO(friends);
+                }
+        );
     }
 
     // 친구 리스트 조회
@@ -195,6 +202,10 @@ public class FriendService {
                 );
 
         friendRepository.delete(friendRequestToDelete);
+
+        // 캐시 무효화
+        redisCacheHelper.deleteFriendCache(userId);
+        redisCacheHelper.deleteFriendCache(friend.getId());
     }
 
     /**
@@ -220,6 +231,10 @@ public class FriendService {
         if (friendRequestToAccept.getAccepted()) throw new GeneralException(ErrorStatus.ALREADY_FRIENDS);
 
         friendRequestToAccept.setAccepted();
+
+        // 캐시 무효화
+        redisCacheHelper.deleteFriendCache(receiver.getId());
+        redisCacheHelper.deleteFriendCache(sender.getId());
 
         // 알림 생성(친구 신청 발신자 대상)
         Alarm newAlarm = AlarmConverter.toFriendReqeustAcceptedAlarm(receiver, sender);
