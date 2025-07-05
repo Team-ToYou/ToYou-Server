@@ -3,7 +3,7 @@ import { check, sleep } from 'k6';
 
 export let options = {
     stages: [
-        { duration: '1m', target: 3000 }
+        { duration: '1m', target: 1000 }
     ],
 };
 
@@ -18,7 +18,7 @@ const params = {
 };
 
 export default function () {
-    const res = http.get(`${BASE_URL}/users/home`, params);
+    const res = http.get(`${BASE_URL}/friends`, params);
     check(res, {
         'home: status is 2xx': (r) => r.status >= 200 && r.status < 300,
         'home: response time < 300ms': (r) => r.timings.duration < 300,

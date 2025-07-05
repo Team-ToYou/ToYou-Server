@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface FriendRepository extends JpaRepository<FriendRequest, Long> {
 
+    // receiver가 탈퇴되지 않았으며, 친구 요청이 수락된 경우에 대해 조회
     @Query("""
         SELECT fr FROM FriendRequest fr
         JOIN FETCH fr.receiver
@@ -20,6 +21,7 @@ public interface FriendRepository extends JpaRepository<FriendRequest, Long> {
     """)
     List<FriendRequest> findBySenderAndAcceptedTrue(@Param("sender") User sender);
 
+    // receiver가 탈퇴되지 않았으며, 수락된 친구 요청이 있는 경우에 대해 조회
     @Query("""
         SELECT fr FROM FriendRequest fr
         JOIN FETCH fr.sender
