@@ -20,8 +20,8 @@ const params = {
 export default function () {
     const res = http.get(`${BASE_URL}/friends`, params);
     check(res, {
-        'home: status is 2xx': (r) => r.status >= 200 && r.status < 300,
-        'home: response time < 300ms': (r) => r.timings.duration < 300,
+        'status is 2xx': (r) => r.status >= 200 && r.status < 300,
+        'response time < 300ms': (r) => r.timings.duration < 300,
     });
     sleep(1);
 }
