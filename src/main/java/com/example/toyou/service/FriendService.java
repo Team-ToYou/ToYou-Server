@@ -93,18 +93,14 @@ public class FriendService {
         if (user == friend) throw new GeneralException(ErrorStatus.CANNOT_REQUEST_MYSELF);
 
         // 친구 상태 확인
-        FriendStatus friendStatus;
-
-        if (friendRepository.existsBySenderAndReceiverAndAccepted(user, friend, true)
-                || friendRepository.existsBySenderAndReceiverAndAccepted(friend, user, true)) {
-            friendStatus = FriendStatus.FRIEND;
-        } else if (friendRepository.existsBySenderAndReceiverAndAccepted(user, friend, false)) {
-            friendStatus = FriendStatus.REQUEST_SENT;
-        } else if (friendRepository.existsBySenderAndReceiverAndAccepted(friend, user, false)) {
-            friendStatus = FriendStatus.REQUEST_RECEIVED;
-        } else {
-            friendStatus = FriendStatus.NOT_FRIEND;
-        }
+        FriendStatus friendStatus = friendRepository.findBetween(user, friend)
+                .map(fr -> {
+                    if (fr.getAccepted()) return FriendStatus.FRIEND;
+                    return fr.getSender().equals(user)
+                            ? FriendStatus.REQUEST_SENT
+                            : FriendStatus.REQUEST_RECEIVED;
+                })
+                .orElse(FriendStatus.NOT_FRIEND);
 
         log.info("친구 상태 : {}", friendStatus);
 

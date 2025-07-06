@@ -8,6 +8,11 @@ GET {{baseUrl}}/users/mypage
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
+### 친구(유저) 검색
+GET {{baseUrl}}/friends/search?keyword=맹구
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
 ### 친구 목록 조회
 GET {{baseUrl}}/friends
 Authorization: Bearer {{token}}
