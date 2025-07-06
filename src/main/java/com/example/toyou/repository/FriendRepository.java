@@ -40,5 +40,10 @@ public interface FriendRepository extends JpaRepository<FriendRequest, Long> {
 
     Boolean existsBySenderAndReceiver(User sender, User receiver);
 
-    Boolean existsBySenderAndReceiverAndAccepted(User sender, User receiver, Boolean accepted);
+    @Query("""
+        SELECT fr FROM FriendRequest fr
+        WHERE (fr.sender = :user AND fr.receiver = :friend)
+           OR (fr.sender = :friend AND fr.receiver = :user)
+    """)
+    Optional<FriendRequest> findBetween(@Param("user") User user, @Param("friend") User friend);
 }

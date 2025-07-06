@@ -18,7 +18,8 @@ const params = {
 };
 
 export default function () {
-    const res = http.get(`${BASE_URL}/friends`, params);
+    const encodedKeyword = '%EB%A7%99%EA%B5%AC';
+    const res = http.get(`${BASE_URL}/friends/search?keyword=${encodedKeyword}`, params);
     check(res, {
         'status is 2xx': (r) => r.status >= 200 && r.status < 300,
         'response time < 300ms': (r) => r.timings.duration < 300,
