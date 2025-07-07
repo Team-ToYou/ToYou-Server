@@ -68,6 +68,7 @@ public class QuestionService {
 
         QuestionType questionType = request.getQuestionType();
 
+
         String safeContent = badWordFiltering.change(request.getContent(), new String[]{" ", ",", ".", "!", "?", "@", "1"});
         log.info("생성된 질문 내용: {}", safeContent);
         Question newQuestion = QuestionConverter.toQuestion(target, questionType, questioner, safeContent);

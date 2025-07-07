@@ -61,16 +61,4 @@ public class AlarmService {
 
         alarmRepository.delete(alarm);
     }
-
-    @Transactional
-    public void createFriendRequestAcceptedAlarm(User requestSender, User requestReceiver) {
-        Alarm alarm = AlarmConverter.toFriendReqeustAcceptedAlarm(requestSender, requestReceiver);
-        alarmRepository.save(alarm);
-    }
-
-    @Transactional
-    public void createQuestionReceivedAlarm(String questioner, User target) {
-        Alarm newAlarm = AlarmConverter.toNewQuestionAlarm(questioner, target);
-        alarmRepository.save(newAlarm);
-    }
 }
