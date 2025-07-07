@@ -10,6 +10,7 @@ import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,5 +61,16 @@ public class AlarmService {
         if(alarm.getUser() != user) throw new GeneralException(ErrorStatus.ALARM_NOT_MINE);
 
         alarmRepository.delete(alarm);
+    }
+
+    @Transactional
+    public void createFriendRequestAcceptedAlarm(User requestSender, User requestReceiver) {
+        Alarm alarm = AlarmConverter.toFriendReqeustAcceptedAlarm(requestSender, requestReceiver);
+        alarmRepository.save(alarm);
+    }
+
+    @Async("asyncExecutor")
+    public void createQuestionAlarm(Long senderId, Long receiverId) {
+
     }
 }

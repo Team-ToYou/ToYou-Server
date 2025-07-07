@@ -35,6 +35,7 @@ public class FriendService {
     private final AlarmRepository alarmRepository;
     private final UserRepository userRepository;
     private final RedisCacheHelper redisCacheHelper;
+    private final AlarmDispatcher alarmDispatcher;
 
     /**
      * 친구 목록 조회
@@ -233,11 +234,7 @@ public class FriendService {
         redisCacheHelper.deleteFriendCache(sender.getId());
 
         // 알림 생성(친구 신청 발신자 대상)
-        Alarm newAlarm = AlarmConverter.toFriendReqeustAcceptedAlarm(receiver, sender);
-
-        alarmRepository.save(newAlarm);
-
-        log.info("생성된 알림 ID : {}", newAlarm.getId());
+        alarmDispatcher.sendFriendAcceptedAlarm(sender, receiver);
 
         return FcmResponse.getMyNameDto.builder()
                 .myName(receiver.getNickname())

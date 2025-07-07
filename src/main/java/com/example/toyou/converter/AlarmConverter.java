@@ -8,10 +8,10 @@ import java.util.List;
 
 public class AlarmConverter {
 
-    public static Alarm toFriendReqeustAcceptedAlarm(User opponent, User alarmTarget) {
+    public static Alarm toFriendReqeustAcceptedAlarm(User user, User opponent) {
 
         return Alarm.builder()
-                .user(alarmTarget)
+                .user(user)
                 .alarmType(AlarmType.FRIEND_REQUEST_ACCEPTED)
                 .content(String.format("%s님이 친구 요청을 수락했습니다.", opponent.getNickname()))
                 .opponent(opponent.getNickname())
