@@ -10,7 +10,6 @@ import com.example.toyou.repository.AlarmRepository;
 import com.example.toyou.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,8 +68,9 @@ public class AlarmService {
         alarmRepository.save(alarm);
     }
 
-    @Async("asyncExecutor")
-    public void createQuestionAlarm(Long senderId, Long receiverId) {
-
+    @Transactional
+    public void createQuestionReceivedAlarm(String questioner, User target) {
+        Alarm newAlarm = AlarmConverter.toNewQuestionAlarm(questioner, target);
+        alarmRepository.save(newAlarm);
     }
 }

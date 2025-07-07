@@ -16,4 +16,9 @@ public class AlarmDispatcher {
     public void sendFriendAcceptedAlarm(User requestSender, User requestReceiver) {
         alarmService.createFriendRequestAcceptedAlarm(requestSender, requestReceiver);
     }
+
+    @Async("asyncExecutor")
+    public void sendQuestionReceivedAlarm(String questioner, User target) {
+        alarmService.createQuestionReceivedAlarm(questioner, target);
+    }
 }

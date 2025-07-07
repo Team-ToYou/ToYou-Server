@@ -18,8 +18,19 @@ const params = {
 };
 
 export default function () {
-    const encodedKeyword = '%EB%A7%99%EA%B5%AC';
-    const res = http.get(`${BASE_URL}/friends/search?keyword=${encodedKeyword}`, params);
+    const min = 247753;
+    const max = 407752;
+    const targetId = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    const payload = JSON.stringify({
+        "targetId": targetId,
+        "content": "content",
+        "questionType": "SHORT_ANSWER",
+        "anonymous": false
+    });
+
+    const res = http.post(`${BASE_URL}/questions`, payload, params);
+
     check(res, {
         'status is 2xx': (r) => r.status >= 200 && r.status < 300,
         'response time < 300ms': (r) => r.timings.duration < 300,

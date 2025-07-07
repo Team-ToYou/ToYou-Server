@@ -39,6 +39,7 @@ public class QuestionService {
     private final UserRepository userRepository;
     private final BadWordFiltering badWordFiltering;
     private final NicknameUtils nicknameUtils;
+    private final AlarmDispatcher alarmDispatcher;
 
     /**
      * 질문 생성
@@ -67,7 +68,6 @@ public class QuestionService {
 
         QuestionType questionType = request.getQuestionType();
 
-
         String safeContent = badWordFiltering.change(request.getContent(), new String[]{" ", ",", ".", "!", "?", "@", "1"});
         log.info("생성된 질문 내용: {}", safeContent);
         Question newQuestion = QuestionConverter.toQuestion(target, questionType, questioner, safeContent);
@@ -92,9 +92,7 @@ public class QuestionService {
         }
 
         // 알림 생성
-        Alarm newAlarm = AlarmConverter.toNewQuestionAlarm(questioner, target);
-
-        alarmRepository.save(newAlarm);
+        alarmDispatcher.sendQuestionReceivedAlarm(questioner, target);
 
         return FcmResponse.getMyNameDto.builder()
                 .myName(questioner)
