@@ -6,18 +6,17 @@ import com.example.toyou.common.cache.RedisCacheHelper;
 import com.example.toyou.dto.response.FcmResponse;
 import com.example.toyou.dto.request.FriendRequestRequest;
 import com.example.toyou.dto.response.FriendResponse;
-import com.example.toyou.converter.AlarmConverter;
 import com.example.toyou.converter.FriendConverter;
-import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.FriendStatus;
-import com.example.toyou.repository.AlarmRepository;
+import com.example.toyou.event.FriendRequestAcceptedEvent;
 import com.example.toyou.repository.FriendRepository;
 import com.example.toyou.repository.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +31,9 @@ import java.util.stream.Stream;
 public class FriendService {
 
     private final FriendRepository friendRepository;
-    private final AlarmRepository alarmRepository;
     private final UserRepository userRepository;
     private final RedisCacheHelper redisCacheHelper;
-    private final AlarmDispatcher alarmDispatcher;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 친구 목록 조회
@@ -234,7 +232,7 @@ public class FriendService {
         redisCacheHelper.deleteFriendCache(sender.getId());
 
         // 알림 생성(친구 신청 발신자 대상)
-        alarmDispatcher.sendFriendAcceptedAlarm(sender, receiver);
+        eventPublisher.publishEvent(new FriendRequestAcceptedEvent(sender, receiver));
 
         return FcmResponse.getMyNameDto.builder()
                 .myName(receiver.getNickname())

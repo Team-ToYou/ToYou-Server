@@ -5,14 +5,12 @@ import com.example.toyou.common.apiPayload.exception.GeneralException;
 import com.example.toyou.dto.response.FcmResponse;
 import com.example.toyou.dto.request.QuestionRequest;
 import com.example.toyou.dto.response.QuestionResponse;
-import com.example.toyou.converter.AlarmConverter;
 import com.example.toyou.converter.QuestionConverter;
-import com.example.toyou.domain.Alarm;
 import com.example.toyou.domain.AnswerOption;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.QuestionType;
-import com.example.toyou.repository.AlarmRepository;
+import com.example.toyou.event.QuestionCreatedEvent;
 import com.example.toyou.repository.AnswerOptionRepository;
 import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
@@ -20,6 +18,7 @@ import com.example.toyou.util.NicknameUtils;
 import com.vane.badwordfiltering.BadWordFiltering;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,11 +34,10 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final AnswerOptionRepository answerOptionRepository;
-    private final AlarmRepository alarmRepository;
     private final UserRepository userRepository;
     private final BadWordFiltering badWordFiltering;
     private final NicknameUtils nicknameUtils;
-    private final AlarmDispatcher alarmDispatcher;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 질문 생성
@@ -93,7 +91,7 @@ public class QuestionService {
         }
 
         // 알림 생성
-        alarmDispatcher.sendQuestionReceivedAlarm(questioner, target);
+        eventPublisher.publishEvent(new QuestionCreatedEvent(questioner, target));
 
         return FcmResponse.getMyNameDto.builder()
                 .myName(questioner)
