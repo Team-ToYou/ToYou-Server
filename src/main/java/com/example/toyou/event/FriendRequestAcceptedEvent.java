@@ -8,6 +8,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FriendRequestAcceptedEvent {
 
-    private final User sender;
-    private final User receiver;
+    private final User requestSender;
+    private final User requestReceiver;
 }

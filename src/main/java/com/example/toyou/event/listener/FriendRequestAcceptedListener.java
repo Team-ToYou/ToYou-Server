@@ -22,8 +22,8 @@ public class FriendRequestAcceptedListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(FriendRequestAcceptedEvent event) {
         try {
-            Alarm alarm = AlarmConverter.toFriendReqeustAcceptedAlarm(
-                    event.getSender(), event.getReceiver()
+            Alarm alarm = AlarmConverter.toFriendRequestAcceptedAlarm(
+                    event.getRequestSender(), event.getRequestReceiver()
             );
             alarmRepository.save(alarm);
         } catch (Exception e) {
