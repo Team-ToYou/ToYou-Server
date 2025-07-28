@@ -66,6 +66,8 @@ dependencies {
 	implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.70'
 	implementation 'org.springframework.security:spring-security-oauth2-jose:5.7.3'
 	implementation 'com.auth0:java-jwt:3.18.2'
+
+	implementation 'net.bytebuddy:byte-buddy:1.14.13'
 }
 
 tasks.named('test') {

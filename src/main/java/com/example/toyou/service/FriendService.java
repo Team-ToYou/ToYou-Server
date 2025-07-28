@@ -1,8 +1,8 @@
 package com.example.toyou.service;
 
-import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.common.apiPayload.exception.GeneralException;
-import com.example.toyou.common.cache.RedisCacheHelper;
+import com.example.toyou.global.response.code.status.ErrorStatus;
+import com.example.toyou.global.exception.GeneralException;
+import com.example.toyou.global.cache.RedisCacheHelper;
 import com.example.toyou.dto.response.FcmResponse;
 import com.example.toyou.dto.request.FriendRequestRequest;
 import com.example.toyou.dto.response.FriendResponse;
@@ -10,7 +10,7 @@ import com.example.toyou.converter.FriendConverter;
 import com.example.toyou.domain.FriendRequest;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.FriendStatus;
-import com.example.toyou.event.FriendRequestAcceptedEvent;
+import com.example.toyou.global.event.FriendRequestAcceptedEvent;
 import com.example.toyou.repository.FriendRepository;
 import com.example.toyou.repository.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;

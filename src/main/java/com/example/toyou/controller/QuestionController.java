@@ -1,6 +1,6 @@
 package com.example.toyou.controller;
 
-import com.example.toyou.common.apiPayload.CustomApiResponse;
+import com.example.toyou.global.response.CustomApiResponse;
 import com.example.toyou.dto.response.FcmResponse;
 import com.example.toyou.dto.request.QuestionRequest;
 import com.example.toyou.dto.response.QuestionResponse;

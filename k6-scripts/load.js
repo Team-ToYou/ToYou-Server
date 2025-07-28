@@ -2,9 +2,8 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export let options = {
-    stages: [
-        { duration: '1m', target: 1000 }
-    ],
+    vus: 100,           // 테스트 시작과 동시에 100명의 가상 사용자 투입
+    duration: '1m'      // 1분 동안 고정된 부하 유지
 };
 
 const BASE_URL = 'http://localhost:8080';

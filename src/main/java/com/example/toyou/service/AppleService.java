@@ -2,8 +2,8 @@ package com.example.toyou.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.global.response.code.status.ErrorStatus;
+import com.example.toyou.global.exception.GeneralException;
 import com.example.toyou.dto.apple.AppleSocialTokenInfoResponse;
 import com.example.toyou.dto.apple.AppleUserInfoResponse;
 import io.jsonwebtoken.JwsHeader;
@@ -12,7 +12,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
-import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
@@ -31,7 +29,6 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 

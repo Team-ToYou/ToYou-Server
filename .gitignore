@@ -10,6 +10,8 @@ build/
 **/resources/firebase/
 **/resources/key/
 http-client.private.env.json
+.k6-scripts
+**/DataInitializer.java
 
 ### STS ###
 .apt_generated

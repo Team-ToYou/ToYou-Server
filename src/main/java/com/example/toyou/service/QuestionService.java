@@ -1,7 +1,7 @@
 package com.example.toyou.service;
 
-import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.global.response.code.status.ErrorStatus;
+import com.example.toyou.global.exception.GeneralException;
 import com.example.toyou.dto.response.FcmResponse;
 import com.example.toyou.dto.request.QuestionRequest;
 import com.example.toyou.dto.response.QuestionResponse;
@@ -10,11 +10,11 @@ import com.example.toyou.domain.AnswerOption;
 import com.example.toyou.domain.Question;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.QuestionType;
-import com.example.toyou.event.QuestionCreatedEvent;
+import com.example.toyou.global.event.QuestionCreatedEvent;
 import com.example.toyou.repository.AnswerOptionRepository;
 import com.example.toyou.repository.QuestionRepository;
 import com.example.toyou.repository.UserRepository;
-import com.example.toyou.util.NicknameUtils;
+import com.example.toyou.global.util.NicknameUtils;
 import com.vane.badwordfiltering.BadWordFiltering;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

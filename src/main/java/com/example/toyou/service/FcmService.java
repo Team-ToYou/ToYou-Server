@@ -1,7 +1,7 @@
 package com.example.toyou.service;
 
-import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.global.response.code.status.ErrorStatus;
+import com.example.toyou.global.exception.GeneralException;
 import com.example.toyou.dto.response.FcmResponse;
 import com.example.toyou.dto.fcm.FcmTopicDto;
 import com.example.toyou.domain.FcmToken;
@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.example.toyou.common.apiPayload.code.status.ErrorStatus.*;
+import static com.example.toyou.global.response.code.status.ErrorStatus.*;
 
 @Service
 @Slf4j

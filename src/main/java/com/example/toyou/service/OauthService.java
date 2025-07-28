@@ -1,13 +1,13 @@
 package com.example.toyou.service;
 
-import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.global.response.code.status.ErrorStatus;
+import com.example.toyou.global.exception.GeneralException;
 import com.example.toyou.dto.apple.AppleUserInfoResponse;
 import com.example.toyou.dto.request.UserRequest;
 import com.example.toyou.domain.OauthInfo;
 import com.example.toyou.domain.User;
 import com.example.toyou.domain.enums.OauthProvider;
-import com.example.toyou.common.jwt.TokenProvider;
+import com.example.toyou.global.jwt.TokenProvider;
 import com.example.toyou.dto.response.AuthResponse;
 import com.example.toyou.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Optional;
 
-import static com.example.toyou.common.apiPayload.code.status.ErrorStatus.*;
+import static com.example.toyou.global.response.code.status.ErrorStatus.*;
 
 @Slf4j
 @Service

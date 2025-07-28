@@ -1,7 +1,7 @@
 package com.example.toyou.service;
 
-import com.example.toyou.common.apiPayload.code.status.ErrorStatus;
-import com.example.toyou.common.apiPayload.exception.GeneralException;
+import com.example.toyou.global.response.code.status.ErrorStatus;
+import com.example.toyou.global.exception.GeneralException;
 import com.example.toyou.dto.request.CardRequest;
 import com.example.toyou.dto.response.CardResponse;
 import com.example.toyou.converter.CardConverter;

@@ -1,12 +1,12 @@
 package com.example.toyou.controller;
 
-import com.example.toyou.common.apiPayload.CustomApiResponse;
+import com.example.toyou.global.response.CustomApiResponse;
 import com.example.toyou.dto.request.HomeRequest;
 import com.example.toyou.dto.request.UserRequest;
 import com.example.toyou.dto.response.HomeResponse;
 import com.example.toyou.dto.response.UserResponse;
 import com.example.toyou.domain.User;
-import com.example.toyou.common.jwt.TokenProvider;
+import com.example.toyou.global.jwt.TokenProvider;
 import com.example.toyou.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,6 +1,6 @@
 package com.example.toyou.controller;
 
-import com.example.toyou.common.apiPayload.CustomApiResponse;
+import com.example.toyou.global.response.CustomApiResponse;
 import com.example.toyou.dto.request.CardRequest;
 import com.example.toyou.dto.response.CardResponse;
 import com.example.toyou.service.CardService;

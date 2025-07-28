@@ -1,6 +1,6 @@
 package com.example.toyou.controller;
 
-import com.example.toyou.common.apiPayload.CustomApiResponse;
+import com.example.toyou.global.response.CustomApiResponse;
 import com.example.toyou.dto.response.AlarmResponse;
 import com.example.toyou.service.AlarmService;
 import io.swagger.v3.oas.annotations.Operation;
