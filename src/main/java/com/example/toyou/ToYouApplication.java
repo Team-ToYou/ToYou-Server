@@ -15,7 +15,7 @@ import java.util.TimeZone;
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @OpenAPIDefinition(
 		servers = {
-				@Server(url = "https://to-you.store", description = "Production Server"),
+				@Server(url = "https://to-you.shop", description = "Production Server"),
 				@Server(url = "http://localhost:8080", description = "Local Development Server")
 		}
 )
