@@ -125,7 +125,7 @@ public class QuestionService {
         LocalDate today = LocalDate.now();
         LocalDateTime startOfDay = today.atStartOfDay();
 
-        List<Question> questionsToDelete = questionRepository.findByCreatedAtBeforeAndDiaryCardIsNull(startOfDay);
+        List<Question> questionsToDelete = questionRepository.findOldQuestionsWithoutDiaryCard(startOfDay);
 
         log.info("삭제될 질문 개수: {}", questionsToDelete.size());
 

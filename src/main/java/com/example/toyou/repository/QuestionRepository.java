@@ -13,7 +13,8 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findByUserAndCreatedAtBetween(User user, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
-    List<Question> findByCreatedAtBeforeAndDiaryCardIsNull(LocalDateTime startOfDay);
+    @Query("SELECT q FROM Question q WHERE q.createdAt < :date AND q.diaryCard IS NULL")
+    List<Question> findOldQuestionsWithoutDiaryCard(@Param("date") LocalDateTime date);
 
     @Query("""
         SELECT COUNT(q) FROM Question q

@@ -5,6 +5,7 @@ import com.example.toyou.dto.response.FcmResponse;
 import com.example.toyou.dto.request.QuestionRequest;
 import com.example.toyou.dto.response.QuestionResponse;
 import com.example.toyou.service.QuestionService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -48,11 +49,12 @@ public class QuestionController {
         return CustomApiResponse.onSuccess(questionList);
     }
 
-//    @DeleteMapping
-//    public CustomApiResponse deleteOld(){
-//
-//        questionService.deleteOldQuestions();
-//
-//        return CustomApiResponse.onSuccess(null);
-//    }
+    @Hidden
+    @DeleteMapping("/old")
+    public CustomApiResponse<Void> deleteOld(){
+
+        questionService.deleteOldQuestions();
+
+        return CustomApiResponse.onSuccess(null);
+    }
 }
