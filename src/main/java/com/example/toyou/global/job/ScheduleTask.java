@@ -30,7 +30,7 @@ public class ScheduleTask {
     /**
      * 매일 자정, 감정 초기화
      */
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 10 0 * * *", zone = "Asia/Seoul")
     public void resetTodayEmotion() {
         log.info("Starting resetTodayEmotion");
         userService.resetTodayEmotion();
@@ -39,7 +39,7 @@ public class ScheduleTask {
     /**
      * 매일 자정, 30일 동안 사용되지 않은 FCM 토큰 삭제
      */
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 20 0 * * *", zone = "Asia/Seoul")
     public void cleanUpOldFcmTokens() {
         log.info("Starting cleanUpOldFcmTokens");
         fcmService.cleanUpOldFcmTokens();
